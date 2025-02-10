@@ -1,8 +1,9 @@
 import React from 'react'
+import { NavLink } from 'react-router'
 
 function Home() {
   return (
-    <div>Home</div>
+    <NavLink to={"/admin"}>Home</NavLink>
   )
 }
 
