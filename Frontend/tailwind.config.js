@@ -4,13 +4,18 @@ export default {
     theme: {
         extend: {
             colors: {
-                secondary: "#ECD2CA", // Soft Pink
-                primary: "#F95952", // Red
-                primary_dark: "#c82821", // Dark Red
-                accent: "#563C51", // Light Purple
-                dark: "#371D32", // Dark Purple
+               'green' : '#1DB954',
+                'dark-green' : '#168d40',
+                'light-green' : '#2bde6a',
+                'black' : '#191414'
             },
         },
-    },
+        extend: {
+            fontFamily: {
+              montserrat: ['"Montserrat"', "sans-serif"],
+              poppins: ['Poppins', 'sans-serif'],
+            },
+        },
     plugins: [],
+    },
 };
