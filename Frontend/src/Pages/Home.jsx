@@ -2,10 +2,25 @@ import { ArrowRight, Send, Menu, TreePine } from "lucide-react"
 import FeatureCard from "../components/FeatureCard"
 import NavBar from "../Components/NavBar/NavBar"
 
+const cards = [
+    {title: "Post",
+    description: "Share your growth with the university's community.",
+    icon: <Send className="h-12 w-12 text-green-600" />,
+    link: "/posts"},
+    {title: "Leaderboard",
+    description: "Track your sustainability rank among your peers.",
+    icon: <Menu className="h-12 w-12 text-green-600" />,
+    link: "/leaderboards"},
+    {title: "Tree",
+    description: "Start planting and growing your own tree.",
+    icon: <TreePine className="h-12 w-12 text-green-600" />,
+    link: "/posts"},
+
+]
 export default function Home() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-green-50 to-green-100">
-      <NavBar></NavBar>
+      <NavBar />
 
       <main className="container mx-auto px-4 py-16">
         <section className="text-center mb-16">
@@ -23,38 +38,7 @@ export default function Home() {
         </section>
         
         <section id="features" className="grid md:grid-cols-3 gap-8 mb-16">
-          <button 
-            onClick={() => alert("Post feature clicked!")} 
-            className="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-transform transform hover:scale-105"
-          >
-            <FeatureCard
-              icon={<Send className="h-12 w-12 text-green-600" />}
-              title="Post"
-              description="Share your growth with the university's community."
-            />
-          </button>
-
-          <button 
-            onClick={() => alert("Leaderboard feature clicked!")} 
-            className="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-transform transform hover:scale-105"
-          >
-            <FeatureCard
-              icon={<Menu className="h-12 w-12 text-green-600" />}
-              title="Leaderboard"
-              description="Track your sustainability rank among your peers."
-            />
-          </button>
-
-          <button 
-            onClick={() => alert("Tree feature clicked!")} 
-            className="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-transform transform hover:scale-105"
-          >
-            <FeatureCard
-              icon={<TreePine className="h-12 w-12 text-green-600" />}
-              title="Tree"
-              description="Start planting and growing your own tree."
-            />
-          </button>
+        {cards.map(e=><FeatureCard icon={e.icon} description={e.description} title={e.title} link={e.link}/>)}
         </section>
 
         <section className="text-center mb-16">
