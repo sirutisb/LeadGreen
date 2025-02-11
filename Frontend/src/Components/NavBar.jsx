@@ -1,6 +1,7 @@
 import { Leaf, TableOfContents } from "lucide-react"
 import UserNav from "./UserNav"
 
+
 export default function NavBar(){
     return(
       <header className="container mx-auto px-4 py-8">
