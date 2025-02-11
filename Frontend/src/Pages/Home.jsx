@@ -1,5 +1,6 @@
 import { ArrowRight, Send, Menu, TreePine } from "lucide-react"
 import FeatureCard from "../components/FeatureCard"
+import NavBar from "../Components/NavBar/NavBar"
 
 export default function Home() {
   return (
@@ -8,7 +9,7 @@ export default function Home() {
 
       <main className="container mx-auto px-4 py-16">
         <section className="text-center mb-16">
-          <h1 className="text-4xl md:text-6xl font-bold text-green-800 mb-4">Track Your Sustainability Journey</h1>
+          <h1 className="text-4xl md:text-6xl font-bold text-green mb-4">Track Your Sustainability Journey</h1>
           <p className="text-xl text-green-700 mb-8">
             Empower yourself to make eco-friendly choices and reduce your carbon footprint.
           </p>

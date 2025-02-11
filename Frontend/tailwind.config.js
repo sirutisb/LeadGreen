@@ -4,10 +4,10 @@ export default {
     theme: {
         extend: {
             colors: {
-                'green': '#1DB954',
-                'dark-green': '#168d40',
-                'light-green': '#2bde6a',
-                'black': '#191414'
+                'primary': '#1DB954',
+                'secondary': '#168d40',
+                'lead-light': '#2bde6a',
+                'lead-black': '#191414'
             },
             fontFamily: {
                 montserrat: ['"Montserrat"', "sans-serif"],
