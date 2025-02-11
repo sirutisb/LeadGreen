@@ -4,7 +4,7 @@ import NavBar from "../Components/NavBar/NavBar"
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-green-50 to-green-100">
+    <div className="min-h-screen bg-green">
       <NavBar></NavBar>
 
       <main className="container mx-auto px-4 py-16">
