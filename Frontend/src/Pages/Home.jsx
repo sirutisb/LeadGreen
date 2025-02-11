@@ -1,28 +1,11 @@
 import { ArrowRight, Leaf, Recycle, Zap } from "lucide-react"
 import FeatureCard from "../components/FeatureCard"
+import NavBar from "../Components/NavBar/NavBar"
 
 export default function Home() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-green-50 to-green-100">
-      <header className="container mx-auto px-4 py-8">
-        <nav className="flex justify-between items-center">
-          <div className="flex items-center space-x-2">
-            <Leaf className="h-8 w-8 text-green-600" />
-            <span className="text-2xl font-bold text-green-800">LeadGreen</span>
-          </div>
-          <div className="space-x-4">
-            <button className="text-green-700 hover:text-green-900">
-              Post
-            </button>
-            <button className="text-green-700 hover:text-green-900">
-              Leaderboard
-            </button>
-            <button className="text-green-700 hover:text-green-900">
-              Tree
-            </button>
-          </div>
-        </nav>
-      </header>
+      <NavBar></NavBar>
 
       <main className="container mx-auto px-4 py-16">
         <section className="text-center mb-16">
