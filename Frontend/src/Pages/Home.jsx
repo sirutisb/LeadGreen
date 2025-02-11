@@ -1,11 +1,11 @@
-import Map from '../Components/map.jsx';
+import React from 'react'
 
-const Home = () => {
-    return (
-        <div className='flex h-full items-center justify-center flex-col gap-4'>
-            <Map />
-        </div>
-    );
+function Home() {
+  return (
+    <div className='underline'>
+      ok
+    </div>
+  )
 }
 
-export default Home;
+export default Home
