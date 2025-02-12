@@ -2,7 +2,7 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import { fetchPosts } from "../Hooks/api";
 import Post from "../Components/Post";
 import useInfiniteScroll from "../Hooks/useInfiniteScroll";
-//aa
+
 const Feed = () => {
     
   const {
@@ -13,15 +13,9 @@ const Feed = () => {
     status,
   } = useInfiniteQuery({
     queryKey: ["posts"],
-    queryFn: fetchPosts,
-    getNextPageParam: (lastPage) => lastPage.nextPage ? lastPage.nextPage : undefined,
+    queryFn: ({ pageParam = 1 }) => fetchPosts({ pageParam }),
+    getNextPageParam: (lastPage) => lastPage.nextPage
   });
-
-  console.log(useInfiniteQuery({
-    queryKey: ["posts"],
-    queryFn: fetchPosts,
-    getNextPageParam: (lastPage) => lastPage.nextPage ? lastPage.nextPage : undefined,
-  }))
 
   const observerRef = useInfiniteScroll(fetchNextPage, hasNextPage, isFetchingNextPage);
 
@@ -29,7 +23,7 @@ const Feed = () => {
   if (status === "error") return <p>Error loading posts</p>;
   return (
     <div className="max-w-lg mx-auto">
-      {data.pages.map((group, index) => (
+      {data?.pages.map((group, index) => (
         <div key={index}>
           {group.posts.map((post) => (
             <Post key={post.id} post={post} />
