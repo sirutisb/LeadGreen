@@ -1,5 +1,5 @@
 import { ArrowRight, Send, Menu, TreePine } from "lucide-react"
-import FeatureCard from "../components/FeatureCard"
+import FeatureCard from "../Components/gui/FeatureCard"
 import NavBar from "../Components/NavBar/NavBar"
 
 export default function Home() {
