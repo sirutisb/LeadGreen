@@ -43,7 +43,7 @@ const Post = ({ post }) => {
       <Box display="flex" alignItems="center" mb={2}>
         <Avatar sx={{ bgcolor: "#1B6630", width: 40, height: 40 }} />
         <Typography variant="h6" sx={{ ml: 2, color: "#1B6630", fontWeight: "bold" }}>
-          top__goon
+          {post.username}
         </Typography>
       </Box>
 
