@@ -1,17 +1,69 @@
-For running django environment
+# LeadGreen Backend Setup
 
-##### Set up python virtual environment for the project content:
+## Initial Setup
 
-python3 -m venv .
+### 1. Create a Python Virtual Environment
 
-##### Enter the python virtual environment
+Run the following command in your project directory to create a virtual environment:
 
-source bin/activate
+```bash
+python3 -m venv venv
+```
 
-##### Install django
+### 2. Activate the Virtual Environment
 
-pip install django
+#### On macOS/Linux:
+```bash
+source venv/bin/activate
+```
 
-##### Move to sustainability-site directory and run server
+#### On Windows:
+```bash
+venv\Scripts\activate
+```
 
+### 3. Install Dependencies
+
+Ensure you have a `requirements.txt` file containing the necessary dependencies, including Django and Django REST framework. Then install them:
+
+```bash
+pip install -r requirements.txt
+```
+
+If `requirements.txt` does not exist, you can create one with the following content:
+```
+django
+djangorestframework
+```
+Then, install using the same command above.
+
+### 4. Navigate to the Project Directory
+
+Move into the Django project directory:
+```bash
+cd sustainability-site
+```
+
+### 5. Apply Migrations
+
+Before running the server, apply database migrations:
+```bash
+python manage.py migrate
+```
+
+### 6. Create a Superuser (Admin Account)
+
+Run the following command and follow the prompts to create an admin account:
+```bash
+python manage.py createsuperuser
+```
+
+### 7. Run the Development Server
+
+Start the Django development server:
+```bash
 python manage.py runserver
+```
+
+Now, you can log in to the admin panel at `http://127.0.0.1:8000/admin/` using the superuser credentials you created.
+
