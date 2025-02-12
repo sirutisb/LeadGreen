@@ -1,5 +1,6 @@
 import { ArrowRight, Leaf, Recycle, Zap } from "lucide-react"
 import FeatureCard from "../components/FeatureCard"
+import { Link } from "react-router-dom"
 
 export default function Home() {
   return (
@@ -11,9 +12,9 @@ export default function Home() {
             <span className="text-2xl font-bold text-green-800">LeadGreen</span>
           </div>
           <div className="space-x-4">
-            <button className="text-green-700 hover:text-green-900">
+            <Link to="/feed" className="text-green-700 hover:text-green-900">
               Post
-            </button>
+            </Link>
             <button className="text-green-700 hover:text-green-900">
               Leaderboard
             </button>
