@@ -5,3 +5,6 @@ from django.http import HttpResponse
 
 def index(request):
     return HttpResponse("Example homepage")
+
+def posts(request):
+    return HttpResponse("Welcome to the posts, this is a collection of the public posts.") 
