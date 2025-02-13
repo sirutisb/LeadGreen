@@ -22,9 +22,9 @@ class Category(models.Model):
 
 class QRCode(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
-    code = models.CharField(max_length=32)
-    location_name = models.CharField(max_length=32)
-    coordinates = models.CharField(max_length=32)
+    code = models.CharField(max_length=32, default="")
+    location_name = models.CharField(max_length=32, default="")
+    coordinates = models.CharField(max_length=32, default="")
 
     def __str__(self):
         return f"{self.location_name} - {self.category.type}"
@@ -48,8 +48,8 @@ class Post(models.Model):
 
 class ShopItem(models.Model):
     name = models.CharField(max_length=32)
-    effect = models.CharField(max_length=32)
-    description = models.TextField()
+    effect = models.CharField(max_length=32, default="")
+    description = models.TextField(default="")
     cost = models.IntegerField(default=0)
 
     def __str__(self):
