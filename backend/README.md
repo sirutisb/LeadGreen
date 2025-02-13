@@ -4,6 +4,7 @@
 
 ### 1. Create a Python Virtual Environment
 
+Make sure to cd into the backend directory before running the following commands.
 Run the following command in your project directory to create a virtual environment:
 
 ```bash
