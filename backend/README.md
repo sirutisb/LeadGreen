@@ -5,8 +5,11 @@
 ### 1. Create a Python Virtual Environment
 
 Make sure to cd into the backend directory before running the following commands.
-Run the following command in your project directory to create a virtual environment:
+```bash
+cd backend
+```
 
+Run the following command in the backend directory to create a virtual environment:
 ```bash
 python3 -m venv venv
 ```
@@ -25,18 +28,14 @@ venv\Scripts\activate
 
 ### 3. Install Dependencies
 
-Ensure you have a `requirements.txt` file containing the necessary dependencies, including Django and Django REST framework. Then install them:
-
+Install the Django and Django REST framework from the requirements.txt file:
 ```bash
 pip install -r requirements.txt
 ```
-
-If `requirements.txt` does not exist, you can create one with the following content:
+You can also install the dependencies manually:
+```bash
+pip install django djangorestframework
 ```
-django
-djangorestframework
-```
-Then, install using the same command above.
 
 ### 4. Navigate to the Project Directory
 
@@ -67,4 +66,3 @@ python manage.py runserver
 ```
 
 Now, you can log in to the admin panel at `http://127.0.0.1:8000/admin/` using the superuser credentials you created.
-
