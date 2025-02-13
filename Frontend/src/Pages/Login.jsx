@@ -147,7 +147,7 @@ import { Link } from "react-router-dom";
 import Button from "../Components/gui/Button";
 import Input from "../Components/gui/Input";
 import Label from "../Components/gui/Label";
-import NavBar from "../Components/NavBar/NavBar";
+import NavBar from "../Components/NavBar";
 import FeatureCard from "../Components/gui/FeatureCard";
 import { FaLeaf, FaRecycle, FaGlobe, FaSolarPanel, FaBicycle } from "react-icons/fa"; // Importing icons
 
