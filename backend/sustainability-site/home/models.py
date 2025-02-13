@@ -11,20 +11,23 @@ class UserProfile(models.Model):
     tree_growth = models.FloatField(default=0) # float between (0,1)
 
     def __str__(self):
-        return self.user.username
+        return f"{self.user.username} - {self.points_balance} points"
 
 class Category(models.Model):
     type = models.CharField(max_length=32)
     reward_points = models.IntegerField(default=0)
 
     def __str__(self):
-        return self.type
+        return f"{self.type} - {self.reward_points} points"
 
 class QRCode(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    code = models.CharField(max_length=32)
+    location_name = models.CharField(max_length=32)
+    coordinates = models.CharField(max_length=32)
 
     def __str__(self):
-        return self.category.type
+        return f"{self.location_name} - {self.category.type}"
 
 
 class Post(models.Model):
@@ -37,7 +40,7 @@ class Post(models.Model):
     points_received = models.IntegerField(default=0)
 
     def __str__(self):
-        return self.caption
+        return f"{self.author} - {self.caption}"
 
     class Meta:
         ordering = ['created_at']
@@ -45,13 +48,21 @@ class Post(models.Model):
 
 class ShopItem(models.Model):
     name = models.CharField(max_length=32)
+    effect = models.CharField(max_length=32)
     description = models.TextField()
     cost = models.IntegerField(default=0)
 
     def __str__(self):
-        return self.name
+        return f"{self.name} - {self.cost} points"
 
 
+class UserItem(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    item = models.ForeignKey(ShopItem, on_delete=models.CASCADE)
+    quantity = models.IntegerField(default=0)
+
+    def __str__(self):
+        return f"{self.user.username} - x{self.quantity} {self.item.name}"
 
 
     #     class Post(models.Model):
