@@ -16,7 +16,7 @@ const cards = [
     {title: "Tree",
     description: "Start planting and growing your own tree.",
     icon: <TreePine className="h-12 w-12 text-green-600" />,
-    link: "/posts"},
+    link: "/trees"},
 
 ]
 export default function Home() {
