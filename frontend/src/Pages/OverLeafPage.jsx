@@ -5,8 +5,15 @@ import OverLeaf from '../Components/OverLeaf'
 function OverLeafPage() {
   return (
     <div>
-        <NavBar />
-        <OverLeaf />
+        <div 
+            className="fixed top-0 left-0 w-full h-screen bg-cover bg-center"
+            style={{ backgroundImage: "url('/garden.png')" }}
+        ></div>
+
+        <div className="relative mt-20">
+            <NavBar />
+            <OverLeaf />
+        </div>
     </div>
   )
 }

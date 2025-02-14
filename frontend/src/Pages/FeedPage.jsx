@@ -6,7 +6,7 @@ import NavBar from "./NavBar";
 
 function FeedPage() {
   return (
-    <div>
+    <div className="pt-20 bg-[#DEFDE9]">
         <Box
         sx={{
             width: "100%",
@@ -16,7 +16,6 @@ function FeedPage() {
             alignItems: "center",
             gap: 4,
             paddingTop: "20px",
-            backgroundColor: "#DEFDE9", // Light green background
         }}
         >
         <NavBar />
