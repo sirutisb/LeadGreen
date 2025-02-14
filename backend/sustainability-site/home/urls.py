@@ -17,8 +17,7 @@ urlpatterns = [
     path('leaderboard/', views.Leaderboard.as_view(), name='leaderboard'),
     
     # Tree related endpoints
-    path('tree/water/', views.WaterTree.as_view(), name='water-tree'),
-    path('tree/upgrade/', views.UpgradeTree.as_view(), name='upgrade-tree'),
+    path('tree/action/', views.WaterTree.as_view(), name='tree-action'),
     
     # Shop related endpoints
     path('shop/', views.ShopItemList.as_view(), name='shop-list'),

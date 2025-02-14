@@ -30,7 +30,20 @@ class PostCreate(generics.CreateAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def perform_create(self, serializer):
-        serializer.save(author=self.request.user)
+        qr_code = serializer.validated_data['qr_code']
+        points = qr_code.category.reward_points
+        
+        # Create the post
+        post = serializer.save(
+            author=self.request.user,
+            points_received=points
+        )
+        
+        # Update user's points
+        profile = self.request.user.userprofile
+        profile.points_balance += points
+        profile.lifetime_points += points
+        profile.save()
 
 class PostReview(views.APIView):
     permission_classes = [permissions.IsAuthenticated]
@@ -57,12 +70,40 @@ class Leaderboard(views.APIView):
 
 # Tree related views
 class WaterTree(views.APIView):
-    def post(self, request):
-        return Response({"message": "Tree watered"})
+    permission_classes = [permissions.IsAuthenticated]
 
-class UpgradeTree(views.APIView):
     def post(self, request):
-        return Response({"message": "Tree upgraded"})
+        profile = request.user.userprofile
+        
+        action = request.data.get('action')
+        if action not in ['water', 'fertilize', 'clean']:
+            return Response(
+                {"error": "Invalid action. Must be 'water', 'fertilize', or 'clean'"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # Each action increases tree growth by different amounts
+        growth_increase = {
+            'water': 0.1,
+            'fertilize': 0.15,
+            'clean': 0.05
+        }
+        
+        # Update tree growth
+        profile.tree_growth += growth_increase[action]
+        
+        # Check if tree can level up (growth >= 1.0)
+        if profile.tree_growth >= 1.0:
+            profile.tree_level += 1
+            profile.tree_growth = profile.tree_growth - 1.0
+        
+        profile.save()
+        
+        return Response({
+            "message": f"Tree {action}ed successfully",
+            "tree_level": profile.tree_level,
+            "tree_growth": profile.tree_growth
+        })
 
 # Shop related views
 class ShopItemList(generics.ListAPIView):
