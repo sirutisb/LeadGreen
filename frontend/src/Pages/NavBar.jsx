@@ -5,7 +5,7 @@ import { Leaf } from "lucide-react";
 function NavBar() {
   return (
     <header
-      className="fixed top-0 left-0 w-full bg-[#DEFDE9] shadow-md z-50"
+      className="w-full bg-[#DEFDE9] shadow-md z-50"
     >
       <nav className="container mx-auto px-6 py-3 flex justify-between items-center">
         {/* Logo */}
