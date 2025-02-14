@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from .models import Post
 from .serializers import PostSerializer
+import random
 
 # Create your views here.
 
@@ -82,27 +83,48 @@ class WaterTree(views.APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
         
-        # Each action increases tree growth by different amounts
-        growth_increase = {
-            'water': 0.1,
-            'fertilize': 0.15,
-            'clean': 0.05
+        # Define costs and growth increases for each action
+        action_details = {
+            'water': {'cost': 10, 'growth': 0.1},
+            'fertilize': {'cost': 25, 'growth': 0.25},
+            'clean': {'cost': 15, 'growth': 0}  # Clean doesn't increase growth
         }
         
-        # Update tree growth
-        profile.tree_growth += growth_increase[action]
+        # Check if user has enough points
+        if profile.points_balance < action_details[action]['cost']:
+            return Response(
+                {"error": f"Insufficient points. {action} costs {action_details[action]['cost']} points"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
         
-        # Check if tree can level up (growth >= 1.0)
-        if profile.tree_growth >= 1.0:
-            profile.tree_level += 1
-            profile.tree_growth = profile.tree_growth - 1.0
+        # If there's a snail, only allow cleaning
+        if profile.has_snail and action != 'clean':
+            return Response(
+                {"error": "Tree has a snail! You must clean it first"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # Process the action
+        if action == 'clean':
+            profile.has_snail = False
+        else:
+            # Add growth if not cleaning
+            profile.tree_level += action_details[action]['growth']
+            
+            # Random chance (10%) to get a snail after growing
+            if not profile.has_snail and random.random() < 0.1:
+                profile.has_snail = True
+        
+        # Deduct points
+        profile.points_balance -= action_details[action]['cost']
         
         profile.save()
         
         return Response({
             "message": f"Tree {action}ed successfully",
             "tree_level": profile.tree_level,
-            "tree_growth": profile.tree_growth
+            "has_snail": profile.has_snail,
+            "points_balance": profile.points_balance
         })
 
 # Shop related views
