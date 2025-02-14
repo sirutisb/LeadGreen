@@ -12,15 +12,17 @@ const leaderboardData = [
 export default function LeaderboardPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-green-50 to-green-100">
-      <header className="container mx-auto px-4 py-8">
-        <nav className="flex justify-between items-center">
-          <h1 className="text-3xl font-bold text-green-800">EcoTrack Leaderboard</h1>
-        </nav>
+      <header className="container mx-auto px-4 py-8 flex justify-between items-center">
+          <a href="/" className="flex items-center space-x-2 text-green-700 hover:text-green-900">
+            <ArrowLeft className="h-6 w-6 text-green-700"/>
+            <span className="text-green-600">Back to Home</span>
+          </a>
+          <h1 className="text-3xl font-bold text-green-800">LeadGreen Leaderboard</h1>
       </header>
 
       <main className="container mx-auto px-4 py-8">
         <div className="bg-white rounded-lg shadow-lg p-6">
-          <h2 className="text-2xl font-semibold text-green-800 mb-6">Top Eco-Warriors</h2>
+          <h2 className="text-2xl font-semibold text-green-800 mb-6">Top Dawg</h2>
           <div className="space-y-4">
             {leaderboardData.map((user, index) => (
               <div key={user.id} className="flex items-center justify-between bg-green-50 p-4 rounded-lg">
@@ -41,7 +43,7 @@ export default function LeaderboardPage() {
 
       <footer className="bg-green-800 text-white py-8 mt-auto">
         <div className="container mx-auto px-4 text-center">
-          <p>&copy; 2025 EcoTrack. All rights reserved.</p>
+          <p>&copy; 2025 LeadGreen. All rights reserved.</p>
           <p className="mt-2">Committed to a sustainable future.</p>
         </div>
       </footer>
