@@ -1,7 +1,8 @@
 import { ArrowRight, Send, Menu, TreePine } from "lucide-react"
 import FeatureCard from "../Components/gui/FeatureCard"
-import NavBar from "../Components/Navbar"
+import NavBar from "../Components/Navbar/NavBar"
 import Section from "../Components/Section"
+
 
 const cards = [
     {title: "Post",

@@ -15,7 +15,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/posts" element={<Posts />} />
-        <Route path="/leaderboard" element={<Leaderboard />} />
+        <Route path="/leaderboards" element={<Leaderboard />} />
         <Route path="/trees" element={<Trees />} />
       </Routes>
       <ToastContainer />
