@@ -3,7 +3,7 @@
 ### Django ###
 
 # Database
-# test for now, remove this line later
+*.sqlite3
 
 # Python cache files
 __pycache__/
