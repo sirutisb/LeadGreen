@@ -1,5 +1,5 @@
 import { ArrowRight, Leaf, Recycle, Zap } from "lucide-react"
-import FeatureCard from "../components/FeatureCard"
+import FeatureCard from "../Components/FeatureCard"
 import NavBar from "./NavBar"
 
 export default function Home() {
