@@ -6,7 +6,8 @@ import { VFXProvider } from "react-vfx";
 import useSound from "use-sound";
 import mojs from "@mojs/core"; 
 import OverLeafBar from "./OverLeafBar";
-import cursors from "../assets/cursors";
+import plants from "../assets/plants"; 
+import insects from "../assets/insects"; 
 
 import waterDropSound from "../assets/drop.mp3";
 import snailSound from "../assets/snail.mp3";
@@ -14,23 +15,18 @@ import alertSound from "../assets/alert.mp3";
 import soilSound from "../assets/soil.mp3";
 import gloveSound from "../assets/glove.mp3";
 import levelSound from "../assets/level.mp3";
-import plant1 from "../assets/plant.svg";
-import plant2 from "../assets/plant2.svg";
-import plant3 from "../assets/plant3.svg";
-import snailImg from "../assets/snail.svg";
 import RouletteButton from "./RouletteButton";
-
-const plants = [plant1, plant2, plant3];
 
 const OverLeaf = () => {
   const [user, setUser] = useState({
     points_balance: 1000,
     tree_level: 1,
+    spins: 5
   });
 
   const [scale, setScale] = useState(1);
   const [selectedIcon, setSelectedIcon] = useState(null);
-  const [snailExists, setSnailExists] = useState(false);
+  const [currentInsect, setCurrentInsect] = useState(null);
   const [prevLevel, setPrevLevel] = useState(Math.floor(user.tree_level));
   const [showConfetti, setShowConfetti] = useState(false);
   const [wiggle, setWiggle] = useState(false);
@@ -41,10 +37,10 @@ const OverLeaf = () => {
   const [playsoil] = useSound(soilSound, { volume: 0.7 });
   const [playGlove] = useSound(gloveSound, { volume: 0.6 });
   const [playLevelUp] = useSound(levelSound, { volume: 1.0 });
-  const [playSnail] = useSound(snailSound, { volume: 1.0 });
+  const [playInsect] = useSound(snailSound, { volume: 1.0 });
   const [playAlert] = useSound(alertSound, { volume: 0.8 });
 
-  // 🌟 Mo.js burst animation (triggers when plant levels up)
+  // 🌟 Mo.js burst animation
   const burst = useRef(null);
 
   useEffect(() => {
@@ -63,7 +59,8 @@ const OverLeaf = () => {
   }, []);
 
   const handleLevelUp = () => {
-    toast.success("🎉 Congratulations! Your plant leveled up!", { theme: "colored" });
+    const currentPlant = plants[Math.min(Math.floor(user.tree_level) - 1, plants.length - 1)];
+    toast.success(`🎉 Congratulations! Your ${currentPlant.name} leveled up!`, { theme: "colored" });
     playLevelUp();
     setShowConfetti(true);
     setTimeout(() => setShowConfetti(false), 4000);
@@ -74,10 +71,14 @@ const OverLeaf = () => {
     }
   };
 
-  const handleSnail = () => {
-    setSnailExists(true);
-    playSnail();
-    toast.warning("🐌 A snail has appeared! Use the glove to remove it.", { theme: "colored" });
+  const handleInsectAppearance = (level) => {
+    // Adjust the calculation to start from insect1 at level 5
+    const insectIndex = Math.floor(level / 5) - 1;
+    const newInsect = insects[insectIndex % insects.length];
+    
+    setCurrentInsect(newInsect);
+    playInsect();
+    toast.warning(`${newInsect.name} has appeared! Use the glove to remove it.`, { theme: "colored" });
   };
 
   useEffect(() => {
@@ -89,7 +90,7 @@ const OverLeaf = () => {
     }
 
     if (newLevelInt % 5 === 0 && newLevelInt !== prevLevelInt) {
-      handleSnail();
+      handleInsectAppearance(newLevelInt);
     }
 
     setPrevLevel(user.tree_level);
@@ -103,9 +104,9 @@ const OverLeaf = () => {
       return;
     }
 
-    if (snailExists && selectedIcon !== "glove") {
+    if (currentInsect && selectedIcon !== "glove") {
       playAlert();
-      toast.error("🐌 A snail is blocking your plant! Use the glove first.", { theme: "colored" });
+      toast.error(`${currentInsect.name} is blocking your plant! Use the glove first.`, { theme: "colored" });
       return;
     }
 
@@ -127,22 +128,22 @@ const OverLeaf = () => {
       growth = 0.1;
       playWaterDrop();
     } else if (selectedIcon === "glove") {
-      if (user.points_balance >= 50 && snailExists) {
+      if (user.points_balance >= 50 && currentInsect) {
         setUser((prev) => ({
           ...prev,
           points_balance: prev.points_balance - 50,
           tree_level: prev.tree_level + 0.1,
         }));
-        setSnailExists(false);
+        setCurrentInsect(null);
         growth = 0.1;
         playGlove();
-        toast.success("🐌 Snail removed successfully!", { theme: "colored" });
-      } else if (!snailExists) {
+        toast.success(`${currentInsect.name} removed successfully!`, { theme: "colored" });
+      } else if (!currentInsect) {
         playAlert();
         toast.error("😭 The plant is already cleaned!", { theme: "colored" });
       } else {
         playAlert();
-        toast.error("❌ Not enough points to remove the snail!", { theme: "colored" });
+        toast.error("❌ Not enough points to remove the pest!", { theme: "colored" });
       }
     }
 
@@ -151,13 +152,23 @@ const OverLeaf = () => {
     }
   };
 
-  // 🌟 Cursor Styling
-  const cursorStyle = { cursor: selectedIcon ? cursors[selectedIcon] : "pointer" };
+  const getCurrentPlant = () => {
+    const plantIndex = Math.min(Math.floor(user.tree_level) - 1, plants.length - 1);
+    return {
+      image: plants[plantIndex].plant,
+      name: plants[plantIndex].name
+    };
+  };
+
+  const getCursorClass = () => {
+    if (!selectedIcon) return "";
+    return `cursor-${selectedIcon}`;
+  };
 
   return (
     <VFXProvider>
       {showConfetti && <Confetti numberOfPieces={200} />}
-      <div className="flex flex-col items-center justify-center min-h-screen relative" style={cursorStyle}>
+      <div className={`flex flex-col items-center justify-center min-h-screen relative ${getCursorClass()}`}>
         <OverLeafBar setSelectedIcon={setSelectedIcon} />
         <RouletteButton user={user} setUser={setUser} />
         
@@ -168,23 +179,21 @@ const OverLeaf = () => {
           transition={{ duration: 0.5, ease: "easeInOut" }}
           className="relative mt-20"
           onClick={handleAction}
-          style={cursorStyle}
         >
           <motion.img
-            src={plants[Math.min(Math.floor(user.tree_level) - 1, plants.length - 1)]}
-            alt="plant"
+            src={getCurrentPlant().image}
+            alt={getCurrentPlant().name}
             className="w-[150px] h-[150px]"
             animate={{ scale }}
             transition={{ type: "spring", stiffness: 150, damping: 10 }}
-            style={cursorStyle}
             draggable={false}
           />
 
-          {/* 🐌 Snail Display */}
-          {snailExists && (
+          {/* 🐛 Insect Display */}
+          {currentInsect && (
             <motion.img
-              src={snailImg}
-              alt="snail"
+              src={currentInsect.insect}
+              alt={currentInsect.name}
               className="absolute -top-6 left-1/2 transform -translate-x-1/2 w-12 h-12"
               animate={{ y: [0, -5, 0] }}
               transition={{ duration: 1, repeat: Infinity, repeatType: "reverse", ease: "easeInOut" }}
@@ -196,6 +205,7 @@ const OverLeaf = () => {
         <div className="absolute top-5 right-5 bg-[#DEFDE9] px-4 py-2 rounded-lg shadow-md">
           <p className="text-[#1B6630] font-semibold">🌱 Tree Level: {Math.floor(user.tree_level)}</p>
           <p className="text-[#1B6630] font-semibold">💰 Points: {user.points_balance}</p>
+          <p className="text-[#1B6630] font-semibold">🌿 Plant: {getCurrentPlant().name}</p>
         </div>
       </div>
     </VFXProvider>

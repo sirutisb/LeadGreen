@@ -8,7 +8,7 @@ import spinSound from "../assets/spin.mp3"; // 🎵 Add spin sound
 const data = [
   { option: "🎁 No Reward", weight: 15, style: { backgroundColor: "red", color: "white" } },
   { option: "🔥 50 Points", weight: 35, style: { backgroundColor: "black", color: "white" } },
-  { option: "🌟 100 Points", weight: 30, style: { backgroundColor: "red", color: "white"} },
+  { option: "🌟 100 Points", weight: 30, style: { backgroundColor: "red", color: "white" } },
   { option: "💎 200 Points", weight: 15, style: { backgroundColor: "black", color: "white" } },
   { option: "☘️ 500 Points", weight: 4, style: { backgroundColor: "red", color: "white" } },
   { option: "🏆 1000 Points", weight: 1, style: { backgroundColor: "black", color: "white" } },
@@ -26,15 +26,20 @@ const RouletteButton = ({ user, setUser }) => {
   const [prizeIndex, setPrizeIndex] = useState(0);
 
   // 🎵 Load roulette spin sound
-  const [playSpin, { stop: stopSpin, sound }] = useSound(spinSound, { volume: 1 });
+  const [playSpin, { stop: stopSpin }] = useSound(spinSound, { volume: 1 });
 
   const handleSpinClick = () => {
-    if (!mustSpin) {
+    if (!mustSpin && user.spins > 0) {
       setPrizeIndex(getWeightedPrizeIndex());
       setMustSpin(true);
-      setTimeout(()=>{
+      setUser((prev) => ({
+        ...prev,
+        spins: prev.spins - 1, // 🔻 Decrease spins count
+      }));
+
+      setTimeout(() => {
         playSpin(); // 🔊 Start spin sound
-      }, 200)
+      }, 200);
     }
   };
 
@@ -46,27 +51,30 @@ const RouletteButton = ({ user, setUser }) => {
     if (reward > 0) {
       setUser((prev) => ({
         ...prev,
-        points_balance: prev.points_balance + reward,
+        points_balance: prev.points_balance + reward, // ✅ Add points to user
       }));
     }
 
     toast.success(`🎉 You won ${data[prizeIndex].option}!`, { theme: "colored" });
 
     // ✅ Close popup after a delay
-    setTimeout(() => {
-      setIsRouletteOpen(false);
-    }, 1500);
+    // setTimeout(() => {
+    //   setIsRouletteOpen(false);
+    // }, 1500);
   };
 
   return (
     <>
       {/* 🎰 Button to Open Roulette */}
       <motion.button
-        className="absolute top-5 left-5 bg-gradient-to-r from-red-500 to-black text-white font-bold py-2 px-6 rounded-lg shadow-md transition-all hover:scale-110"
-        onClick={() => setIsRouletteOpen(true)}
+        className={`absolute top-5 left-5 ${
+          user.spins === 0 ? "bg-gray-400 cursor-not-allowed" : "bg-gradient-to-r from-red-500 to-black"
+        } text-white font-bold py-2 px-6 rounded-lg shadow-md transition-all hover:scale-110`}
+        onClick={() => user.spins > 0 && setIsRouletteOpen(true)}
         whileTap={{ scale: 0.9 }}
+        disabled={user.spins === 0} // ❌ Disable button if no spins left
       >
-        🎰 Spin Roulette
+        🎰 Spins Left: {user.spins}
       </motion.button>
 
       {/* 🎡 Roulette Modal */}
