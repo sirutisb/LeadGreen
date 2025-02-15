@@ -1,15 +1,15 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import fermIcon from "../assets/ferm.svg";
+import soilIcon from "../assets/soil.svg";
 import waterIcon from "../assets/water.svg";
 import gloveIcon from "../assets/glove.svg";
 
 const icons = [
   {
-    id: "ferm",
-    src: fermIcon,
-    label: "Ferm",
-    tooltip: "Fermentalizer: Helps plant growth x3. Cost: 20 points",
+    id: "soil",
+    src: soilIcon,
+    label: "soil",
+    tooltip: "Helps plant growth x3. Cost: 20 points",
   },
   {
     id: "water",
