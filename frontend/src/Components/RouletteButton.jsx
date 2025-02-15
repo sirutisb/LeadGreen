@@ -78,40 +78,43 @@ const RouletteButton = ({ user, setUser }) => {
       </motion.button>
 
       {/* 🎡 Roulette Modal */}
-      <AnimatePresence>
-        {isRouletteOpen && (
-          <motion.div
-            className="fixed inset-0 flex justify-center items-center z-50"
-            style={{ backgroundColor: "rgba(209, 213, 219, 0.7)" }} // ✅ Slightly gray transparent background
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => setIsRouletteOpen(false)} // ✅ Clicking outside closes modal
-          >
-            <motion.div
-              className="relative flex items-center justify-center"
-              initial={{ scale: 0.8 }}
-              animate={{ scale: 1 }}
-              exit={{ scale: 0.8 }}
-              onClick={(e) => {
-                e.stopPropagation();
-                handleSpinClick();
-              }} // ✅ Clicking inside spins the wheel
-            >
-              <Wheel
-                mustStartSpinning={mustSpin}
-                prizeNumber={prizeIndex}
-                data={data}
-                onStopSpinning={handleSpinStop} // ✅ Close popup after spin
-                backgroundColors={["black", "red"]}
-                textColors={["white"]}
-                outerBorderColor="white"
-                spinDuration={0.35}
-              />
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+<AnimatePresence>
+  {isRouletteOpen && (
+    <motion.div
+      className="fixed inset-0 flex justify-center items-center z-50"
+      style={{ backgroundColor: "rgba(209, 213, 219, 0.7)" }} // ✅ Slightly gray transparent background
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      onClick={() => {
+        if (!mustSpin) setIsRouletteOpen(false); // ✅ Prevent closing while spinning
+      }}
+    >
+      <motion.div
+        className="relative flex items-center justify-center"
+        initial={{ scale: 0.8 }}
+        animate={{ scale: 1 }}
+        exit={{ scale: 0.8 }}
+        onClick={(e) => {
+          e.stopPropagation();
+          handleSpinClick();
+        }} // ✅ Clicking inside spins the wheel
+      >
+        <Wheel
+          mustStartSpinning={mustSpin}
+          prizeNumber={prizeIndex}
+          data={data}
+          onStopSpinning={handleSpinStop} // ✅ Close popup after spin
+          backgroundColors={["black", "red"]}
+          textColors={["white"]}
+          outerBorderColor="white"
+          spinDuration={0.35}
+        />
+      </motion.div>
+    </motion.div>
+  )}
+</AnimatePresence>
+
     </>
   );
 };

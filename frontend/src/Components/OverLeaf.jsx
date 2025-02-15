@@ -19,7 +19,7 @@ import RouletteButton from "./RouletteButton";
 
 const OverLeaf = () => {
   const [user, setUser] = useState({
-    points_balance: 1000,
+    points_balance: 0,
     tree_level: 1,
     spins: 5
   });
@@ -96,20 +96,25 @@ const OverLeaf = () => {
     setPrevLevel(user.tree_level);
   }, [user.tree_level]);
 
-  // 🏗️ Action handlers
   const handleAction = () => {
     if (!selectedIcon) {
       setWiggle(true);
       setTimeout(() => setWiggle(false), 500);
-      return;
+      return; // 🔹 If no icon selected, just wiggle the plant and do nothing.
     }
-
+  
+    if (user.points_balance <= 0) {
+      playAlert();
+      toast.error("❌ Not enough points to perform this action!", { theme: "colored" });
+      return; // 🔹 Only trigger error when an icon is selected and points are 0.
+    }
+  
     if (currentInsect && selectedIcon !== "glove") {
       playAlert();
       toast.error(`${currentInsect.name} is blocking your plant! Use the glove first.`, { theme: "colored" });
       return;
     }
-
+  
     let growth = 0;
     if (selectedIcon === "soil" && user.points_balance >= 20) {
       setUser((prev) => ({
@@ -145,12 +150,16 @@ const OverLeaf = () => {
         playAlert();
         toast.error("❌ Not enough points to remove the pest!", { theme: "colored" });
       }
+    } else {
+      playAlert();
+      toast.error("❌ Not enough points to perform this action!", { theme: "colored" });
     }
-
+  
     if (growth > 0) {
       setScale((prevScale) => prevScale + growth);
     }
-  };
+  };  
+  
 
   const getCurrentPlant = () => {
     const plantIndex = Math.min(Math.floor(user.tree_level) - 1, plants.length - 1);
