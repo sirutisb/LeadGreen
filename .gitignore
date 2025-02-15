@@ -35,5 +35,6 @@ env/
 *.pyc
 local_settings.py
 media
+migrations
 
 # frontend
