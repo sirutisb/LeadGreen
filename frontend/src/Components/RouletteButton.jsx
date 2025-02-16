@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Wheel } from "react-custom-roulette";
 import { toast } from "react-toastify";
 import useSound from "use-sound";
-import spinSound from "../assets/spin.mp3"; // 🎵 Add spin sound
+import spinSound from "../assets/sounds/spin.mp3"; // 🎵 Add spin sound
 
 const data = [
   { option: "🎁 No Reward", weight: 15, style: { backgroundColor: "red", color: "white" } },
