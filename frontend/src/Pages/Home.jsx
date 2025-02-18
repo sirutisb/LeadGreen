@@ -1,7 +1,7 @@
 'use client'
 import { ArrowRight, Send, Menu, TreePine, Bird } from "lucide-react"
 import FeatureCard from "../Components/FeatureCard"
-import NavBar from "../Components/Navbar/NavBar"
+import NavBar from "../Components/NavBar/NavBar"
 import Section from "../Components/Section"
 import earth from "../assets/earth.webp"
 import earth2 from "../assets/earth2.svg"
