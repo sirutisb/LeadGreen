@@ -7,7 +7,8 @@ class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     points_balance = models.IntegerField(default=0)
     lifetime_points = models.IntegerField(default=0)
-    tree_level = models.IntegerField(default=0)
+    tree_level = models.FloatField(default=1.0)
+    has_snail = models.BooleanField(default=False)
     tree_growth = models.FloatField(default=0) # float between (0,1)
 
     def __str__(self):

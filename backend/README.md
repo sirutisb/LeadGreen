@@ -4,26 +4,21 @@
 
 ### 1. Create a Python Virtual Environment
 
-Make sure to cd into the backend directory before running the following commands.
+Run the following command in the project directory to create a virtual environment:
 ```bash
-cd backend
-```
-
-Run the following command in the backend directory to create a virtual environment:
-```bash
-python3 -m venv venv
+python3 -m venv .venv
 ```
 
 ### 2. Activate the Virtual Environment
 
 #### On macOS/Linux:
 ```bash
-source venv/bin/activate
+source .venv/bin/activate
 ```
 
 #### On Windows:
 ```bash
-venv\Scripts\activate
+.venv\Scripts\activate
 ```
 
 ### 3. Install Dependencies
@@ -37,17 +32,19 @@ You can also install the dependencies manually:
 pip install django djangorestframework
 ```
 
-### 4. Navigate to the Project Directory
+### 4. Navigate to the DjangoProject Directory
 
 Move into the Django project directory:
 ```bash
+cd backend
 cd sustainability-site
 ```
 
 ### 5. Apply Migrations
 
-Before running the server, apply database migrations:
+Before running the server, make and apply database migrations:
 ```bash
+python manage.py makemigrations
 python manage.py migrate
 ```
 
