@@ -1,61 +1,60 @@
-import { ArrowRight, Leaf, Recycle, Zap } from "lucide-react"
-import FeatureCard from "../components/FeatureCard"
-import { Link } from "react-router-dom"
+"use client"
+import { ArrowRight, Send, Menu, TreePine, Bird } from "lucide-react"
+import FeatureCard from "../Components/gui/FeatureCard"
+import NavBar from "../Components/Navbar/NavBar"
+import Section from "../Components/Section"
+import earth from "../assets/earth.webp"
+import earth2 from "../assets/earth2.svg"
 
+import {motion} from "framer-motion"
+const cards = [
+    {title: "Post",
+    description: "Share your growth with the university's community.",
+    icon: <Send className="h-12 w-12 text-green-600" />,
+    link: "/posts"},
+    {title: "Leaderboard",
+    description: "Track your sustainability rank among your peers.",
+    icon: <Menu className="h-12 w-12 text-green-600" />,
+    link: "/leaderboards"},
+    {title: "Tree",
+    description: "Start planting and growing your own tree.",
+    icon: <TreePine className="h-12 w-12 text-green-600" />,
+    link: "/trees"},
+
+]
 export default function Home() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-green-50 to-green-100">
-      <header className="container mx-auto px-4 py-8">
-        <nav className="flex justify-between items-center">
-          <div className="flex items-center space-x-2">
-            <Leaf className="h-8 w-8 text-green-600" />
-            <span className="text-2xl font-bold text-green-800">LeadGreen</span>
-          </div>
-          <div className="space-x-4">
-            <Link to="/feed" className="text-green-700 hover:text-green-900">
-              Post
-            </Link>
-            <button className="text-green-700 hover:text-green-900">
-              Leaderboard
-            </button>
-            <button className="text-green-700 hover:text-green-900">
-              Tree
-            </button>
-          </div>
-        </nav>
-      </header>
+    <div className="min-h-screen bg-[#f3f1ea]">
+      <NavBar />
 
-      <main className="container mx-auto px-4 py-16">
-        <section className="text-center mb-16">
-          <h1 className="text-4xl md:text-6xl font-bold text-green-800 mb-4">Track Your Sustainability Journey</h1>
-          <p className="text-xl text-green-700 mb-8">
-            Empower yourself to make eco-friendly choices and reduce your carbon footprint.
-          </p>
-          <a
-            href="#get-started"
-            className="inline-flex items-center px-6 py-3 text-lg font-semibold text-white bg-green-600 rounded-full hover:bg-green-700 transition-colors duration-300"
-          >
-            Get Started
-            <ArrowRight className="ml-2 h-5 w-5" />
-          </a>
-        </section>
+        <Section></Section>
 
-        <section id="features" className="grid md:grid-cols-3 gap-8 mb-16">
-          <FeatureCard
-            icon={<Leaf className="h-12 w-12 text-green-600" />}
-            title="Track Eco-Habits"
-            description="Log your daily sustainable actions and see your progress over time."
+        <motion.div 
+          className="relative w-full mt-12"  
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.8 }}>
+          <svg
+            xmlns = {earth2}
+            alt="EcoTrack Dashboard Visualization"
+            className="w-full  mx-auto py-16"
+            priority
+      
           />
-          <FeatureCard
-            icon={<Recycle className="h-12 w-12 text-green-600" />}
-            title="Waste Reduction"
-            description="Get personalized tips on reducing waste and improving recycling habits."
+          <div
+            className="absolute bottom-0 left-0 right-0 w-full"
+            style={{
+              height: "400px",
+              background: "linear-gradient(to top, #DCD5C1 0%, rgba(217, 217, 217, 0) 100%)",
+              zIndex: 10,
+            }}
           />
-          <FeatureCard
-            icon={<Zap className="h-12 w-12 text-green-600" />}
-            title="Energy Insights"
-            description="Monitor your energy consumption and find ways to reduce your usage."
-          />
+        </motion.div>
+
+        <section id="features" className="grid md:grid-cols-3 gap-8 mb-16 py-40">
+        {cards.map(e=><FeatureCard icon={e.icon} description={e.description} title={e.title} link={e.link}/>)}
         </section>
 
         <section className="text-center mb-16">
@@ -68,7 +67,6 @@ export default function Home() {
             <div className="text-green-800">kg of CO2 reduced</div>
           </div>
         </section>
-      </main>
 
       <footer className="bg-green-800 text-white py-8">
         <div className="container mx-auto px-4 text-center">
@@ -78,4 +76,4 @@ export default function Home() {
       </footer>
     </div>
   )
-}
+} 

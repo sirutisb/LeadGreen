@@ -4,17 +4,22 @@ import { Routes, Route } from 'react-router-dom'
 import Home from './Pages/Home'
 import { ToastContainer } from 'react-toastify';
 import Feed from './Pages/Feed';
-
+import Posts from './Pages/Posts'
+import Leaderboard from './Pages/Leaderboard'
+import Trees from './Pages/Trees'
 
 function App() {
 
   return (
     <div className='h-screen w-screen'>
-        <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/feed" element={<Feed />} />
-        </Routes>
-        <ToastContainer />
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/posts" element={<Posts />} />
+        <Route path="/leaderboards" element={<Leaderboard />} />
+        <Route path="/trees" element={<Trees />} />
+
+      </Routes>
+      <ToastContainer />
     </div>
   )
 }
