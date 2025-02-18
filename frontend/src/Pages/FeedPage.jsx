@@ -2,7 +2,7 @@ import React from "react";
 import Feed from "../Components/Feed";
 import MakePost from "../Components/MakePost/MakePost";
 import { Box } from "@mui/material";
-import NavBar from "./NavBar";
+import NavBar from "../Components/NavBar/NavBar";
 
 function FeedPage() {
   return (

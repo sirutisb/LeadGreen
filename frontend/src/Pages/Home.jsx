@@ -11,7 +11,7 @@ const cards = [
     {title: "Post",
     description: "Share your growth with the university's community.",
     icon: <Send className="h-12 w-12 text-green-600" />,
-    link: "/posts"},
+    link: "/feed"},
     {title: "Leaderboard",
     description: "Track your sustainability rank among your peers.",
     icon: <Menu className="h-12 w-12 text-green-600" />,
@@ -19,7 +19,7 @@ const cards = [
     {title: "Tree",
     description: "Start planting and growing your own tree.",
     icon: <TreePine className="h-12 w-12 text-green-600" />,
-    link: "/trees"},
+    link: "/game"},
 
 ]
 export default function Home() {
