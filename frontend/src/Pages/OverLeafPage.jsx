@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import NavBar from "../Components/NavBar/NavBar";
-import OverLeaf from "../Components/OverLeaf";
+import OverLeaf from "../Components/OverLeaf/OverLeaf";
 
 function OverLeafPage() {
   return (

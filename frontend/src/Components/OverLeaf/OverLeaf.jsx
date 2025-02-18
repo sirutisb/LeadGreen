@@ -6,15 +6,15 @@ import { VFXProvider } from "react-vfx";
 import useSound from "use-sound";
 import mojs from "@mojs/core"; 
 import OverLeafBar from "./OverLeafBar";
-import plants from "../assets/plants"; 
-import insects from "../assets/insects"; 
+import plants from "../../assets/plants"; 
+import insects from "../../assets/insects"; 
 
-import waterDropSound from "../assets/sounds/drop.mp3";
-import snailSound from "../assets/sounds/snail.mp3";
-import alertSound from "../assets/sounds/alert.mp3";
-import soilSound from "../assets/sounds/soil.mp3";
-import gloveSound from "../assets/sounds/glove.mp3";
-import levelSound from "../assets/sounds/level.mp3";
+import waterDropSound from "../../assets/sounds/drop.mp3";
+import snailSound from "../../assets/sounds/snail.mp3";
+import alertSound from "../../assets/sounds/alert.mp3";
+import soilSound from "../../assets/sounds/soil.mp3";
+import gloveSound from "../../assets/sounds/glove.mp3";
+import levelSound from "../../assets/sounds/level.mp3";
 import RouletteButton from "./RouletteButton";
 
 const OverLeaf = () => {

@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import soilIcon from "../assets/soil.svg";
-import waterIcon from "../assets/water.svg";
-import gloveIcon from "../assets/glove.svg";
+import soilIcon from "../../assets/soil.svg";
+import waterIcon from "../../assets/water.svg";
+import gloveIcon from "../../assets/glove.svg";
 
 const icons = [
   {

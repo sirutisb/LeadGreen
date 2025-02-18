@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import Button from "../Components/Button";
 import Input from "../Components/Input";
 import Label from "../Components/Label";
-import NavBar from "../Components/NavBar";
+import NavBar from "../Components/NavBar/NavBar";
 import FeatureCard from "../Components/FeatureCard";
 import { FaLeaf, FaRecycle, FaGlobe, FaSolarPanel, FaBicycle } from "react-icons/fa"; // Importing icons
 
