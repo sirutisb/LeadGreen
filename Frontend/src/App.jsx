@@ -17,6 +17,7 @@ function App() {
         <Route path="/posts" element={<Posts />} />
         <Route path="/leaderboards" element={<Leaderboard />} />
         <Route path="/trees" element={<Trees />} />
+
       </Routes>
       <ToastContainer />
     </div>
