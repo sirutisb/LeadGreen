@@ -1,7 +1,7 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { fetchPosts } from "../Hooks/api";
+import { fetchPosts } from "../../Hooks/api";
 import Post from "./Post";
-import useInfiniteScroll from "../Hooks/useInfiniteScroll";
+import useInfiniteScroll from "../../Hooks/useInfiniteScroll";
 
 const Feed = () => {
   const {
