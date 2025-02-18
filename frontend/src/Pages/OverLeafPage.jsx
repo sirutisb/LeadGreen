@@ -10,7 +10,7 @@ function OverLeafPage() {
         style={{ backgroundImage: "url('/garden.png')" }}
       ></div>
 
-      <div className="relative mt-20 overflow-hidden">
+      <div className="relative overflow-hidden">
         <NavBar />
         <OverLeaf />
       </div>

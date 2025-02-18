@@ -5,17 +5,20 @@ import { Link } from "react-router-dom"
 
 export default function NavBar(){
     return(
-      <header className="container py-8 bg-[#f3f1ea] ">
-        <nav className="flex justify-between items-center">
-          <div className="flex items-center space-x-2">
-            <Leaf className="h-8 w-8 text-green-600" />
-            <Link to={"/"} className="text-2xl font-bold text-green-700">LeadGreen</Link>
+      <div className="flex justify-between items-center py-8 bg-[#f3f1ea] ">
+        <div className="flex items-center space-x-2 px-8">
+          <Leaf className="h-8 w-8 text-green-600" />
+          <Link to={"/"} className="text-2xl font-bold text-green-700">LeadGreen</Link>
+        </div>
+
+        <div className="">
+          <div className="flex items-center space-x-6 px-8">
+            <Link to={"/feed"} className="text-2xl font-bold text-green-700">Feeds</Link>
+            <Link to={"/leaderboards"} className="text-2xl font-bold text-green-700">Leaderboard</Link>
+            <Link to={"/game"} className="text-2xl font-bold text-green-700">Game</Link>
+            <UserNav/>
           </div>
-
-          <UserNav>
-
-          </UserNav>
-        </nav>
-      </header>
+        </div>
+      </div>
     )
 }

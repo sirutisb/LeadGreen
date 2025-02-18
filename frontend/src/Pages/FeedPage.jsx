@@ -6,7 +6,8 @@ import NavBar from "../Components/NavBar/NavBar";
 
 function FeedPage() {
   return (
-    <div className="pt-20 bg-[#DEFDE9]">
+    <div className="bg-[#DEFDE9]">
+        <NavBar className=""/>
         <Box
         sx={{
             width: "100%",
@@ -18,7 +19,7 @@ function FeedPage() {
             paddingTop: "20px",
         }}
         >
-        <NavBar />
+
         {/* Create Post Button */}
         <MakePost />
 
