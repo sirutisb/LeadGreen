@@ -15,7 +15,11 @@ function App() {
   return (
     <div className='h-screen w-screen'>
       <Routes>
-        <Route path="/" element={<Register />} />
+        <Route path="/" element={<Home />} />
+        <Route path="/posts" element={<Posts />} />
+        <Route path="/leaderboards" element={<Leaderboard />} />
+        <Route path="/trees" element={<Trees />} />
+
       </Routes>
       <ToastContainer />
     </div>
