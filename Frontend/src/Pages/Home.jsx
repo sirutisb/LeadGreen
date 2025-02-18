@@ -1,5 +1,5 @@
-import { ArrowRight, Send, Menu, TreePine } from "lucide-react"
-import FeatureCard from "../Components/gui/FeatureCard"
+import { Send, Menu, TreePine } from "lucide-react"
+import FeatureCard from "../Components/FeatureCard"
 import NavBar from "../Components/NavBar"
 
 const cards = [

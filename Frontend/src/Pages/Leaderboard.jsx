@@ -1,6 +1,3 @@
-// import { useState } from "react"
-// import NavBar from "../Components/NavBar"
-// import { Search, ArrowUp, ArrowDown, ArrowRight } from "lucide-react"
 import { useState } from "react"
 import NavBar from "../Components/NavBar"
 import { Search } from "lucide-react"
@@ -21,19 +18,6 @@ const leaderboardData = [
   { id: 12, name: "pagetestmockuser5", score: 500, badge: "🌊" }
 ];
 
-// const LeaderboardPage = () => {
-//   const [searchTerm, setSearchTerm] = useState("");
-//   const [activeTab, setActiveTab] = useState("all");
-
-//   const filteredLeaderboard = leaderboardData.filter((user) =>
-//     user.name.toLowerCase().includes(searchTerm.toLowerCase())
-//   );
-
-//   const trendIcon = {
-//     up: <ArrowUp className="h-4 w-4 text-green-500" />, 
-//     down: <ArrowDown className="h-4 w-4 text-red-500" />, 
-//     stable: <ArrowRight className="h-4 w-4 text-yellow-500" />,
-//   };
 const LeaderboardPage = () => {
   const [searchTerm, setSearchTerm] = useState("")
   const [activeTab, setActiveTab] = useState("all")

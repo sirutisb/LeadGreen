@@ -15,7 +15,7 @@ function App() {
   return (
     <div className='h-screen w-screen'>
       <Routes>
-        <Route path="/" element={<Leaderboard />} />
+        <Route path="/" element={<Register />} />
       </Routes>
       <ToastContainer />
     </div>

@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import Button from "../Components/gui/Button";
-import Input from "../Components/gui/Input";
-import Label from "../Components/gui/Label";
+import Button from "../Components/Button";
+import Input from "../Components/Input";
+import Label from "../Components/Label";
 import NavBar from "../Components/NavBar";
-import FeatureCard from "../Components/gui/FeatureCard";
+import FeatureCard from "../Components/FeatureCard";
 import { FaLeaf, FaRecycle, FaGlobe, FaSolarPanel, FaBicycle } from "react-icons/fa"; // Importing icons
 
 export default function RegisterPage() {
