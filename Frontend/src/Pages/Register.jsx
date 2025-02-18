@@ -60,7 +60,7 @@ export default function RegisterPage() {
           <form onSubmit={handleSubmit} className="mt-6 space-y-6">
             <div className="space-y-5">
               <div>
-                <Label htmlFor="name" className="sr-only">Full Name</Label>
+                <Label htmlFor="name" className="sr-only">Username</Label>
                 <Input
                   id="name"
                   name="name"
