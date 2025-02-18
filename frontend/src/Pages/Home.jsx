@@ -1,4 +1,4 @@
-
+'use client'
 import { ArrowRight, Send, Menu, TreePine, Bird } from "lucide-react"
 import FeatureCard from "../Components/FeatureCard"
 import NavBar from "../Components/Navbar/NavBar"
@@ -30,28 +30,31 @@ export default function Home() {
         <Section></Section>
 
         <motion.div 
-          className="relative w-full mt-12"  
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.8 }}>
-          <svg
-            xmlns = {earth2}
-            alt="EcoTrack Dashboard Visualization"
-            className="w-full  mx-auto py-16"
-            priority
-      
-          />
-          <div
-            className="absolute bottom-0 left-0 right-0 w-full"
-            style={{
-              height: "400px",
-              background: "linear-gradient(to top, #DCD5C1 0%, rgba(217, 217, 217, 0) 100%)",
-              zIndex: 10,
-            }}
-          />
-        </motion.div>
+      className="relative w-full mt-12"  
+      whileHover={{ scale: 1.05 }}
+      whileTap={{ scale: 0.95 }}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, delay: 0.8 }}
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 100 100"
+        className="w-full mx-auto py-16"
+      >
+        <circle cx="50" cy="50" r="40" fill="green" />
+      </svg>
+
+      <div
+        className="absolute bottom-0 left-0 right-0 w-full"
+        style={{
+          height: "400px",
+          background: "linear-gradient(to top, #DCD5C1 0%, rgba(217, 217, 217, 0) 100%)",
+          zIndex: 10,
+        }}
+      />
+    </motion.div>
+
 
         <section id="features" className="grid md:grid-cols-3 gap-8 mb-16 py-40">
         {cards.map(e=><FeatureCard icon={e.icon} description={e.description} title={e.title} link={e.link}/>)}
