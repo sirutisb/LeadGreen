@@ -19,7 +19,7 @@ import RouletteButton from "./RouletteButton";
 
 const OverLeaf = () => {
   const [user, setUser] = useState({
-    points_balance: 0,
+    points_balance: 1000,
     tree_level: 1,
     spins: 5
   });
@@ -186,7 +186,7 @@ const OverLeaf = () => {
           ref={plantRef}
           animate={wiggle ? { rotate: [0, -5, 5, -5, 5, 0] } : {}}
           transition={{ duration: 0.5, ease: "easeInOut" }}
-          className="relative mt-20"
+          className="relative -mt-30"
           onClick={handleAction}
         >
           <motion.img
