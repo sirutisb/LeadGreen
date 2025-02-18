@@ -109,34 +109,6 @@ export default function RegisterPage() {
           </form>
         </div>
 
-        {/* Feature Cards Section */}
-        <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 max-w-8xl">
-          <FeatureCard 
-            icon={<FaLeaf className="text-green-600 text-4xl" />} 
-            title="Eco-Friendly Initiatives" 
-            description="Participate in green projects that help reduce carbon footprint on campus." 
-          />
-          <FeatureCard 
-            icon={<FaRecycle className="text-green-600 text-4xl" />} 
-            title="Recycling & Waste Management" 
-            description="Learn how to properly dispose of waste and contribute to sustainability." 
-          />
-          <FeatureCard 
-            icon={<FaGlobe className="text-green-600 text-4xl" />} 
-            title="Global Impact" 
-            description="Join a community that works towards a healthier and cleaner planet." 
-          />
-          <FeatureCard 
-            icon={<FaSolarPanel className="text-green-600 text-4xl" />} 
-            title="Electrical minimization" 
-            description="Help maintain a low carbon footprint by turning off lights and computers when not in use." 
-          />
-          <FeatureCard 
-            icon={<FaBicycle className="text-green-600 text-4xl" />} 
-            title="Sustainable Transport" 
-            description="Use bicycles and public transport to reduce emissions and promote a greener campus." 
-          />
-        </div>
       </div>
     </div>
   );
