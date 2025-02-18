@@ -5,10 +5,11 @@ import Home from './Pages/Home'
 import Register from './Pages/Register'
 import Login from './Pages/Login'
 import { ToastContainer } from 'react-toastify';
-import Feed from './Pages/Feed';
-import Posts from './Pages/Posts'
+
 import Leaderboard from './Pages/Leaderboard'
-import Trees from './Pages/Trees'
+import FeedPage from './Pages/FeedPage';
+import OverLeafPage from './Pages/OverLeafPage';
+
 
 function App() {
 
@@ -16,9 +17,9 @@ function App() {
     <div className='h-screen w-screen'>
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/posts" element={<Posts />} />
+        <Route path="/feed" element={<FeedPage />} />
         <Route path="/leaderboards" element={<Leaderboard />} />
-        <Route path="/trees" element={<Trees />} />
+        <Route path="/game" element={<OverLeafPage />} />
 
       </Routes>
       <ToastContainer />

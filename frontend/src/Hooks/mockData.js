@@ -1,8 +1,9 @@
 const mockPosts = Array.from({ length: 50 }, (_, i) => ({
     id: i + 1,
-    title: `Post Title ${i + 1}`,
-    image:'',
-    body:`This is the body of post ${i + 1}. More content goes here.`,
+    image: "https://i.redd.it/v4g5cnfm3pk41.jpg",
+    caption: `${i + 1} rule of Fight Club, you DO NOT talk about Fight Club.`,
+    points: 0,
+    username: "top__goo"
   }));
   
   export default mockPosts;

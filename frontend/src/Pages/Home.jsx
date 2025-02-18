@@ -1,4 +1,4 @@
-"use client"
+
 import { ArrowRight, Send, Menu, TreePine, Bird } from "lucide-react"
 import FeatureCard from "../Components/FeatureCard"
 import NavBar from "../Components/Navbar/NavBar"
