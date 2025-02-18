@@ -30,6 +30,7 @@ const OverLeaf = () => {
   const [prevLevel, setPrevLevel] = useState(Math.floor(user.tree_level));
   const [showConfetti, setShowConfetti] = useState(false);
   const [wiggle, setWiggle] = useState(false);
+  const [sparkColor, setSparkColor] = useState("#248335");
   const plantRef = useRef(null); 
 
   // 🎵 Load sounds
@@ -124,6 +125,7 @@ const OverLeaf = () => {
       }));
       growth = 0.3;
       playsoil();
+      setSparkColor("#805A36");
     } else if (selectedIcon === "water" && user.points_balance >= 10) {
       setUser((prev) => ({
         ...prev,
@@ -132,6 +134,7 @@ const OverLeaf = () => {
       }));
       growth = 0.1;
       playWaterDrop();
+      setSparkColor("#94f9ff");
     } else if (selectedIcon === "glove") {
       if (user.points_balance >= 50 && currentInsect) {
         setUser((prev) => ({
@@ -142,6 +145,7 @@ const OverLeaf = () => {
         setCurrentInsect(null);
         growth = 0.1;
         playGlove();
+        setSparkColor("#FFD700");
         toast.success(`${currentInsect.name} removed successfully!`, { theme: "colored" });
       } else if (!currentInsect) {
         playAlert();
@@ -169,18 +173,14 @@ const OverLeaf = () => {
     };
   };
 
-  const getCursorClass = () => {
-    if (!selectedIcon) return "";
-    return `cursor-${selectedIcon}`;
-  };
 
   return (
     <VFXProvider>
       {showConfetti && <Confetti numberOfPieces={200} />}
-      <div className={`flex flex-col items-center justify-center min-h-screen relative ${getCursorClass()}`}>
+      <div className={`flex flex-col items-center justify-center min-h-screen max- relative`}>
         <OverLeafBar setSelectedIcon={setSelectedIcon} />
         <RouletteButton user={user} setUser={setUser} />
-        
+
         {/* 🌱 Plant Container */}
         <motion.div
           ref={plantRef}
