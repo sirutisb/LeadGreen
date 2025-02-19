@@ -28,10 +28,8 @@ const cards = [
 export default function Home() {
     let {name} = useContext(AuthContext)
   return (
-    <Page>
-            <Section />
-
-      <Section></Section>
+    <Page className="bg-[#f3f1ea]">
+      <Section />
 
       <div>
         <GreenCircles 
@@ -41,37 +39,6 @@ export default function Home() {
           showVariantToggle={true}
         />
       </div>
-
-
-        {/* <motion.div 
-          className="relative w-full mt-12"  
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.8 }}
-          >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 100 100"
-            className="w-full mx-auto py-16"
-          >
-            <circle cx="50" cy="50" r="40" fill="green" />
-          </svg>
-
-          <div
-            className="absolute bottom-0 left-0 right-0 w-full"
-            style={{
-              height: "400px",
-              background: "linear-gradient(to top, #DCD5C1 0%, rgba(217, 217, 217, 0) 100%)",
-              zIndex: 10,
-            }}/>
-          </motion.div> */}
-
-{/* 
-        <section id="features" className="grid md:grid-cols-3 gap-8 mb-16 py-40">
-        {cards.map(e=><FeatureCard icon={e.icon} description={e.description} title={e.title} link={e.link}/>)}
-        </section> */}
 
       <section className="text-center mb-16">
         <h2 className="text-3xl font-bold text-green-800 mb-4">Join the Green Revolution</h2>
@@ -84,14 +51,12 @@ export default function Home() {
         </div>
       </section>
 
-        <footer className="bg-green-800 text-white py-8">
-            <div className="container mx-auto px-4 text-center">
-            <p>&copy; © 2025 Lead Green. All rights reserved.</p>
-            <p className="mt-2">Committed to a sustainable future.</p>
-            </div>
-        </footer>
+      <footer className="bg-green-800 text-white py-8">
+          <div className="container mx-auto px-4 text-center">
+          <p>&copy; © 2025 Lead Green. All rights reserved.</p>
+          <p className="mt-2">Committed to a sustainable future.</p>
+          </div>
+      </footer>
     </Page>
-
-    
   )
 } 

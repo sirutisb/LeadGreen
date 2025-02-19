@@ -45,7 +45,7 @@ const GreenCircles = ({
         className,
       )}
     >
-      <motion.div className="absolute h-[480px] w-[480px]">
+      <motion.div className="absolute h-[720px] w-[720px]">
         {[0, 1, 2].map((i) => (
           <motion.div
             key={i}
@@ -120,7 +120,7 @@ const GreenCircles = ({
               setCurrentVariant(getNextVariant())
             }}
           >
-            Change Variant
+            Click me cuh
           </button>
         </div>
       )}
