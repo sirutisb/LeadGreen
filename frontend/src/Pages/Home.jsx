@@ -1,4 +1,3 @@
-'use client'
 import { ArrowRight, Send, Menu, TreePine, Bird } from "lucide-react"
 // import FeatureCard from "../Components/FeatureCard"
 import NavBar from "../Components/NavBar/NavBar"
@@ -6,8 +5,11 @@ import Section from "../Components/Section"
 import earth from "../assets/earth.webp"
 import earth2 from "../assets/earth2.svg"
 import GreenCircles from "../Components/Circle"
+import { useContext } from "react"
 
 import {motion} from "framer-motion"
+import Page from "./Page"
+import AuthContext from "../Context/AuthContext"
 const cards = [
     {title: "Post",
     description: "Share your growth with the university's community.",
@@ -24,9 +26,10 @@ const cards = [
 
 ]
 export default function Home() {
+    let {name} = useContext(AuthContext)
   return (
-    <div className="min-h-screen bg-[#f3f1ea]">
-      <NavBar />
+    <Page>
+            <Section />
 
       <Section></Section>
 
@@ -81,12 +84,14 @@ export default function Home() {
         </div>
       </section>
 
-      <footer className="bg-green-800 text-white py-8">
-        <div className="container mx-auto px-4 text-center">
-          <p>&copy; © 2025 Lead Green. All rights reserved.</p>
-          <p className="mt-2">Committed to a sustainable future.</p>
-        </div>
-      </footer>
-    </div>
+        <footer className="bg-green-800 text-white py-8">
+            <div className="container mx-auto px-4 text-center">
+            <p>&copy; © 2025 Lead Green. All rights reserved.</p>
+            <p className="mt-2">Committed to a sustainable future.</p>
+            </div>
+        </footer>
+    </Page>
+
+    
   )
 } 

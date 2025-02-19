@@ -1,32 +1,42 @@
-import { useState } from 'react'
-import './App.css'
-import { Routes, Route } from 'react-router-dom'
-import Home from './Pages/Home'
-import { ToastContainer } from 'react-toastify';
-
-import Leaderboard from './Pages/Leaderboard'
-import FeedPage from './Pages/FeedPage';
-import OverLeafPage from './Pages/OverLeafPage';
-import RegisterPage from './Pages/Register'
-import LoginPage from './Pages/LoginPage';
-
+import { useState } from "react";
+import "./App.css";
+import { Routes, Route } from "react-router-dom";
+import Home from "./Pages/Home";
+import { ToastContainer } from "react-toastify";
+import Leaderboard from "./Pages/Leaderboard";
+import FeedPage from "./Pages/FeedPage";
+import OverLeafPage from "./Pages/OverLeafPage";
+import RegisterPage from "./Pages/Register";
+import LoginPage from "./Pages/LoginPage";
+import PrivateRoute from "./Context/PrivateRoute";
+import { AuthProvider } from "./Context/AuthContext";
+import NavBar from "./Components/NavBar/NavBar";
 
 function App() {
+  const [isAuthenticated, setIsAuthenticated] = useState(true); // Replace with actual auth logic
 
   return (
-    <div className='h-screen w-screen'>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/feed" element={<FeedPage />} />
-        <Route path="/leaderboards" element={<Leaderboard />} />
-        <Route path="/game" element={<OverLeafPage />} />
-        <Route path="/register" element={<RegisterPage />} />
-        <Route path="/login" element={<LoginPage />} />
+    <div className="h-screen w-screen">
+        <AuthProvider>
+            <NavBar />
+            <Routes>
+                {/* Private Routes */}
+                <Route
+                path="/game"
+                element={<PrivateRoute element={OverLeafPage} isAuthenticated={isAuthenticated} />}
+                />
 
-      </Routes>
+                {/* Public Routes */}
+                <Route path="/" element={<Home />} />
+                <Route path="/leaderboard" element={<Leaderboard />} />
+                <Route path="/feed" element={<FeedPage />} />
+                <Route path="/register" element={<RegisterPage />} />
+                <Route path="/login" element={<LoginPage />} />
+            </Routes>
+        </AuthProvider>
       <ToastContainer />
     </div>
-  )
+  );
 }
 
-export default App
+export default App;

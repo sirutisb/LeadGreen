@@ -1,6 +1,7 @@
 import { useState } from "react"
 import NavBar from "../Components/NavBar/NavBar";
 import { Search } from "lucide-react"
+import Page from "./Page";
 
 // Mock data for the leaderboard
 const leaderboardData = [
@@ -39,8 +40,7 @@ const LeaderboardPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-green-50 to-green-200">
-      <NavBar />
+    <Page className="min-h-screen bg-gradient-to-b from-green-50 to-green-200">
 
       {/* Hero Section */}
       <section className="text-green-700 py-20">
@@ -175,7 +175,8 @@ const LeaderboardPage = () => {
           <div className="mt-8 text-center text-sm">© 2025 Lead Green. All rights reserved.</div>
         </div>
       </footer>
-    </div>
+    </Page>
+
   );
 };
 

@@ -3,11 +3,12 @@ import Feed from "../Components/Feed/Feed";
 import MakePost from "../Components/MakePost/MakePost";
 import { Box } from "@mui/material";
 import NavBar from "../Components/NavBar/NavBar";
+import Page from "./Page";
 
 function FeedPage() {
   return (
-    <div className="bg-[#DEFDE9]">
-        <NavBar className=""/>
+    <Page>
+
         <Box
         sx={{
             width: "100%",
@@ -38,8 +39,9 @@ function FeedPage() {
             <Feed />
         </Box>
         </Box>
+    </Page>
 
-    </div>
+    
   );
 }
 
