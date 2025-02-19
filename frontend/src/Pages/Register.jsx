@@ -3,51 +3,46 @@ import { Link } from "react-router-dom";
 import Button from "../Components/Button";
 import Input from "../Components/Input";
 import Label from "../Components/Label";
-import NavBar from "../Components/NavBar/NavBar";
-import FeatureCard from "../Components/FeatureCard";
-import { FaLeaf, FaRecycle, FaGlobe, FaSolarPanel, FaBicycle } from "react-icons/fa"; // Importing icons
 import Page from "./Page";
 import AuthContext from "../Context/AuthContext";
 
+const schema = yup.object().shape({
+  name: yup.string().required("Full Name is required"),
+  email: yup.string().email("Invalid email format").required("Email is required"),
+  password: yup
+    .string()
+    .min(6, "Password must be at least 6 characters long")
+    .required("Password is required"),
+});
+
 export default function RegisterPage() {
-    const {registerUser} = useContext(AuthContext)
-  const [formData, setFormData] = useState({
-    username: "",
-    email: "",
-    password: "",
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(schema),
+    mode: "onChange", 
   });
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    registerUser(formData)
-    console.log("Registration data:", formData);
+  const onSubmit = (data) => {
+    console.log("Registration data:", data);
   };
 
   return (
     <Page className="min-h-screen bg-gradient-to-b from-green-50 to-green-100 flex flex-col">
-
-      {/* Main Content */}
       <div className="flex flex-col items-center justify-center px-6 py-16 space-y-12">
-        {/* Sustainability Header */}
         <div className="text-center max-w-2xl space-y-4">
           <h1 className="text-3xl font-bold text-green-700">
             Join the Sustainability Movement!
           </h1>
           <p className="mt-2 text-lg text-gray-700 leading-relaxed">
-            Help the University achieve its <span className="font-semibold text-green-700">carbon net zero</span> goal by 2030.  
+            Help the University achieve its{" "}
+            <span className="font-semibold text-green-700">carbon net zero</span> goal by 2030.
             Be part of the change.
           </p>
         </div>
 
-        {/* Form Box */}
         <div className="w-full max-w-lg bg-white p-8 shadow-lg rounded-4xl">
           <div className="text-center space-y-3">
             <h1 className="text-3xl font-bold text-green-700">Create an account</h1>
@@ -59,50 +54,57 @@ export default function RegisterPage() {
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="mt-6 space-y-6">
+          <form onSubmit={handleSubmit(onSubmit)} className="mt-6 space-y-6">
             <div className="space-y-5">
               <div>
-                <Label htmlFor="name" className="sr-only">Username</Label>
+                <Label htmlFor="name" className="sr-only">
+                  Username
+                </Label>
                 <Input
-                    id="username"
-                    name="username"
-                    type="text"
-                    required
-                    className="w-full text-black placeholder-gray-500 border border-green-300 bg-green-50 rounded-lg px-4 py-3"
-                    placeholder="Username"
-                    value={formData.username}
-                    onChange={handleInputChange}
+                  id="name"
+                  name="name"
+                  type="text"
+                  className="w-full text-black placeholder-gray-500 border border-green-300 bg-green-50 rounded-lg px-4 py-3"
+                  placeholder="Full Name"
+                  {...register("name")}
                 />
-
-
+                {errors.name && (
+                  <p className="text-red-600 text-sm mt-1">{errors.name.message}</p>
+                )}
               </div>
               <div>
-                <Label htmlFor="email" className="sr-only">Email address</Label>
+                <Label htmlFor="email" className="sr-only">
+                  Email address
+                </Label>
                 <Input
                   id="email"
                   name="email"
                   type="email"
                   autoComplete="email"
-                  required
                   className="w-full text-black placeholder-gray-500 border border-green-300 bg-green-50 rounded-lg px-4 py-3"
                   placeholder="Email address"
-                  value={formData.email}
-                  onChange={handleInputChange}
+                  {...register("email")}
                 />
+                {errors.email && (
+                  <p className="text-red-600 text-sm mt-1">{errors.email.message}</p>
+                )}
               </div>
               <div>
-                <Label htmlFor="password" className="sr-only">Password</Label>
+                <Label htmlFor="password" className="sr-only">
+                  Password
+                </Label>
                 <Input
                   id="password"
                   name="password"
                   type="password"
                   autoComplete="new-password"
-                  required
                   className="w-full text-black placeholder-gray-500 border border-green-300 bg-green-50 rounded-lg px-4 py-3"
                   placeholder="Password"
-                  value={formData.password}
-                  onChange={handleInputChange}
+                  {...register("password")}
                 />
+                {errors.password && (
+                  <p className="text-red-600 text-sm mt-1">{errors.password.message}</p>
+                )}
               </div>
             </div>
             <div>
@@ -112,10 +114,7 @@ export default function RegisterPage() {
             </div>
           </form>
         </div>
-
       </div>
     </Page>
-
   );
 }
-
