@@ -10,7 +10,7 @@ export default function UserNav() {
       <button
         onClick={() => {
             setIsOpen(!isOpen)
-            navigate("/register")
+            navigate("/login")
         }}
         className="w-full h-full flex items-center justify-center gap-2 hover:opacity-80 transition cursor-pointer"
       >

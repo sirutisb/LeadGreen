@@ -14,7 +14,7 @@ export default function NavBar(){
         <div className="">
           <div className="flex items-center space-x-6 px-8">
             <Link to={"/feed"} className="text-2xl font-bold text-green-700">Feeds</Link>
-            <Link to={"/leaderboards"} className="text-2xl font-bold text-green-700">Leaderboard</Link>
+            <Link to={"/leaderboard"} className="text-2xl font-bold text-green-700">Leaderboard</Link>
             <Link to={"/game"} className="text-2xl font-bold text-green-700">Game</Link>
             <UserNav/>
           </div>

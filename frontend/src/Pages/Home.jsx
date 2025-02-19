@@ -1,12 +1,14 @@
-'use client'
 import { ArrowRight, Send, Menu, TreePine, Bird } from "lucide-react"
 import FeatureCard from "../Components/FeatureCard"
 import NavBar from "../Components/NavBar/NavBar"
 import Section from "../Components/Section"
 import earth from "../assets/earth.webp"
 import earth2 from "../assets/earth2.svg"
+import { useContext } from "react"
 
 import {motion} from "framer-motion"
+import Page from "./Page"
+import AuthContext from "../Context/AuthContext"
 const cards = [
     {title: "Post",
     description: "Share your growth with the university's community.",
@@ -23,9 +25,9 @@ const cards = [
 
 ]
 export default function Home() {
+    let {name} = useContext(AuthContext)
   return (
     <Page>
-
             <Section />
 
             <motion.div 

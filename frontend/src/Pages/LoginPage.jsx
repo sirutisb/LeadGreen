@@ -1,11 +1,12 @@
 import { useState } from "react";
-import { Link } from "react";
+import { Link } from "react-router-dom";
 import Button from "../Components/Button";
 import Input from "../Components/Input";
 import Label from "../Components/Label";
 import NavBar from "../Components/NavBar/NavBar";
 import FeatureCard from "../Components/FeatureCard";
 import { FaLeaf, FaRecycle, FaGlobe, FaSolarPanel, FaBicycle } from "react-icons/fa"; // Importing icons
+import Page from "./Page";
 
 export default function LoginPage() {
   const [loginData, setLoginData] = useState({
@@ -28,9 +29,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-green-50 to-green-100 flex flex-col">
-      {/* NavBar */}
-      <NavBar />
+    <Page className="min-h-screen bg-gradient-to-b from-green-50 to-green-100 flex flex-col">
 
       {/* Main Content */}
       <div className="flex flex-col items-center justify-center px-6 py-16 space-y-12">
@@ -112,6 +111,6 @@ export default function LoginPage() {
         </div>
 
       </div>
-    </div>
+    </Page>
   );
 }
