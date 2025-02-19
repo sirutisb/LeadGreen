@@ -24,6 +24,7 @@
     "@turf/turf": "^7.2.0",
     "@yudiel/react-qr-scanner": "^2.2.1",
     "axios": "^1.7.9",
+    "clsx": "^2.1.1",
     "dayjs": "^1.11.13",
     "framer-motion": "^12.4.2",
     "lucide-react": "^0.475.0",
