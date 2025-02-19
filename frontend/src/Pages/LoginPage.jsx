@@ -26,7 +26,7 @@ export default function LoginPage() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    loginUser(loginData)
+    // loginUser(loginData) DONT DELETE BUT DONT UNCOMMENT
     // Add your login logic here (e.g., API call, validation)
   };
 
