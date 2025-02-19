@@ -16,8 +16,25 @@ export const AuthProvider = ({ children }) => {
   let [user, setUser] = useState(parsedTokens ? jwtDecode(parsedTokens.access) : null);
   let [loading, setLoading] = useState(false); // set to true
 
+  const registerUser = async (e) => {
+    let response = await fetch("http://127.0.0.1:8000/api/register/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({username: e.username, email: e.email, password: e.password }),
+      });
+      let data = await response.json(); 
+
+      if (response.status === 200) {
+        setAuthTokens(data);
+        setUser(jwtDecode(data.access));
+        localStorage.setItem("authToken", JSON.stringify(data)); 
+        navigate("/");
+      } else {
+        alert("ERROR");
+      }
+  }
   const loginUser = async (e) => {
-    let response = await fetch("API_ENDPOINT_HERE", {
+    let response = await fetch("http://127.0.0.1:8000/api/login/", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email: e.email, password: e.password }),
@@ -48,7 +65,7 @@ export const AuthProvider = ({ children }) => {
       return;
     }
 
-    let response = await fetch("API_REFRESH_ENDPOINT_HERE", {
+    let response = await fetch("http://127.0.0.1:8000/api/token/refresh/", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ refresh: authTokens?.refresh }),
@@ -88,6 +105,7 @@ export const AuthProvider = ({ children }) => {
     logoutUser,
     user,
     authTokens,
+    registerUser
   };
 
   return <AuthContext.Provider value={contextData}>{!loading && children}</AuthContext.Provider>;
