@@ -1,6 +1,5 @@
 django
-django-cors-headers
 djangorestframework
 djangorestframework-simplejwt
-python-dotenv
-PyJWT
+django-cors-headers
+Pillow # for images

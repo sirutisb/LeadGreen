@@ -1,4 +1,7 @@
 from django.contrib import admin
+
+# Register your models here.
+
 from .models import UserProfile, Category, QRCode, Post, ShopItem, UserItem
 
 admin.site.register(UserProfile)

@@ -23,21 +23,16 @@ source .venv/bin/activate
 
 ### 3. Install Dependencies
 
-Install the Django and Django REST framework from the requirements.txt file:
+Install the dependencies with:
 ```bash
 pip install -r requirements.txt
-```
-You can also install the dependencies manually:
-```bash
-pip install django djangorestframework
 ```
 
 ### 4. Navigate to the DjangoProject Directory
 
-Move into the Django project directory:
+Move into the root Django backend directory (it contains manage.py):
 ```bash
 cd backend
-cd sustainability-site
 ```
 
 ### 5. Apply Migrations

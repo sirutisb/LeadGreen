@@ -1,25 +1,26 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth.models import AbstractUser
 
 # Create your models here.
 
-class UserProfile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+class UserProfile(AbstractUser):
+    #profile_picture = models.ImageField(upload_to='profile_pics/', blank=True, null=True)
+
     points_balance = models.IntegerField(default=0)
     lifetime_points = models.IntegerField(default=0)
-    tree_level = models.FloatField(default=1.0)
+    tree_level = models.IntegerField(default=1) # Current tree level
+    tree_growth = models.FloatField(default=0.0) # Progress towards next level
     has_snail = models.BooleanField(default=False)
-    tree_growth = models.FloatField(default=0) # float between (0,1)
 
     def __str__(self):
-        return f"{self.user.username} - {self.points_balance} points"
+        return f"{self.username} - Points: {self.points_balance} | Level: {self.tree_level}"
 
 class Category(models.Model):
     type = models.CharField(max_length=32)
     reward_points = models.IntegerField(default=0)
 
     def __str__(self):
-        return f"{self.type} - {self.reward_points} points"
+        return f"{self.type} - Reward: {self.reward_points}"
 
 class QRCode(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
@@ -32,16 +33,21 @@ class QRCode(models.Model):
 
 
 class Post(models.Model):
-    author = models.ForeignKey(User, on_delete=models.CASCADE)
-    qr_code = models.ForeignKey(QRCode, on_delete=models.CASCADE)
+    user = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
+    image = models.ImageField(upload_to='posts/', blank=True)
     caption = models.CharField(max_length=200, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     private = models.BooleanField(default=False)
-    reviewed = models.BooleanField(default=False)
+    qr_code = models.ForeignKey(
+        QRCode,
+        on_delete=models.SET_NULL,
+        null=True
+    )
+    approved = models.BooleanField(default=False)
     points_received = models.IntegerField(default=0)
 
     def __str__(self):
-        return f"{self.author} - {self.caption}"
+        return f"{self.user.username} - {self.caption} | Points: {self.points_received}"
 
     class Meta:
         ordering = ['created_at']
@@ -58,21 +64,9 @@ class ShopItem(models.Model):
 
 
 class UserItem(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
     item = models.ForeignKey(ShopItem, on_delete=models.CASCADE)
     quantity = models.IntegerField(default=0)
 
     def __str__(self):
         return f"{self.user.username} - x{self.quantity} {self.item.name}"
-
-
-    #     class Post(models.Model):
-    # user = models.ForeignKey("auth.User", on_delete=models.CASCADE)
-    # qr_code_location = models.CharField(max_length=255)
-    # image = models.ImageField(upload_to="uploads/")
-    # description = models.TextField()
-    # points = models.IntegerField(default=0)
-    # approved = models.BooleanField(default=False)
-
-    # def __str__(self):
-    #     return f"{self.user.username} - {self.qr_code_location}"
