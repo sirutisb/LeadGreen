@@ -11,7 +11,7 @@ from base.models import UserProfile
 from rest_framework_simplejwt.tokens import RefreshToken
 
 
-from .serializers import RegisterSerializer
+from .serializers import RegisterSerializer, UserProfileSerializer
 from rest_framework import status
 
 
@@ -29,7 +29,14 @@ class RegisterView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-
+@api_view(['GET'])
+def getUserProfile(request, pk):
+    try:
+        user = UserProfile.objects.get(username=pk)
+        serializer = UserProfileSerializer(user, many=False)
+        return Response(serializer.data)
+    except UserProfile.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
 
 # @api_view([['POST']])
 # def register_user(request):
