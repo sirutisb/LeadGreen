@@ -31,6 +31,13 @@ ALLOWED_HOSTS = []
 # allow all origins for development purposes
 CORS_ALLOW_ALL_ORIGINS = True
 
+
+# image files and stuff
+# TODO: media implementation
+# import os
+# MEDIA_URL = '/media/'
+# MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
 AUTH_USER_MODEL = 'base.UserProfile'
 
 # Application definition
