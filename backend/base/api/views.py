@@ -32,7 +32,7 @@ class RegisterView(APIView):
 @api_view(['GET'])
 def getUserProfile(request, pk):
     try:
-        user = UserProfile.objects.get(username=pk)
+        user = UserProfile.objects.get(id=pk)
         serializer = UserProfileSerializer(user, many=False)
         return Response(serializer.data)
     except UserProfile.DoesNotExist:

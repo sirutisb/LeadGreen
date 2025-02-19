@@ -2,21 +2,12 @@ from rest_framework import serializers
 from django.contrib.auth.models import User
 from base.models import UserProfile
 
-# class UserSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = UserProfile
-#         fields = '__all__'
-#         extra_kwargs = {'password': {'write_only': True}}
-
-#     def create(self, validated_data):
-#         user = UserProfile.objects.create_user(**validated_data)
-#         return user
-
 class UserProfileSerializer(serializers.ModelSerializer):
-    
+    #password = serializers.CharField(write_only=True) # for safety on all fields (maybe not needed)
     class Meta:
         model = UserProfile
-        fields = '__all__'
+        fields = ['id', 'username', 'points_balance', 'lifetime_points', 'tree_level', 'tree_growth', 'has_snail']
+        #fields = '__all__'
 
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
