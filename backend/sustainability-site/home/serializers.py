@@ -1,8 +1,30 @@
 from rest_framework import serializers
-from .models import Post, QRCode
+from django.contrib.auth.models import User
+from base.models import UserProfile
 
-class PostSerializer(serializers.ModelSerializer):
+# class UserSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = UserProfile
+#         fields = '__all__'
+#         extra_kwargs = {'password': {'write_only': True}}
+
+#     def create(self, validated_data):
+#         user = UserProfile.objects.create_user(**validated_data)
+#         return user
+
+class RegisterSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True)
+
     class Meta:
-        model = Post
-        fields = ['id', 'author', 'qr_code', 'caption', 'created_at', 'private', 'reviewed', 'points_received']
-        read_only_fields = ['author', 'reviewed', 'points_received']
+        model = UserProfile
+        fields = ["username", "email", "password"]
+
+    def create(self, validated_data):
+        user = UserProfile.objects.create_user(
+            username=validated_data["username"],
+            email=validated_data["email"],
+            password=validated_data["password"],
+        )
+        return user
+
+
