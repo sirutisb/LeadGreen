@@ -6,6 +6,7 @@ import Label from "../Components/Label";
 import NavBar from "../Components/NavBar/NavBar";
 import FeatureCard from "../Components/FeatureCard";
 import { FaLeaf, FaRecycle, FaGlobe, FaSolarPanel, FaBicycle } from "react-icons/fa"; // Importing icons
+import Page from "./Page";
 
 export default function RegisterPage() {
   const [formData, setFormData] = useState({
@@ -28,9 +29,7 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-green-50 to-green-100 flex flex-col">
-      {/* NavBar */}
-      <NavBar />
+    <Page className="min-h-screen bg-gradient-to-b from-green-50 to-green-100 flex flex-col">
 
       {/* Main Content */}
       <div className="flex flex-col items-center justify-center px-6 py-16 space-y-12">
@@ -110,7 +109,8 @@ export default function RegisterPage() {
         </div>
 
       </div>
-    </div>
+    </Page>
+
   );
 }
 
