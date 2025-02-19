@@ -12,6 +12,12 @@ from base.models import UserProfile
 #         user = UserProfile.objects.create_user(**validated_data)
 #         return user
 
+class UserProfileSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = UserProfile
+        fields = '__all__'
+
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
 
