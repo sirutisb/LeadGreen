@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { Link } from "react-router-dom";
 import Button from "../Components/Button";
 import Input from "../Components/Input";
@@ -7,8 +7,10 @@ import NavBar from "../Components/NavBar/NavBar";
 import FeatureCard from "../Components/FeatureCard";
 import { FaLeaf, FaRecycle, FaGlobe, FaSolarPanel, FaBicycle } from "react-icons/fa"; // Importing icons
 import Page from "./Page";
+import AuthContext from "../Context/AuthContext";
 
 export default function LoginPage() {
+    let {loginUser} = useContext(AuthContext)
   const [loginData, setLoginData] = useState({
     email: "",
     password: "",
@@ -24,7 +26,7 @@ export default function LoginPage() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Login data:", loginData);
+    loginUser(loginData)
     // Add your login logic here (e.g., API call, validation)
   };
 

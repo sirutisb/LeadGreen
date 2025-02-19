@@ -13,7 +13,6 @@ import { AuthProvider } from "./Context/AuthContext";
 import NavBar from "./Components/NavBar/NavBar";
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(true); // Replace with actual auth logic
 
   return (
     <div className="h-screen w-screen">
@@ -22,8 +21,8 @@ function App() {
             <Routes>
                 {/* Private Routes */}
                 <Route
-                path="/game"
-                element={<PrivateRoute element={OverLeafPage} isAuthenticated={isAuthenticated} />}
+                    path="/game"
+                    element={<PrivateRoute element={OverLeafPage} />}
                 />
 
                 {/* Public Routes */}

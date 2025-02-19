@@ -1,8 +1,9 @@
-import React from "react";
+import {useContext} from "react";
 import { Route, Navigate } from "react-router-dom";
 
-const PrivateRoute = ({ element: Element, isAuthenticated, ...rest }) => {
-  return isAuthenticated ? (
+const PrivateRoute = ({ element: Element, ...rest }) => {
+    let {user} = useContext()
+  return user ? (
     <Route {...rest} element={<Element />} />
   ) : (
     <Navigate to="/login" replace />
