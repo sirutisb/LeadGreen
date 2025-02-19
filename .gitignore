@@ -11,8 +11,8 @@ __pycache__/
 *$py.class
 
 # Django migrations
-**/migrations/*.py
-!**/migrations/__init__.py
+#**/migrations/*.py
+#!**/migrations/__init__.py
 
 # Environment variables
 .env
@@ -35,6 +35,6 @@ env/
 *.pyc
 local_settings.py
 media
-migrations
+#migrations
 
 # frontend
