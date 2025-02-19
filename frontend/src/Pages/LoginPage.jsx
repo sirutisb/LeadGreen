@@ -24,7 +24,7 @@ export default function LoginPage() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        loginUser(loginData); // ✅ Now sends "username" instead of "email"
+        loginUser(loginData); 
     };
 
     return (

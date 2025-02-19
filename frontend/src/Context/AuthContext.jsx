@@ -23,8 +23,8 @@ export const AuthProvider = ({ children }) => {
         body: JSON.stringify({username: e.username, email: e.email, password: e.password }),
       });
       let data = await response.json(); 
-
-      if (response.status === 200) {
+      console.log(data)
+      if (response.status == 201) {
         setAuthTokens(data);
         setUser(jwtDecode(data.access));
         localStorage.setItem("authToken", JSON.stringify(data)); 
@@ -37,11 +37,10 @@ export const AuthProvider = ({ children }) => {
     let response = await fetch("http://127.0.0.1:8000/api/login/", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: e.email, password: e.password }),
+      body: JSON.stringify({ username: e.username, password: e.password }),
     });
 
     let data = await response.json(); 
-
     if (response.status === 200) {
       setAuthTokens(data);
       setUser(jwtDecode(data.access));
@@ -60,6 +59,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const updateToken = async () => {
+    console.log(first)
     if (!authTokens?.refresh) {
       logoutUser(); // Logout if refresh token is missing
       return;
@@ -72,13 +72,14 @@ export const AuthProvider = ({ children }) => {
     });
 
     let data = await response.json(); 
-
+    console.log(data)
     if (response.status === 200) {
+        console.log("refresh data", data)
       setAuthTokens(data);
       setUser(jwtDecode(data.access));
       localStorage.setItem("authToken", JSON.stringify(data));
     } else {
-      logoutUser(); // logout if token refresh fails
+      logoutUser(); 
     }
 
     if (loading) {
@@ -90,7 +91,7 @@ export const AuthProvider = ({ children }) => {
     if (loading) {
         updateToken();
     }
-    const fourMins = 1000 * 60 * 4;
+    const fourMins = 1000;
     const interval = setInterval(() => {
       if (authTokens) {
         updateToken();

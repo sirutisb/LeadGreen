@@ -26,11 +26,11 @@ const cards = [
 
 ]
 export default function Home() {
-    // let {user, logoutUser} = useContext(AuthContext)
+    let {user, logoutUser} = useContext(AuthContext)
   return (
     <Page>
-        {/* {user && user.email}
-        {user ? <p onClick={logoutUser}>Log out</p> : <p>Log in</p>} */}
+        {user && user.username}
+        {user ? <p onClick={logoutUser}>Log out</p> : <p>Log in</p>}
 
         <Section />
 
