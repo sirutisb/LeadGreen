@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { Link } from "react-router-dom";
 import Button from "../Components/Button";
 import Input from "../Components/Input";
@@ -7,10 +7,12 @@ import NavBar from "../Components/NavBar/NavBar";
 import FeatureCard from "../Components/FeatureCard";
 import { FaLeaf, FaRecycle, FaGlobe, FaSolarPanel, FaBicycle } from "react-icons/fa"; // Importing icons
 import Page from "./Page";
+import AuthContext from "../Context/AuthContext";
 
 export default function RegisterPage() {
+    const {registerUser} = useContext(AuthContext)
   const [formData, setFormData] = useState({
-    name: "",
+    username: "",
     email: "",
     password: "",
   });
@@ -25,6 +27,7 @@ export default function RegisterPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    registerUser(formData)
     console.log("Registration data:", formData);
   };
 
@@ -61,15 +64,17 @@ export default function RegisterPage() {
               <div>
                 <Label htmlFor="name" className="sr-only">Username</Label>
                 <Input
-                  id="name"
-                  name="name"
-                  type="text"
-                  required
-                  className="w-full text-black placeholder-gray-500 border border-green-300 bg-green-50 rounded-lg px-4 py-3"
-                  placeholder="Full Name"
-                  value={formData.name}
-                  onChange={handleInputChange}
+                    id="username"
+                    name="username"
+                    type="text"
+                    required
+                    className="w-full text-black placeholder-gray-500 border border-green-300 bg-green-50 rounded-lg px-4 py-3"
+                    placeholder="Username"
+                    value={formData.username}
+                    onChange={handleInputChange}
                 />
+
+
               </div>
               <div>
                 <Label htmlFor="email" className="sr-only">Email address</Label>
