@@ -59,7 +59,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const updateToken = async () => {
-    console.log(first)
+    console.log(authTokens)
     if (!authTokens?.refresh) {
       logoutUser(); // Logout if refresh token is missing
       return;
@@ -91,7 +91,7 @@ export const AuthProvider = ({ children }) => {
     if (loading) {
         updateToken();
     }
-    const fourMins = 1000;
+    const fourMins = 1000 * 60 * 4;
     const interval = setInterval(() => {
       if (authTokens) {
         updateToken();
