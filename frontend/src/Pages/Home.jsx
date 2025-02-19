@@ -9,6 +9,7 @@ import { useContext } from "react"
 import {motion} from "framer-motion"
 import Page from "./Page"
 import AuthContext from "../Context/AuthContext"
+
 const cards = [
     {title: "Post",
     description: "Share your growth with the university's community.",
@@ -25,11 +26,11 @@ const cards = [
 
 ]
 export default function Home() {
-    let {user, logoutUser} = useContext(AuthContext)
+    // let {user, logoutUser} = useContext(AuthContext)
   return (
     <Page>
-        {user && user.email}
-        {user ? <p onClick={logoutUser}>Log out</p> : <p>Log in</p>}
+        {/* {user && user.email}
+        {user ? <p onClick={logoutUser}>Log out</p> : <p>Log in</p>} */}
 
         <Section />
 

@@ -1,5 +1,5 @@
 import { createContext, useState, useEffect } from "react";
-import jwt_decode from "jwt-decode";
+import {jwtDecode} from "jwt-decode";
 import { useNavigate } from "react-router-dom";
 
 const AuthContext = createContext();
@@ -13,8 +13,8 @@ export const AuthProvider = ({ children }) => {
   const parsedTokens = storedTokens ? JSON.parse(storedTokens) : null;
 
   let [authTokens, setAuthTokens] = useState(parsedTokens);
-  let [user, setUser] = useState(parsedTokens ? jwt_decode(parsedTokens.access) : null);
-  let [loading, setLoading] = useState(true);
+  let [user, setUser] = useState(parsedTokens ? jwtDecode(parsedTokens.access) : null);
+  let [loading, setLoading] = useState(false); // set to true
 
   const loginUser = async (e) => {
     let response = await fetch("API_ENDPOINT_HERE", {
@@ -27,7 +27,7 @@ export const AuthProvider = ({ children }) => {
 
     if (response.status === 200) {
       setAuthTokens(data);
-      setUser(jwt_decode(data.access));
+      setUser(jwtDecode(data.access));
       localStorage.setItem("authToken", JSON.stringify(data)); 
       navigate("/");
     } else {
@@ -39,7 +39,7 @@ export const AuthProvider = ({ children }) => {
     setAuthTokens(null);
     setUser(null);
     localStorage.removeItem("authToken");
-    navigate("/login");
+    // navigate("/login");
   };
 
   const updateToken = async () => {
@@ -58,10 +58,10 @@ export const AuthProvider = ({ children }) => {
 
     if (response.status === 200) {
       setAuthTokens(data);
-      setUser(jwt_decode(data.access));
+      setUser(jwtDecode(data.access));
       localStorage.setItem("authToken", JSON.stringify(data));
     } else {
-      logoutUser(); // ogout if token refresh fails
+      logoutUser(); // logout if token refresh fails
     }
 
     if (loading) {
