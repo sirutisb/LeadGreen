@@ -24,8 +24,8 @@ class RegisterView(APIView):
             refresh = RefreshToken.for_user(user)
             return Response({
                 "message": "User registered successfully!",
-                "access_token": str(refresh.access_token),
-                "refresh_token": str(refresh),
+                "access": str(refresh.access_token),
+                "refresh": str(refresh),
             }, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -50,9 +50,15 @@ def getRoutes(request):
 
 class PostView(APIView):
     parser_classes = (MultiPartParser, FormParser)
-    permission_classes = [IsAuthenticated]
-
+    
+    # Only require authentication for creating posts
     def post(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return Response(
+                {"detail": "Authentication required to create posts."},
+                status=status.HTTP_401_UNAUTHORIZED
+            )
+            
         serializer = PostSerializer(
             data=request.data,
             context={'request': request}
@@ -77,9 +83,13 @@ class PostView(APIView):
         if user_id:
             posts = posts.filter(user_id=user_id)
             
-        # Include private posts only if they belong to the requesting user
-        if not request.user.is_staff:
-            posts = posts.filter(private=False) | posts.filter(user=request.user)
+        # Include private posts only if user is authenticated and they belong to the requesting user
+        if request.user.is_authenticated:
+            if not request.user.is_staff:
+                posts = posts.filter(private=False) | posts.filter(user=request.user)
+        else:
+            # For unauthenticated users, only show public posts
+            posts = posts.filter(private=False)
             
         serializer = PostSerializer(
             posts, 
