@@ -19,10 +19,10 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/auth/', include('apps.auth.urls')),
-    path('api/game/', include('apps.game.urls')),
-    path('api/leaderboard/', include('apps.leaderboard.urls')),
-    path('api/posts/', include('apps.posts.urls')),
-    path('api/qrcodes/', include('apps.qrcodes.urls')),
-    path('api/users/', include('apps.users.urls')),
+    path('api/auth/', include('authentication.urls')),
+    path('api/game/', include('game.urls')),
+    path('api/leaderboard/', include('leaderboard.urls')),
+    path('api/posts/', include('posts.urls')),
+    path('api/qrcodes/', include('qrcodes.urls')),
+    path('api/users/', include('users.urls')),
 ]

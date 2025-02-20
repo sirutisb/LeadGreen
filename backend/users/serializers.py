@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from base.models import UserProfile
+from .models import UserProfile
 
 class UserProfileSerializer(serializers.ModelSerializer):
     #password = serializers.CharField(write_only=True) # for safety on all fields (maybe not needed)
