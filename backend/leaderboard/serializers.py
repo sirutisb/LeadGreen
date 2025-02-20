@@ -1,7 +1,7 @@
 from django.utils import timezone
 from rest_framework import serializers, generics
 from rest_framework.filters import OrderingFilter
-from django_filters.rest_framework import DjangoFilterBackend
+#from django_filters.rest_framework import DjangoFilterBackend
 from users.models import UserProfile
 
 class UserProfileSerializer(serializers.ModelSerializer):
@@ -17,11 +17,11 @@ class TopPointsBalance(generics.ListAPIView):
         limit = self.request.query_params.get('limit', 10)
         return UserProfile.objects.all().order_by('-points_balance')[:int(limit)]
 
-class FilteredPointsBalance(generics.ListAPIView):
-    serializer_class = UserProfileSerializer
-    filter_backends = [DjangoFilterBackend, OrderingFilter]
-    filterset_fields = ['date_joined']
-    ordering_fields = ['points_balance']
+# class FilteredPointsBalance(generics.ListAPIView):
+#     serializer_class = UserProfileSerializer
+#     filter_backends = [DjangoFilterBackend, OrderingFilter]
+#     filterset_fields = ['date_joined']
+#     ordering_fields = ['points_balance']
 
     def get_queryset(self):
         queryset = UserProfile.objects.all()
