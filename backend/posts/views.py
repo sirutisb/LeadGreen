@@ -3,58 +3,77 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
 from .models import Post
 from .serializers import PostSerializer
 
-# Create your views here.
+from rest_framework import generics
+from django.db import models
 
-class PostView(APIView):
-    parser_classes = (MultiPartParser, FormParser)
+class PostListCreate(generics.ListCreateAPIView):
+    permission_classes = [IsAuthenticatedOrReadOnly]
+    serializer_class = PostSerializer
+
+    def get_queryset(self):
+        queryset = Post.objects.all()
+        return queryset
     
-    # Only require authentication for creating posts
-    def post(self, request, *args, **kwargs):
-        if not request.user.is_authenticated:
-            return Response(
-                {"detail": "Authentication required to create posts."},
-                status=status.HTTP_401_UNAUTHORIZED
-            )
-            
-        serializer = PostSerializer(
-            data=request.data,
-            context={'request': request}
-        )
-        
-        if serializer.is_valid():
-            serializer.save()
-            return Response(
-                serializer.data,
-                status=status.HTTP_201_CREATED
-            )
-        return Response(
-            serializer.errors,
-            status=status.HTTP_400_BAD_REQUEST
-        )
+    def perform_create(self, serializer):
+        # Automatically set the user to the authenticated user
+        serializer.save(user=self.request.user)
 
-    def get(self, request, *args, **kwargs):
-        posts = Post.objects.filter(approved=True).select_related('user', 'qr_code')
+
+
+
+
+# class PostView(APIView):
+#     permission_classes = [IsAuthenticatedOrReadOnly]
+#     parser_classes = (MultiPartParser, FormParser)
+    
+#     # Only require authentication for creating posts
+#     def post(self, request, *args, **kwargs):
+#         if not request.user.is_authenticated:
+#             return Response(
+#                 {"detail": "Authentication required to create posts."},
+#                 status=status.HTTP_401_UNAUTHORIZED
+#             )
+            
+#         serializer = PostSerializer(
+#             data=request.data,
+#             context={'request': request}
+#         )
         
-        # Filter by user if specified
-        user_id = request.query_params.get('user_id')
-        if user_id:
-            posts = posts.filter(user_id=user_id)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(
+#                 serializer.data,
+#                 status=status.HTTP_201_CREATED
+#             )
+#         return Response(
+#             serializer.errors,
+#             status=status.HTTP_400_BAD_REQUEST
+#         )
+
+#     def get_queryset(self):
+#         # Extract common queryset logic
+#         queryset = Post.objects.filter(approved=True).select_related('user', 'qr_code')
+#         if self.request.user.is_authenticated:
+#             if not self.request.user.is_staff:
+#                 return queryset.filter(private=False) | queryset.filter(user=self.request.user)
+#         return queryset.filter(private=False)
+
+#     def get(self, request, *args, **kwargs):
+#         posts = self.get_queryset()
+        
+#         # Filter by user if specified
+#         user_id = request.query_params.get('user_id')
+#         if user_id:
+#             posts = posts.filter(user_id=user_id)
             
-        # Include private posts only if user is authenticated and they belong to the requesting user
-        if request.user.is_authenticated:
-            if not request.user.is_staff:
-                posts = posts.filter(private=False) | posts.filter(user=request.user)
-        else:
-            # For unauthenticated users, only show public posts
-            posts = posts.filter(private=False)
-            
-        serializer = PostSerializer(
-            posts, 
-            many=True,
-            context={'request': request}
-        )
-        return Response(serializer.data)
+#         serializer = PostSerializer(
+#             posts, 
+#             many=True,
+#             context={'request': request}
+#         )
+#         return Response(serializer.data)
