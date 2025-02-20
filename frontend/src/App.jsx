@@ -15,9 +15,8 @@ import NavBar from "./Components/NavBar/NavBar";
 function App() {
 
   return (
-    <div className="h-screen w-screen">
+    <div className="h-screen w-screen ">
         <AuthProvider>
-            <NavBar />
             <Routes>
                 {/* Private Routes */}
                 <Route

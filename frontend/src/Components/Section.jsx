@@ -35,15 +35,15 @@ export default function Section(){
           <div className="font-serif font-normal">encouraging eco-friendly lifestyle</div>
         </motion.h1>
 
-        <motion.p className="text-[28px] text-center text-green-700 font-sans font-light px-4 lg:px-[314px] mt-[25px] mb-[48px] leading-[133%]"
+        <motion.p className="text-[32px] text-center text-green-600 font-sans font-light px-4 lg:px-[314px] mt-[25px] mb-[48px] leading-[133%]"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.6 }}
         >
           
-          Lead Green analyzes your habits & surfaces insights
+          LeadGreen turns your eco-friendly actions into a fun, rewarding game.
           <br className="hidden md:inline" />
-          you'd normally spend hours uncovering.
+          Scan, post, and grow your virtual plant while saving the planet!
         </motion.p>
       </div>
     )

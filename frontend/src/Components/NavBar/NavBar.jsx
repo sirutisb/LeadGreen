@@ -5,7 +5,7 @@ import { Link } from "react-router-dom"
 
 export default function NavBar(){
     return(
-      <div className="flex justify-between items-center py-8 bg-[#f3f1ea] z-50 ">
+      <div className="flex justify-between items-center py-8 z-50 backdrop-blur-lg shadow-md bg-transparent">
         <div className="flex items-center space-x-2 px-8">
           <Leaf className="h-8 w-8 text-green-600" />
           <Link to={"/"} className="text-2xl font-bold text-green-700">LeadGreen</Link>

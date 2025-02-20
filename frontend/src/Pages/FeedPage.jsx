@@ -4,11 +4,12 @@ import MakePost from "../Components/MakePost/MakePost";
 import { Box } from "@mui/material";
 import NavBar from "../Components/NavBar/NavBar";
 import Page from "./Page";
+import Footer from "../Components/Footer";
 
 function FeedPage() {
   return (
     <Page>
-
+      <NavBar/>
         <Box
         sx={{
             width: "100%",
@@ -39,6 +40,7 @@ function FeedPage() {
             <Feed />
         </Box>
         </Box>
+        <Footer/>
     </Page>
 
     

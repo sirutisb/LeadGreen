@@ -2,6 +2,7 @@ import { useState } from "react"
 import NavBar from "../Components/NavBar/NavBar";
 import { Search } from "lucide-react"
 import Page from "./Page";
+import Footer from "../Components/Footer";
 
 // Mock data for the leaderboard
 const leaderboardData = [
@@ -41,7 +42,7 @@ const LeaderboardPage = () => {
 
   return (
     <Page className="min-h-screen bg-gradient-to-b from-green-50 to-green-200">
-
+      <NavBar/>
       {/* Hero Section */}
       <section className="text-green-700 py-20">
         <div className="container mx-auto px-4 text-center">
@@ -152,29 +153,7 @@ const LeaderboardPage = () => {
       </section>
 
       {/* Footer */}
-      <footer className="text-green-600 py-12">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div>
-              <h3 className="text-xl font-bold mb-4">How it works</h3>
-              <p>
-                As you make more sustainable choices around our university campus and contribute 
-                to Exeter university's sustainability goals, you gradually move up the leaderboard 
-                to earn special rewards.
-              </p>
-            </div>
-            <div>
-              <h3 className="text-xl font-bold mb-4">Quick Links</h3>
-              <ul className="space-y-2">
-                <li><a href="#" className="hover:underline">Get transported to Home Page</a></li>
-                <li><a href="#" className="hover:underline">Browse through your feed</a></li>
-                <li><a href="#" className="hover:underline">Play the Tree</a></li>
-              </ul>
-            </div>
-          </div>
-          <div className="mt-8 text-center text-sm">© 2025 Lead Green. All rights reserved.</div>
-        </div>
-      </footer>
+      <Footer/>
     </Page>
 
   );
