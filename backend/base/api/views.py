@@ -1,10 +1,10 @@
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser, FormParser
-from rest_framework import generics
+from rest_framework import generics, viewsets
 
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
@@ -15,6 +15,14 @@ from .serializers import RegisterSerializer, UserProfileSerializer, PostSerializ
 
 from .serializers import RegisterSerializer, UserProfileSerializer
 
+
+@api_view(['GET'])
+def getRoutes(request):
+    routes = [
+        'api/token',
+        'api/token/refresh'
+    ]
+    return Response(routes)
 
 class RegisterView(APIView):
     def post(self, request):
@@ -39,14 +47,17 @@ def getUserProfile(request, pk):
     except UserProfile.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
-@api_view(['GET'])
-def getRoutes(request):
-    routes = [
-        'api/token',
-        'api/token/refresh'
-    ]
-    return Response(routes)
 
+
+
+class PostViewSet(viewsets.ModelViewSet):
+    queryset = Post.objects.all().order_by('-created_at')
+    serializer_class = PostSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
+    def perform_create(self, serializer):
+        # Automatically set the user of the post to the logged in user.
+        serializer.save(user=self.request.user)
 
 class PostView(APIView):
     parser_classes = (MultiPartParser, FormParser)

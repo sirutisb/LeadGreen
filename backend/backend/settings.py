@@ -38,7 +38,7 @@ CORS_ALLOW_ALL_ORIGINS = True
 # MEDIA_URL = '/media/'
 # MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-AUTH_USER_MODEL = 'base.UserProfile'
+AUTH_USER_MODEL = 'users.UserProfile'
 
 # Application definition
 
@@ -50,10 +50,17 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    'base.apps.BaseConfig',
+    'users',
+    'posts',
+    'game',
+
+
+    #'base.apps.BaseConfig',
+    
     'rest_framework',
     'rest_framework_simplejwt.token_blacklist',
-    'corsheaders'
+    'corsheaders',
+
 ]
 
 REST_FRAMEWORK = {

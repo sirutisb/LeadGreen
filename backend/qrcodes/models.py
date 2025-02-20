@@ -2,8 +2,6 @@ from django.db import models
 
 # Create your models here.
 
-
-
 class Category(models.Model):
     type = models.CharField(max_length=32)
     reward_points = models.IntegerField(default=0)
