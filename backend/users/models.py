@@ -11,7 +11,6 @@ class UserProfile(AbstractUser):
     tree_level = models.IntegerField(default=1) # Current tree level
     tree_growth = models.FloatField(default=0.0) # Progress towards next level
     has_snail = models.BooleanField(default=False)
-    badge = models.CharField(max_length=10, default="🌱", blank=True)
 
     def __str__(self):
         return f"{self.username} - Points: {self.points_balance} | Level: {self.tree_level}"
