@@ -7,7 +7,7 @@ function OverLeafPage() {
   return (
     <Page className="max-h-screen max-w-screen overflow-hidden">
         <div 
-          className="fixed top-0 left-0 w-full h-screen bg-cover bg-center"
+          className="fixed top-0 left-0 w-full h-screen bg-cover bg-center -z-50"
           style={{ backgroundImage: "url('/garden.png')" }}
         ></div>
           <OverLeaf />
