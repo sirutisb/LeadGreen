@@ -2,6 +2,10 @@
 
 LeadGreen is a web application with a Django backend and a React frontend designed to promote sustainable habits through gamification. Users can post their eco-friendly actions, such as recycling, reducing vehicle travel, and saving electricity, by scanning a QR code. Each post earns points that users can spend to grow their virtual plant by watering, fertilizing, and cleaning it. HELP US CREATE CARBON NEUTRAL ENVIORNMENT.
 
+When you complete a sustainable activity such as picking up litter or using public transport, you scan a QR code at that location and post a photo of what you have done. You will then be awarded points based on what the activity was and your photo will be uploaded to the feed where other users can see your activity.
+
+You can then spend these points growing your plant. Using water, soil, etc. As your plant grows it will level up unlocking new appearances.  
+
 ## GETTING STARTED:
 
 ### 1. Ensure you have the following installed:
