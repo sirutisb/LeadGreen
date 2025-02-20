@@ -50,9 +50,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    'users',
-    'posts',
+    'authentication',
     'game',
+    'leaderboard',
+    'posts',
+    'qrcodes',
+    'users',
 
 
     #'base.apps.BaseConfig',

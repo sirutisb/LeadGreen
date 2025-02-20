@@ -16,10 +16,13 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from django.conf import settings
-from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/', include('base.api.urls')),
+    path('api/auth/', include('authentication.urls')),
+    path('api/game/', include('game.urls')),
+    path('api/leaderboard/', include('leaderboard.urls')),
+    path('api/posts/', include('posts.urls')),
+    path('api/qrcodes/', include('qrcodes.urls')),
+    path('api/users/', include('users.urls')),
 ]
