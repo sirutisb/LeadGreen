@@ -1,78 +1,36 @@
-import { useState, useContext } from "react";
+import { useContext, useState } from "react";
 import { Link } from "react-router-dom";
 import Button from "../Components/Button";
 import Input from "../Components/Input";
 import Label from "../Components/Label";
-import NavBar from "../Components/NavBar/NavBar";
-import FeatureCard from "../Components/FeatureCard";
 import Page from "./Page";
-import * as Yup from 'yup';
 import AuthContext from "../Context/AuthContext";
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
+
+
+const schema = yup.object().shape({
+  name: yup.string().required("Full Name is required"),
+  email: yup.string().email("Invalid email format").required("Email is required"),
+  password: yup
+    .string()
+    .min(6, "Password must be at least 6 characters long")
+    .required("Password is required"),
+});
 
 export default function RegisterPage() {
-  const {registerUser} = useContext(AuthContext)
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    password: "",
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(schema),
+    mode: "onChange", 
   });
 
-  const [errors, setErrors] = useState({
-    name: "",
-    email: "",
-    password: "",
-  });
-
-  // Validation schema
-  const validationSchema = Yup.object().shape({
-    name: Yup.string().required('Full name is required'),
-    email: Yup.string()
-      .required('Email is required')
-      .email('Please enter a valid email'),
-    password: Yup.string()
-      .required('Password is required')
-      .min(8, 'Password must be at least 8 characters')
-  });
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-
-    // Clear error when user starts typing
-    setErrors(prev => ({
-      ...prev,
-      [name]: ""
-    }));
-  };
-
-  const validateField = async (name, value) => {
-    try {
-      await validationSchema.validateAt(name, { [name]: value });
-      setErrors(prev => ({
-        ...prev,
-        [name]: ""
-      }));
-      return true;
-    } catch (error) {
-      setErrors(prev => ({
-        ...prev,
-        [name]: error.message
-      }));
-      return false;
-    }
-  };
-
-  const handleBlur = (e) => {
-    const { name, value } = e.target;
-    validateField(name, value);
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    registerUser(formData)
+  const onSubmit = (data) => {
+    console.log("Registration data:", data);
   };
 
   return (
@@ -83,7 +41,8 @@ export default function RegisterPage() {
             Join the Sustainability Movement!
           </h1>
           <p className="mt-2 text-lg text-gray-700 leading-relaxed">
-            Help the University achieve its <span className="font-semibold text-green-700">carbon net zero</span> goal by 2030.  
+            Help the University achieve its{" "}
+            <span className="font-semibold text-green-700">carbon net zero</span> goal by 2030.
             Be part of the change.
           </p>
         </div>
@@ -99,73 +58,61 @@ export default function RegisterPage() {
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="mt-6 space-y-6">
+          <form onSubmit={handleSubmit(onSubmit)} className="mt-6 space-y-6">
             <div className="space-y-5">
               <div>
-                <Label htmlFor="name" className="sr-only">Username</Label>
+                <Label htmlFor="name" className="sr-only">
+                  Username
+                </Label>
                 <Input
                   id="name"
                   name="name"
                   type="text"
-                  required
-                  className={`w-full text-black placeholder-gray-500 border ${
-                    errors.name ? 'border-red-500' : 'border-green-300'
-                  } bg-green-50 rounded-lg px-4 py-3`}
+                  className="w-full text-black placeholder-gray-500 border border-green-300 bg-green-50 rounded-lg px-4 py-3"
                   placeholder="Full Name"
-                  value={formData.name}
-                  onChange={handleInputChange}
-                  onBlur={handleBlur}
+                  {...register("name")}
                 />
                 {errors.name && (
-                  <p className="mt-1 text-sm text-red-600">{errors.name}</p>
+                  <p className="text-red-600 text-sm mt-1">{errors.name.message}</p>
                 )}
               </div>
               <div>
-                <Label htmlFor="email" className="sr-only">Email address</Label>
+                <Label htmlFor="email" className="sr-only">
+                  Email address
+                </Label>
                 <Input
                   id="email"
                   name="email"
                   type="email"
                   autoComplete="email"
-                  required
-                  className={`w-full text-black placeholder-gray-500 border ${
-                    errors.email ? 'border-red-500' : 'border-green-300'
-                  } bg-green-50 rounded-lg px-4 py-3`}
+                  className="w-full text-black placeholder-gray-500 border border-green-300 bg-green-50 rounded-lg px-4 py-3"
                   placeholder="Email address"
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  onBlur={handleBlur}
+                  {...register("email")}
                 />
                 {errors.email && (
-                  <p className="mt-1 text-sm text-red-600">{errors.email}</p>
+                  <p className="text-red-600 text-sm mt-1">{errors.email.message}</p>
                 )}
               </div>
               <div>
-                <Label htmlFor="password" className="sr-only">Password</Label>
+                <Label htmlFor="password" className="sr-only">
+                  Password
+                </Label>
                 <Input
                   id="password"
                   name="password"
                   type="password"
                   autoComplete="new-password"
-                  required
-                  className={`w-full text-black placeholder-gray-500 border ${
-                    errors.password ? 'border-red-500' : 'border-green-300'
-                  } bg-green-50 rounded-lg px-4 py-3`}
+                  className="w-full text-black placeholder-gray-500 border border-green-300 bg-green-50 rounded-lg px-4 py-3"
                   placeholder="Password"
-                  value={formData.password}
-                  onChange={handleInputChange}
-                  onBlur={handleBlur}
+                  {...register("password")}
                 />
                 {errors.password && (
-                  <p className="mt-1 text-sm text-red-600">{errors.password}</p>
+                  <p className="text-red-600 text-sm mt-1">{errors.password.message}</p>
                 )}
               </div>
             </div>
             <div>
-              <Button 
-                type="submit" 
-                className="w-full bg-green-600 hover:bg-green-700 py-3 rounded-lg text-lg"
-              >
+              <Button type="submit" className="w-full bg-green-600 hover:bg-green-700 py-3 rounded-lg text-lg">
                 Sign Up
               </Button>
             </div>
