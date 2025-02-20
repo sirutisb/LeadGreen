@@ -2,6 +2,7 @@ import { useContext } from "react";
 import { User } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import AuthContext from "../../Context/AuthContext";
+import { motion } from "framer-motion";
 
 export default function UserNav() {
   const navigate = useNavigate();
@@ -9,19 +10,22 @@ export default function UserNav() {
 
   const handleAuthAction = () => {
     if (user) {
-      logoutUser(); // If logged in, log out
+      logoutUser();
     } else {
-      navigate("/login"); // If not logged in, navigate to login
+      navigate("/login");
     }
   };
 
   return (
-    <button
+    <motion.button
       onClick={handleAuthAction}
-      className="flex items-center gap-2 bg-green-700 hover:bg-green-600 text-white font-semibold px-4 py-2 rounded-full transition"
+      className={`flex items-center gap-3 px-6 py-3 text-white font-semibold rounded-full shadow-lg transition-all duration-200
+        ${user ? "bg-red-600 hover:bg-red-700" : "bg-green-700 hover:bg-green-600"}
+      `}
     >
-      <User />
+      {/* Icon */}
+      <User size={20} />
       {user ? "Logout" : "Login"}
-    </button>
+    </motion.button>
   );
 }
