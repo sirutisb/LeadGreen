@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from base.models import QRCode
+from .models import QRCode
 
 class QRCodeSerializer(serializers.ModelSerializer):
     class Meta:

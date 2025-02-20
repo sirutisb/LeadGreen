@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from base.models import Post, QRCode
+from .models import Post
+from qrcodes.models import QRCode
 
 from users.serializers import UserProfileSerializer
 from qrcodes.serializers import QRCodeSerializer
