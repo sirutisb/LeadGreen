@@ -10,8 +10,8 @@ class Category(models.Model):
         return f"{self.type} - Reward: {self.reward_points}"
 
 class QRCode(models.Model):
-    category = models.ForeignKey(Category, on_delete=models.CASCADE)
-    code = models.CharField(max_length=32, default="")
+    code = models.CharField(max_length=32, unique=True)
+    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True)
     location_name = models.CharField(max_length=32, default="")
     coordinates = models.CharField(max_length=32, default="")
 
