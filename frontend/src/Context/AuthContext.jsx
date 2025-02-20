@@ -41,7 +41,8 @@ export const AuthProvider = ({ children }) => {
     });
 
     let data = await response.json(); 
-    if (response.status === 200) {
+      console.log(data)
+      if (response.status === 200) {
       setAuthTokens(data);
       setUser(jwtDecode(data.access));
       localStorage.setItem("authToken", JSON.stringify(data)); 
@@ -55,7 +56,7 @@ export const AuthProvider = ({ children }) => {
     setAuthTokens(null);
     setUser(null);
     localStorage.removeItem("authToken");
-    // navigate("/login");
+    navigate("/login");
   };
 
   const updateToken = async () => {
