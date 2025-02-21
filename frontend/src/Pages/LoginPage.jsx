@@ -8,6 +8,7 @@ import AuthContext from "../Context/AuthContext";
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
+import NavBar from "../Components/NavBar/NavBar";
 
 // ✅ Validation Schema using Yup
 const schema = yup.object().shape({
@@ -33,6 +34,7 @@ export default function LoginPage() {
 
   return (
     <Page className="min-h-screen bg-gradient-to-b from-green-50 to-green-100 flex flex-col">
+      <NavBar/>
       <div className="flex flex-col items-center justify-center px-6 py-16 space-y-12">
         {/* Header */}
         <div className="text-center max-w-2xl space-y-4">
