@@ -3,13 +3,15 @@ import { ArrowRight, Send, Menu, TreePine, Bird } from "lucide-react"
 import NavBar from "../Components/NavBar/NavBar"
 import Section from "../Components/Section"
 import earth from "../assets/earth.webp"
-import earth2 from "../assets/earth2.svg"
+import Earth2 from "../assets/earth2.svg"
 import GreenCircles from "../Components/Circle"
 import { useContext } from "react"
 import {motion} from "framer-motion"
 import Page from "./Page"
 import AuthContext from "../Context/AuthContext"
 import Footer from "../Components/Footer"
+import FAQ from "../Components/FAQ"
+import UserFeedBack from "../Components/UserFeedBack"
 
 const cards = [
     {title: "Post",
@@ -61,7 +63,7 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="w-full flex justify-center mt-[51px] mb-[187px] relative z-1 ">
+          <div className="w-full flex justify-center mt-[51px] mb-[96px] relative z-1 ">
             <div className="grid grid-cols-1 md:grid-cols-3 max-w-[1024px] mx-auto gap-8">
               {[
                 {
@@ -92,15 +94,40 @@ export default function Home() {
           </div>
         </div>
 
+        <div className="w-full flex justify-center mt-[51px] mb-[187px] relative z-1">
+            <div className="grid grid-cols-3 max-w-[1024px] mx-auto" style={{ gap: "8px" }}>
+              <img
+                src= ''
+                alt="Banner"
+              />
+              <img
+                src=""
+                alt="LLM Powered Banner"
+                width={336}
+                height={332}
+                priority
+                className="mx-auto"
+              />
+              <img
+                src=""
+                alt="Third Banner"
+                width={336}
+                height={332}
+                priority
+                className="mx-auto"
+              />
+            </div>
+          </div>
+
+      <UserFeedBack/>
+      <FAQ/>
       <section className="text-center mb-16">
-        <div className="bg-white rounded-lg shadow-lg p-8">
+        <div className="bg-green-100 rounded-lg shadow-lg p-8">
           <h2 className="text-3xl font-semibold text-green-700 mb-4">Join Lead Green and be part of the solution.</h2>
           <div className="text-4xl font-bold text-green-700 mb-2 font-serif ">Every small action counts towards a greener future.</div>
           <div className="text-green-800"></div>
         </div>
       </section>
-
-      
 
       <Footer/>
     </Page>
