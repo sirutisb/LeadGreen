@@ -8,6 +8,7 @@ import AuthContext from "../Context/AuthContext";
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
+import NavBar from "../Components/NavBar/NavBar";
 
 // ✅ Validation Schema with Correct Field Names
 const schema = yup.object().shape({
