@@ -14,14 +14,6 @@ from rest_framework import generics
 from django.db import models
 
 # Create your views here.
-
-class ShopItems(generics.ListAPIView):
-    permission_classes = [IsAuthenticated]
-    serializer_class = ShopItemSerializer
-
-    def get_queryset(self):
-        queryset = ShopItem.objects.all()
-        return queryset
     
 '''    
 class UseActionView(APIView):
@@ -104,4 +96,5 @@ class GloveTreeAction(APIView):
             "tree_level": user.tree_level,
             "has_snail": False,
         })
+
 
