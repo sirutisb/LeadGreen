@@ -17,7 +17,7 @@ export const AuthProvider = ({ children }) => {
   let [loading, setLoading] = useState(false); // set to true
 
   const registerUser = async (e) => {
-    let response = await fetch("http://127.0.0.1:8000/api/register/", {
+    let response = await fetch("http://127.0.0.1:8000/api/auth/register/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({username: e.username, email: e.email, password: e.password }),
@@ -34,7 +34,7 @@ export const AuthProvider = ({ children }) => {
       }
   }
   const loginUser = async (e) => {
-    let response = await fetch("http://127.0.0.1:8000/api/login/", {
+    let response = await fetch("http://127.0.0.1:8000/api/auth/login/", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ username: e.username, password: e.password }),
