@@ -11,8 +11,6 @@ You can then spend these points growing your plant. Using water, soil, etc. As y
 - [Python 3.10+](https://www.python.org/downloads/)
 - [Node.js (v18+)](https://nodejs.org/en)
 - [Git](https://git-scm.com/downloads)
-- [SQLite](https://www.sqlite.org/download.html) (for the database)
-
 ---
 
 ### 2. **Clone the Repository**
@@ -26,28 +24,30 @@ cd LeadGreen
 
 ## Backend Setup
 
-### 1. Go To The sustainability-site Directory
+### 1. Go To The backend Directory
 
 ```bash
-cd backend/sustainability-site/
+cd backend/
 ```
 
 ### 2. **Create a Virtual Environment**
 
+#### Windows
 ```bash
-# Windows
-python -m venv venv
-venv\Scripts\activate
+python -m venv .venv
+.venv\Scripts\activate
+```
 
-# macOS/Linux
-python3 -m venv venv
-source venv/bin/activate
+#### macOS/Linux
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
 ```
 
 ### 3. Install Python Dependencies
 
 ```bash
-pip install -r backend/requirements.txt
+pip install -r requirements.txt
 ```
 
 ### 4. Make Database Migrations
@@ -78,19 +78,19 @@ python manage.py runserver
 ### 1. Go To The Frontend Directory
 
 ```bash
-cd Frontend
+cd frontend
 ```
 
 ### 2. Install Node Dependencies
 
 ```bash
-npm install
+npm i
 ```
 
 ### 3. Run The App
 
 ```bash
-npm run dev
+npx vite
 # The frontend will be live at http://localhost:5173/
 ```
 
@@ -101,14 +101,14 @@ npm run dev
 ### 1. Backend Tests
 
 ```bash
-cd backend/sustainability-site
+cd backend
 python manage.py test
 ```
 
 ### 2. Frontend Tests
 
 ```bash
-cd Frontend
+cd frontend
 npm test
 ```
 
@@ -116,8 +116,8 @@ npm test
 
 ## Testing Basic Functionalities
 
-1. Go to [http://localhost:5173/login](http://localhost:5173/login) and use the superuser credentials.
-2. Access [http://localhost:5173/register](http://localhost:5173/register) and complete the sign-up form.
+1. Access [http://localhost:5173/register](http://localhost:5173/register) and complete the sign-up form.
+2. Go to [http://localhost:5173/login](http://localhost:5173/login) and use the superuser credentials.
 
 ---
 
@@ -126,7 +126,7 @@ npm test
 ### 1. Register
 
 ```bash
-curl -X POST http://localhost:8000/api/register/ \
+curl -X POST http://localhost:8000/api/auth/register/ \
 -H "Content-Type: application/json" \
 -d '{"username":"newuser","email":"newuser@example.com","password":"password123"}'
 ```
@@ -134,7 +134,7 @@ curl -X POST http://localhost:8000/api/register/ \
 ### 2. Login
 
 ```bash
-curl -X POST http://localhost:8000/api/login/ \
+curl -X POST http://localhost:8000/api/auth/login/ \
 -H "Content-Type: application/json" \
 -d '{"username":"newuser","password":"password123"}'
 ```
@@ -144,36 +144,17 @@ curl -X POST http://localhost:8000/api/login/ \
 ## Configurations
 
 ### 1. Database
-Edit `DATABASES` in `backend/sustainability-site/project/settings.py` for SQLite.
+Edit `DATABASES` in `backend/backend/settings.py` for SQLite.
 
-### 2. CORS Settings
-Ensure CORS settings are enabled in `backend/sustainability-site/project/settings.py`.
+### 2. CORS Settings (Enabled by default)
+Ensure CORS settings as needed in `backend/backend/settings.py`.
 
 ---
 
 ## Project Structure
 
 ```
-LeadGreen/                      # Project root directory
-├── .venv/                      # Virtual environment for Python packages
-├── backend/                    # Django backend for server-side logic
-│   └── sustainability-site/    # Main Django project folder
-│       ├── home/               # Django app for home-related functionalities
-│       ├── project/            # Core project settings and configurations
-│       ├── users/              # Django app for user authentication and profiles
-├── env/                        # Python environment configuration
-│   ├── Include/                # C headers for Python packages
-│   ├── Lib/                    # Installed Python packages
-│   └── Scripts/                # Executable scripts (e.g., virtual environment activation)
-├── Frontend/                   # React frontend for user interface
-│   ├── .vite/                  # Vite configuration and cache
-│   ├── node_modules/           # Installed npm packages for React
-│   ├── public/                 # Static files (e.g., index.html)
-│   └── src/                    # React source code
-│       ├── assets/             # Static resources like images and fonts
-│       ├── Components/         # Reusable React components (buttons, forms)
-│       ├── Hooks/              # Custom React hooks for state management
-│       └── Pages/              # React pages (e.g., Home, Login, Dashboard)
+Needs to be remade
 ```
 
 ---
@@ -182,6 +163,6 @@ LeadGreen/                      # Project root directory
 This project is licensed under the MIT License. See the LICENSE file for details.
 
 ## Contact
-**Name:** TEAM LAKERS  
+**Name:** Team Lakers
 **Email:** [lakers2757@gmail.com](mailto:lakers2757@gmail.com)"
 
