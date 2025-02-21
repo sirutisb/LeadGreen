@@ -56,7 +56,7 @@ export default function Home() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 1.2 }}
               >
-                How Lead Green Work
+                How Lead Green Works
               </motion.div>
             </div>
           </div>
