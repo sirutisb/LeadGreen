@@ -94,12 +94,9 @@ class GloveTreeAction(APIView):
     def post(self, request, *args, **kwargs):
         user = request.user
         
-        # GET LEVEL AND POINTS FOR GLOVE
-        '''
-        user.tree_level += 0.1
-        user.points_balance -= 10
-        '''
-
+        user.tree_level += 0
+        user.points_balance -= 50
+        
         return Response({
             "success": True,
             "message": "Glove applied successfully",
