@@ -1,45 +1,52 @@
-import { useInfiniteQuery } from "@tanstack/react-query";
-import { fetchPosts } from "../../Hooks/api";
-import Post from "./Post";
-import useInfiniteScroll from "../../Hooks/useInfiniteScroll";
+import { useState, useEffect } from "react";
+import axiosInstance from "../../Context/axiosInstance"; // ✅ Use axios instance
+import useInfiniteScroll from "../../hooks/useInfiniteScroll";
 
-const Feed = () => {
-  const {
-    data,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-    status,
-  } = useInfiniteQuery({
-    queryKey: ["posts"],
-    queryFn: ({ pageParam = 1 }) => fetchPosts({ pageParam }),
-    getNextPageParam: (lastPage) => lastPage.nextPage,
-    initialPageParam: 1,
-  });
+const FeedPage = () => {
+  const [posts, setPosts] = useState([]); // ✅ Store posts
+  const [nextPage, setNextPage] = useState("http://127.0.0.1:8000/api/posts/?page=1"); // ✅ Track next page
+  const [isFetchingNextPage, setIsFetchingNextPage] = useState(false);
 
-  const observerRef = useInfiniteScroll(fetchNextPage, hasNextPage, isFetchingNextPage);
+  // ✅ Fetch Posts Function
+  const fetchNextPage = async () => {
+    if (!nextPage || isFetchingNextPage) return; // Stop if no more pages
+
+    setIsFetchingNextPage(true);
+    try {
+      const response = await axiosInstance.get(nextPage);
+      const data = response.data;
+
+      setPosts((prev) => [...prev, ...data.results]); // ✅ Append new posts
+      setNextPage(data.next); // ✅ Update next page URL
+    } catch (error) {
+      console.error("Error fetching posts:", error);
+    } finally {
+      setIsFetchingNextPage(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchNextPage(); // ✅ Fetch initial posts
+  }, []);
+
+  // ✅ Infinite Scroll Hook (Triggers fetchNextPage)
+  const observerRef = useInfiniteScroll(fetchNextPage, !!nextPage, isFetchingNextPage);
 
   return (
-    <div className="max-w-lg w-full">
-      {status === "loading" && <p>Loading posts...</p>}
-      {status === "error" && <p>Error loading posts</p>}
-      
-      {status === "success" && (
-        <>
-          {data.pages.map((group, index) => (
-            <div key={index}>
-              {group.posts.map((post) => (
-                <Post key={post.id} post={post} />
-              ))}
-            </div>
-          ))}
-          <div ref={observerRef} className="h-10 w-full flex justify-center items-center">
-            {isFetchingNextPage && <p>Loading more...</p>}
-          </div>
-        </>
-      )}
+    <div className="feed-container">
+      {posts.map((post, index) => (
+        <div key={post.id} className="post">
+          <img src={post.image} alt="Post" className="post-image" />
+          <p>{post.caption}</p>
+          <span>By {post.user.username}</span>
+
+          {/* ✅ Attach Observer to Last Post */}
+          {index === posts.length - 1 && <div ref={observerRef} />}
+        </div>
+      ))}
+      {isFetchingNextPage && <p>Loading more...</p>}
     </div>
   );
 };
 
-export default Feed;
+export default FeedPage;
