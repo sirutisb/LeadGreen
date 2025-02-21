@@ -10,3 +10,8 @@ class UserItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserItem
         fields = ['user', 'item', 'quantity']
+
+class GameStateSerializer(serializers.ModelSerializers):
+    class Meta:
+        model = GameState
+        fields = ['tree_level', 'points', 'spins', 'plant', 'snail']
