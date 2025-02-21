@@ -27,7 +27,7 @@ axiosInstance.interceptors.request.use(async (req) => {
   }
 
   try {
-    const response = await axios.post(`${baseURL}token/refresh/`, {
+    const response = await axios.post(`${baseURL}auth/token/refresh/`, {
       refresh: authTokens.refresh,
     });
 
@@ -37,6 +37,7 @@ axiosInstance.interceptors.request.use(async (req) => {
     console.error("Token Refresh Failed:", error);
     localStorage.removeItem("authTokens");
     localStorage.removeItem("user");
+    
   }
 
   return req;
