@@ -85,27 +85,20 @@ const GreenCircles = ({
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
       >
-        <h1
+        <motion.div
           className={clsx(
-            "text-xl font-bold tracking-tight md:text-4xl",
+            "text-xl font-bold tracking-tight md:text-5xl",
             "bg-gradient-to-b from-green-800 to-green-500 dark:from-green-300 dark:to-green-500 bg-clip-text text-transparent",
             "drop-shadow-[0_0_32px_rgba(34,197,94,0.4)]",
-          )} 
+          )}
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 1.2 }}
         >
-        Help Us Create a Carbon Neutral Environment
-        </h1>
-
-        <motion.p
-          className="mt-6 text-xl font-semibold md:text-xl dark:text-white text-green-950"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.2 }}
-        >
-          <span className="mx-3 opacity-90">Join LeadGreen and be part of the solution.</span>
-        </motion.p>
-        <span className="py-4 mx-3 text-xl font-semibold md:text-xl dark:text-white text-green-950 opacity-90">
-          Every small action counts towards a greener future.
-        </span>
+          Made for 
+          <br/> 
+          Modern Eco-Conscious People
+        </motion.div>
       </motion.div>
 
       <div className="absolute inset-0 [mask-image:radial-gradient(90%_60%_at_50%_50%,#000_40%,transparent)]">

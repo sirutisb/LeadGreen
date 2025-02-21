@@ -45,21 +45,18 @@ export default function Home() {
       </div>
 
       <div className="container mx-auto relative " style={{ height: "887px" }}>
-          <div className="w-full flex justify-center">
+          <div className="w-full flex justify-center ">
             <div className="max-w-[1024px] w-full">
               <motion.div
-                className="font-serif text-[64px] leading-[70px] text-black"
+                className="font-serif text-[64px] text-center text-black"
                 style={{
                   marginTop: "181px",
-                  width: "391px",
                 }}
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 1.2 }}
               >
-                Made for Modern
-                <br />
-                Eco-Conscious People
+                How Lead Green Works
               </motion.div>
             </div>
           </div>
@@ -96,15 +93,14 @@ export default function Home() {
         </div>
 
       <section className="text-center mb-16">
-        <h2 className="text-3xl font-bold text-green-800 mb-4">Join the Green Revolution</h2>
-        <p className="text-xl text-green-700 mb-8">
-          asd
-        </p>
         <div className="bg-white rounded-lg shadow-lg p-8">
-          <div className="text-5xl font-bold text-green-600 mb-2">asd</div>
-          <div className="text-green-800">asd</div>
+          <h2 className="text-3xl font-semibold text-green-700 mb-4">Join Lead Green and be part of the solution.</h2>
+          <div className="text-4xl font-bold text-green-700 mb-2 font-serif ">Every small action counts towards a greener future.</div>
+          <div className="text-green-800"></div>
         </div>
       </section>
+
+      
 
       <Footer/>
     </Page>
