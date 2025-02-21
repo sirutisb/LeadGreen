@@ -20,3 +20,11 @@ class UserItem(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - x{self.quantity} {self.item.name}"
+
+class GameState(models.Model):
+    tree_level = models.IntegerField(default=0)
+    growth = models.FloatField(default=0.0)
+    points = models.IntegerField(default=0)
+    spins = models.IntegerField(default=0)
+    plant = models.CharField(max_length=32, default='leafy')
+    snail = models.BooleanField(default=False)
