@@ -23,6 +23,7 @@ class ShopItems(generics.ListAPIView):
         queryset = ShopItem.objects.all()
         return queryset
     
+'''    
 class UseActionView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -49,3 +50,61 @@ class UseActionView(APIView):
             "points_balance": user.points_balance,
 
         })
+    
+'''
+
+class WaterTreeAction(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        user = request.user
+        
+        # adjust level and points
+        user.tree_level += 0.1
+        user.points_balance -= 10
+
+        return Response({
+            "success": True,
+            "message": "Water applied successfully",
+            "points_balance": user.points_balance,
+            "tree_level": user.tree_level,
+            "has_snail": False,
+        })
+    
+class SoilTreeAction(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        user = request.user
+        
+        user.tree_level += 0.3
+        user.points_balance -= 20
+
+        return Response({
+            "success": True,
+            "message": "Soil applied successfully",
+            "points_balance": user.points_balance,
+            "tree_level": user.tree_level,
+            "has_snail": False,
+        })
+
+class GloveTreeAction(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        user = request.user
+        
+        # GET LEVEL AND POINTS FOR GLOVE
+        '''
+        user.tree_level += 0.1
+        user.points_balance -= 10
+        '''
+
+        return Response({
+            "success": True,
+            "message": "Glove applied successfully",
+            "points_balance": user.points_balance,
+            "tree_level": user.tree_level,
+            "has_snail": False,
+        })
+
