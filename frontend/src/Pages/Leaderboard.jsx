@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { Search, ChevronUp } from "lucide-react";
 import Page from "./Page";
+import NavBar from "../Components/NavBar/NavBar.jsx";
 
 const API_BASE_URL = "http://127.0.0.1:8000/api/leaderboard";
 
@@ -54,6 +55,7 @@ const LeaderboardPage = () => {
 
   return (
       <Page className="min-h-screen bg-gradient-to-b from-green-50 to-green-200">
+        <NavBar />
         {/* Hero Section */}
         <section className="text-green-700 py-20">
           <div className="container mx-auto px-4 text-center">
