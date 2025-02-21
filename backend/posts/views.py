@@ -7,6 +7,7 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
 from .models import Post
 from .serializers import PostSerializer
+from .pagination import PostPagination
 
 from rest_framework import generics
 from django.db import models
@@ -14,6 +15,7 @@ from django.db import models
 class PostListCreate(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticatedOrReadOnly]
     serializer_class = PostSerializer
+    pagination_class = PostPagination
 
     def get_queryset(self):
         queryset = Post.objects.all()

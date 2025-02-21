@@ -1,10 +1,12 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { Modal, Box, IconButton, Typography } from "@mui/material";
 import { Close } from "@mui/icons-material";
 import QRScannerStep from "./QRScannerStep";
 import ImageUploadStep from "./ImageUploadStep";
 import CaptionStep from "./CaptionStep";
 import { toast } from "react-toastify";
+import AuthContext from "../../Context/AuthContext";
+import axiosInstance from "../../Context/axiosInstance";
 
 const MakePostModal = ({ open, onClose }) => {
   const [qrValue, setQrValue] = useState(""); // ✅ Store scanned QR value
@@ -19,18 +21,18 @@ const MakePostModal = ({ open, onClose }) => {
     }
 
     const formData = new FormData();
-    formData.append("userId", 0);
     formData.append("caption", data.caption);
-    formData.append("qrcode", qrValue || "");
+    formData.append("qr_code", qrValue || "");
     formData.append("image", images[0].file);
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/upload/", {
-        method: "POST",
-        body: formData,
+      const response = await axiosInstance.post("/posts/", formData, {
+        headers: { "Content-Type": "multipart/form-data" }, // ✅ No need to manually add Authorization
       });
-      console.log(formData)
-      if (response.ok) {
+
+      console.log("Response Data:", response.data);
+
+      if (response.status === 201) {
         toast.success("Post created successfully!", { position: "top-right" });
         setImages([]);
         setQrValue("");
@@ -40,13 +42,26 @@ const MakePostModal = ({ open, onClose }) => {
         toast.error("Failed to create post!", { position: "top-right" });
       }
     } catch (error) {
+      console.error("Axios Error:", error.response?.data || error.message);
       toast.error("Network error! Please try again.", { position: "top-right" });
     }
   };
 
   return (
     <Modal open={open} onClose={onClose}>
-      <Box sx={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", width: 400, bgcolor: "white", boxShadow: 24, p: 3, borderRadius: 2 }}>
+      <Box
+        sx={{
+          position: "absolute",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          width: 400,
+          bgcolor: "white",
+          boxShadow: 24,
+          p: 3,
+          borderRadius: 2,
+        }}
+      >
         <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
           <Typography variant="h6" color="black">Create Post</Typography>
           <IconButton onClick={onClose}>

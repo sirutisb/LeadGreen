@@ -82,7 +82,7 @@ SIMPLE_JWT = {
     "UPDATE_LAST_LOGIN": False,
 
     "ALGORITHM": "HS256",
-    #"SIGNING_KEY": settings.SECRET_KEY,
+    #"SIGNING_KEY": settings.SECRET_KEY, # check why i commented out this line, i forgot, it may be important though
     "VERIFYING_KEY": "",
     "AUDIENCE": None,
     "ISSUER": None,
