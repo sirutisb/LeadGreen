@@ -4,7 +4,12 @@ from django.contrib.auth.models import AbstractUser
 # Create your models here.
 
 class UserProfile(AbstractUser):
-    profile_picture = models.ImageField(upload_to='profile_pics/', blank=True, null=True)
+    profile_picture = models.ImageField(
+        upload_to='profile_pics/',
+        default='profile_pics/default.png',
+        blank=True,
+        null=True
+        )
     
     points_balance = models.IntegerField(default=0)
     lifetime_points = models.IntegerField(default=0)
