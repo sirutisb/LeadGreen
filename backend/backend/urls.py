@@ -17,8 +17,9 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
+
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('api/admin/', admin.site.urls),
     path('api/auth/', include('authentication.urls')),
     path('api/game/', include('game.urls')),
     path('api/leaderboard/', include('leaderboard.urls')),
@@ -26,3 +27,21 @@ urlpatterns = [
     path('api/qrcodes/', include('qrcodes.urls')),
     path('api/users/', include('users.urls')),
 ]
+
+
+
+
+
+
+
+
+
+
+
+
+# urlpatterns = [
+    # path('admin/', admin.site.urls),
+    # path('api/', include('base.api.urls')),
+    # path('leaderboard/', include('leaderboard.urls')),
+# ]
+

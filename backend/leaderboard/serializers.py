@@ -7,5 +7,5 @@ from users.models import UserProfile
 class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
-        fields = ['username', 'points_balance', 'tree_level', 'lifetime_points']
-        read_only_fields = ['username', 'points_balance', 'tree_level', 'lifetime_points']
+        fields = ['username', 'points_balance', 'tree_level', 'lifetime_points', ]
+        read_only_fields = [ 'username', 'points_balance', 'tree_level', 'lifetime_points']
