@@ -2,6 +2,7 @@ import React from "react";
 import { Box, Typography, Avatar } from "@mui/material";
 
 const Post = ({ post }) => {
+    console.log(post)
   return (
     <Box
       sx={{
