@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import axiosInstance from "../../Context/axiosInstance"; // ✅ Use axios instance
 import useInfiniteScroll from "../../hooks/useInfiniteScroll";
+import Post from "./Post";
 
 const FeedPage = () => {
   const [posts, setPosts] = useState([]); // ✅ Store posts
@@ -34,15 +35,8 @@ const FeedPage = () => {
 
   return (
     <div className="feed-container">
-      {posts.map((post, index) => (
-        <div key={post.id} className="post">
-          <img src={post.image} alt="Post" className="post-image" />
-          <p>{post.caption}</p>
-          <span>By {post.user.username}</span>
-
-          {/* ✅ Attach Observer to Last Post */}
-          {index === posts.length - 1 && <div ref={observerRef} />}
-        </div>
+      {posts.map((post) => (
+        <Post key={post.id} post={post} />
       ))}
       {isFetchingNextPage && <p>Loading more...</p>}
     </div>
