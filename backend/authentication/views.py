@@ -13,13 +13,11 @@ class RegisterView(APIView):
             user = serializer.save()
             refresh = RefreshToken.for_user(user)
             return Response({
-                "data": {
-                    "tokens": {
-                        "refresh": str(refresh),
-                        "access": str(refresh.access_token),
-                    },
-                    "user": BasicUserProfileSerializer(user).data
-                }
+                "tokens": {
+                    "refresh": str(refresh),
+                    "access": str(refresh.access_token),
+                },
+                "user": BasicUserProfileSerializer(user).data
             }, status=status.HTTP_201_CREATED)
         
         return Response({
@@ -34,10 +32,8 @@ class LoginView(TokenObtainPairView):
             tokens = serializer.validated_data
             user = serializer.user
             return Response({
-                "data": {
-                    "tokens": tokens,
-                    "user": BasicUserProfileSerializer(user).data
-                }
+                "tokens": tokens,
+                "user": BasicUserProfileSerializer(user).data
             }, status=status.HTTP_200_OK)
             
         except Exception:
