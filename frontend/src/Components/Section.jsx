@@ -1,5 +1,7 @@
 "use client"
 import { motion } from "framer-motion"
+import TrueFocus from "./Effects/TrueFocus"
+
 
 export default function Section(){
     return(
@@ -18,9 +20,16 @@ export default function Section(){
             }}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
+            transition={{ duration: 0.1, delay: 0.1 }}
           >
-            INTRODUCING LEADGREEN
+            <TrueFocus 
+          sentence="Lead Green"
+          manualMode={false}
+          blurAmount={5}
+          borderColor="green"
+          animationDuration={0.5}
+          pauseBetweenAnimations={1.5}
+          />
           </motion.p>
         </div>
 
