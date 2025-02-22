@@ -26,12 +26,12 @@ class UserItem(models.Model):
 class Plant(models.Model):
     name = models.CharField(max_length=32)
 
-class UserGameProfile(models.Model):
-    user = models.OneToOneField(UserProfile, on_delete=models.CASCADE)
+class GameProfile(models.Model):
+    user = models.OneToOneField(UserProfile, on_delete=models.CASCADE, related_name='game_profile')
+    points_balance = models.IntegerField(default=0) # Progress towards next level
     tree_level = models.IntegerField(default=0)
     tree_growth = models.FloatField(default=0.0) # current tree level
-    points_balance = models.IntegerField(default=0) # Progress towards next level
-    spins = models.IntegerField(default=5)
+    spins_remaining = models.IntegerField(default=5)
     #plant_name = models.CharField(max_length=32, default='leafy')
     #plant = models.ForeignKey(Plant, on_delete=models.CASCADE) # TO be added
-    has_snail = models.BooleanField(default=False)
+    has_bug = models.BooleanField(default=False)
