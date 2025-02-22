@@ -1,10 +1,9 @@
 import React from "react";
 import { Box, TextField, Button, Typography, Stack } from "@mui/material";
-import { ArrowBack } from "@mui/icons-material";
+import { ArrowBack, Send } from "@mui/icons-material"; // ✅ Icon for Post Button
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import { toast } from "react-toastify";
 
 // ✅ Validation Schema
 const schema = yup.object().shape({
@@ -22,7 +21,13 @@ const CaptionStep = ({ images, qrValue, prevStep, onSubmit }) => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <Typography variant="body1" fontWeight="bold" mb={1} color="black">
+      <Typography 
+        variant="body1" 
+        fontWeight="bold" 
+        mb={1} 
+        color="black"
+        sx={{ fontSize: { xs: "1rem", sm: "1.2rem" } }} // ✅ Responsive font sizes
+      >
         Step 3: Add Caption & Post
       </Typography>
 
@@ -34,16 +39,29 @@ const CaptionStep = ({ images, qrValue, prevStep, onSubmit }) => {
         helperText={errors.caption?.message}
         margin="normal"
         multiline
-        rows={2}
+        rows={3} // ✅ More space for text input
+        sx={{
+          fontSize: { xs: "0.9rem", sm: "1rem" },
+          "& .MuiInputBase-root": { borderRadius: "12px" }, // ✅ Rounded corners
+        }}
       />
 
-      {/* ✅ Buttons with space and animations */}
-      <Stack direction="row" justifyContent="space-between" mt={3} spacing={2}>
+      {/* ✅ Buttons: Back & Post in SAME ROW */}
+      <Stack 
+        direction="row" 
+        spacing={2} 
+        mt={3} 
+        sx={{
+          width: "100%",
+          justifyContent: "space-between",
+        }}
+      >
         <Button
           variant="outlined"
-          fullWidth
           sx={{
+            flex: 1, // ✅ Ensures equal button size
             transition: "all 0.3s ease-in-out",
+            fontSize: { xs: "0.9rem", sm: "1rem" },
             "&:hover": { bgcolor: "#ddd", transform: "scale(1.05)" },
           }}
           startIcon={<ArrowBack />}
@@ -55,15 +73,17 @@ const CaptionStep = ({ images, qrValue, prevStep, onSubmit }) => {
         <Button
           type="submit"
           variant="contained"
-          fullWidth
           sx={{
+            flex: 1, // ✅ Ensures equal button size
             bgcolor: "#1B6630",
             color: "white",
             transition: "all 0.3s ease-in-out",
+            fontSize: { xs: "0.9rem", sm: "1rem" },
             "&:hover": { bgcolor: "#155724", transform: "scale(1.05)" },
           }}
+          endIcon={<Send />} // ✅ Added Send Icon
         >
-          Submit Post
+          Post
         </Button>
       </Stack>
     </form>

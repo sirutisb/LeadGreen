@@ -16,6 +16,7 @@ import soilSound from "../../assets/sounds/soil.mp3";
 import gloveSound from "../../assets/sounds/glove.mp3";
 import levelSound from "../../assets/sounds/level.mp3";
 import RouletteButton from "./RouletteButton";
+import { toastError, toastSuccess, toastWarning } from "../utils/toastCustom";
 
 const OverLeaf = () => {
   const [user, setUser] = useState({
@@ -61,7 +62,7 @@ const OverLeaf = () => {
 
   const handleLevelUp = () => {
     const currentPlant = plants[Math.min(Math.floor(user.tree_level) - 1, plants.length - 1)];
-    toast.success(`🎉 Congratulations! Your ${currentPlant.name} leveled up!`, { theme: "colored" });
+    toastSuccess(`🎉 Congratulations! Your ${currentPlant.name} leveled up!`)
     playLevelUp();
     setShowConfetti(true);
     setTimeout(() => setShowConfetti(false), 4000);
@@ -79,7 +80,7 @@ const OverLeaf = () => {
     
     setCurrentInsect(newInsect);
     playInsect();
-    toast.warning(`${newInsect.name} has appeared! Use the glove to remove it.`, { theme: "colored" });
+    toastWarning(`${newInsect.name} has appeared! Use the glove to remove it.`)
   };
 
   useEffect(() => {
@@ -106,13 +107,13 @@ const OverLeaf = () => {
   
     if (user.points_balance <= 0) {
       playAlert();
-      toast.error("❌ Not enough points to perform this action!", { theme: "colored" });
+      toastError("❌ Not enough points to perform this action!")
       return; // 🔹 Only trigger error when an icon is selected and points are 0.
     }
   
     if (currentInsect && selectedIcon !== "glove") {
       playAlert();
-      toast.error(`${currentInsect.name} is blocking your plant! Use the glove first.`, { theme: "colored" });
+      toastError(`${currentInsect.name} is blocking your plant! Use the glove first.`)
       return;
     }
   
@@ -146,17 +147,17 @@ const OverLeaf = () => {
         growth = 0.1;
         playGlove();
         setSparkColor("#FFD700");
-        toast.success(`${currentInsect.name} removed successfully!`, { theme: "colored" });
+        toastSuccess(`${currentInsect.name} removed successfully!`)
       } else if (!currentInsect) {
         playAlert();
-        toast.error("😭 The plant is already cleaned!", { theme: "colored" });
+        toastError("😭 The plant is already cleaned!")
       } else {
         playAlert();
-        toast.error("❌ Not enough points to remove the pest!", { theme: "colored" });
+        toastError("❌ Not enough points to remove the pest!")
       }
     } else {
       playAlert();
-      toast.error("❌ Not enough points to perform this action!", { theme: "colored" });
+      toastError("❌ Not enough points to perform this action!")
     }
   
     if (growth > 0) {

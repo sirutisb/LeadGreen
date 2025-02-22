@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 
 import useSound from "use-sound";
 import spinSound from "../../assets/sounds/spin.mp3"; // 🎵 Add spin sound
+import { toastSuccess } from "../utils/toastCustom";
 
 const data = [
   { option: "🎁 No Reward", weight: 15, style: { backgroundColor: "red", color: "white" } },
@@ -56,7 +57,7 @@ const RouletteButton = ({ user, setUser }) => {
       }));
     }
 
-    toast.success(`🎉 You won ${data[prizeIndex].option}!`, { theme: "colored" });
+    toastSuccess(`🎉 You won ${data[prizeIndex].option}!`)
 
     // ✅ Close popup after a delay
     // setTimeout(() => {
@@ -75,7 +76,7 @@ const RouletteButton = ({ user, setUser }) => {
         whileTap={{ scale: 0.9 }}
         disabled={user.spins === 0} // ❌ Disable button if no spins left
       >
-        🎰 Spins Left: {user.spins}
+        🎰 Spins: {user.spins}
       </motion.button>
 
       {/* 🎡 Roulette Modal */}

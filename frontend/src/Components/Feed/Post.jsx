@@ -2,7 +2,6 @@ import React from "react";
 import { Box, Typography, Avatar } from "@mui/material";
 
 const Post = ({ post }) => {
-    console.log(post)
   return (
     <Box
       sx={{
@@ -57,6 +56,13 @@ const Post = ({ post }) => {
           {post.user.username}
         </Typography>
       </Box>
+            {/* 📝 Caption */}
+            <Typography
+              variant="body1"
+              sx={{ color: "#1B6630", fontWeight: "bold", mt: 1 }}
+            >
+              {post.caption}
+            </Typography>
 
       {/* 🖼️ Image */}
       <Box
@@ -74,13 +80,6 @@ const Post = ({ post }) => {
         />
       </Box>
 
-      {/* 📝 Caption */}
-      <Typography
-        variant="body1"
-        sx={{ color: "#1B6630", fontWeight: "bold", mt: 1 }}
-      >
-        {post.caption}
-      </Typography>
     </Box>
   );
 };

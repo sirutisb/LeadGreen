@@ -27,10 +27,8 @@ const cards = [
 
 ]
 export default function Home() {
-    let {user, logoutUser} = useContext(AuthContext)
   return (
     <Page className="bg-[#f3f1ea]">
-      <NavBar/>
       <Section />
     {/* // <Page>
     //     {user && user.username}

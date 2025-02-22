@@ -1,6 +1,48 @@
 @import 'tailwindcss';
 @tailwind utilities;
 
+@media (max-width: 768px) {
+    .Toastify__toast-container {
+      width: fit-content !important; /* ✅ Only as wide as the content */
+      max-width: 90% !important; /* ✅ Prevents stretching */
+      right: 10px !important; /* ✅ Sticks to the right with space */
+      left: auto !important; /* ✅ Ensures right positioning */
+      padding: 0 !important;
+    }
+  
+    .Toastify__toast {
+      font-size: 12px !important;  /* ✅ Smaller text */
+      min-height: 30px !important;  /* ✅ Compact toast size */
+      padding: 8px 12px !important;  /* ✅ Keeps it readable */
+      border-radius: 8px !important; /* ✅ Softer corners */
+      margin-bottom: 8px !important; /* ✅ Adds spacing between each toast */
+    }
+  
+    .Toastify__toast-body {
+      font-size: 12px !important;  /* ✅ Adjust message size */
+      flex: 1 !important; /* ✅ Ensures text takes available space */
+      margin-right: 12px !important; /* ✅ Space between text & close button */
+    }
+  
+    .Toastify__toast-icon svg {
+      width: 16px !important;  /* ✅ Smaller icon */
+      height: 16px !important;
+    }
+  
+    .Toastify__close-button {
+      width: 16px !important;
+      height: 16px !important;
+      margin-left: 1000px;
+    }
+  
+    /* 🔥 Space from top (while sticking to the right) */
+    .Toastify__toast-container--top-right {
+      top: 15px !important;
+    }
+  }
+  
+  
+  
 
 :root {
   height: 100vh !important;

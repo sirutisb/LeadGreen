@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Fab, Zoom } from "@mui/material";
-import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
+import PostAddIcon from '@mui/icons-material/PostAdd';
 import MakePostModal from "./MakePostModal";
 
 const MakePost = () => {
@@ -33,7 +33,7 @@ const MakePost = () => {
             },
           }}
         >
-          <AddPhotoAlternateIcon sx={{ fontSize: 30 }} />
+          <PostAddIcon sx={{ fontSize: 30 }} />
         </Fab>
       </Zoom>
 
