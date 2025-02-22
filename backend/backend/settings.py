@@ -75,7 +75,7 @@ REST_FRAMEWORK = {
 # Django project settings.py
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=5),
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=500), # for testing purposes make it shorter like 30 min
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
     "ROTATE_REFRESH_TOKENS": True, # refresh tokens will be regenerated when user persists
     "BLACKLIST_AFTER_ROTATION": True, # blacklists the old refresh token after rotation
