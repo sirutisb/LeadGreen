@@ -20,3 +20,18 @@ class UserItem(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - x{self.quantity} {self.item.name}"
+    
+
+# TODO: add plants to database
+class Plant(models.Model):
+    name = models.CharField(max_length=32)
+
+class UserGameProfile(models.Model):
+    user = models.OneToOneField(UserProfile, on_delete=models.CASCADE)
+    tree_level = models.IntegerField(default=0)
+    tree_growth = models.FloatField(default=0.0) # current tree level
+    points_balance = models.IntegerField(default=0) # Progress towards next level
+    spins = models.IntegerField(default=5)
+    #plant_name = models.CharField(max_length=32, default='leafy')
+    #plant = models.ForeignKey(Plant, on_delete=models.CASCADE) # TO be added
+    has_snail = models.BooleanField(default=False)

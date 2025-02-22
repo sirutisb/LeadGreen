@@ -19,17 +19,3 @@ class UserProfile(AbstractUser):
 
     def __str__(self):
         return f"{self.username} - Points: {self.points_balance} | Level: {self.tree_level}"
-    
-'''
-uncomment if changing method of seperating base profile / game, etc...
-
-class UserGameProfile(models.Model):
-    # relate to user profile
-    user = models.OneToOneField(UserProfile, on_delete=models.CASCADE)
-    
-    # user fields only relevant to game profile
-    tree_level = models.IntegerField(default=1) # current tree level
-    tree_growth = models.FloatField(default=0.0) # Progress towards next level
-    has_snail = models.BooleanField(default=False)
-
-'''
