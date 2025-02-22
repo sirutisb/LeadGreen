@@ -29,7 +29,7 @@ const MobileDropdown = ({ isOpen, setIsOpen, navLinks, UserNav }) => {
           animate="open"
           exit="closed"
           variants={mobileMenuVariants}
-          className="md:hidden fixed w-full bg-white/90 backdrop-blur-lg shadow-md z-40 top-[88px]"
+          className="md:hidden fixed w-full backdrop-blur-lg shadow-md bg-transparent z-40 top-[88px]"
         >
           <div className="flex flex-col space-y-4 p-6">
             {navLinks.map((link) => (
