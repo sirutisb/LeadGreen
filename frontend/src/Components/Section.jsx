@@ -1,10 +1,11 @@
 "use client"
 import { motion } from "framer-motion"
+import TrueFocus from "./Effects/TrueFocus"
+
 
 export default function Section(){
     return(
-      <div className="flex-1 flex flex-col items-center bg-[#f3f1ea] py-8 md:py-12" >
-
+      <div className="flex-1 flex flex-col items-center bg-[#f3f1ea] py-6 md:py-8" >
         <div className="w-full">
           <motion.p
             className="font-sans uppercase tracking-[0.3em] md:tracking-[0.51em] leading-[133%] text-center md:text-[24px] text-green-700 "
@@ -18,9 +19,16 @@ export default function Section(){
             }}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
+            transition={{ duration: 0.1, delay: 0.1 }}
           >
-            INTRODUCING LEADGREEN
+            <TrueFocus 
+          sentence="Lead Green"
+          manualMode={false}
+          blurAmount={5}
+          borderColor="green"
+          animationDuration={0.5}
+          pauseBetweenAnimations={1.5}
+          />
           </motion.p>
         </div>
 
