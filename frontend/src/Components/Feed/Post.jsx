@@ -13,19 +13,19 @@ const Post = ({ post }) => {
         mt: 2,
         p: 2,
         border: "2px solid #1B6630",
-        position: "relative", // Needed for positioning the points badge
-        mb: 10
+        position: "relative",
+        mb: 5, // Adjusted margin-bottom for spacing
       }}
     >
-      {/* Points Received (Top-Right Badge) */}
+      {/* 🏆 Points Received (Top-Right Badge) */}
       <Box
         sx={{
           position: "absolute",
-          top: 15,
-          right: 15,
+          top: 10,
+          right: 10,
           width: 40,
           height: 40,
-          backgroundColor: "#1B6630", // Dark green
+          backgroundColor: post.points_received > 0 ? "#1B6630" : "#bbb",
           color: "white",
           display: "flex",
           justifyContent: "center",
@@ -36,21 +36,31 @@ const Post = ({ post }) => {
           boxShadow: "2px 2px 8px rgba(0,0,0,0.2)",
         }}
       >
-        {post.points}
+        {post.points_received}
       </Box>
 
-      {/* User Info */}
+      {/* 👤 User Info */}
       <Box display="flex" alignItems="center" mb={2}>
-        <Avatar sx={{ bgcolor: "#1B6630", width: 40, height: 40 }} />
-        <Typography variant="h6" sx={{ ml: 2, color: "#1B6630", fontWeight: "bold" }}>
-          {post.username}
+        <Avatar
+          src={post.user.profile_picture} // ✅ Uses profile picture if available
+          sx={{
+            width: 40,
+            height: 40,
+            bgcolor: "#1B6630",
+          }}
+        />
+        <Typography
+          variant="h6"
+          sx={{ ml: 2, color: "#1B6630", fontWeight: "bold" }}
+        >
+          {post.user.username}
         </Typography>
       </Box>
 
-      {/* Image */}
+      {/* 🖼️ Image */}
       <Box
         sx={{
-          backgroundColor: "#DEFDE9", // Light green background
+          backgroundColor: "#DEFDE9",
           borderRadius: 2,
           overflow: "hidden",
           mb: 1,
@@ -63,8 +73,11 @@ const Post = ({ post }) => {
         />
       </Box>
 
-      {/* Caption */}
-      <Typography variant="body1" sx={{ color: "#1B6630", fontWeight: "bold" }}>
+      {/* 📝 Caption */}
+      <Typography
+        variant="body1"
+        sx={{ color: "#1B6630", fontWeight: "bold", mt: 1 }}
+      >
         {post.caption}
       </Typography>
     </Box>

@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import { Link } from "react-router-dom";
 import Button from "../Components/Button";
 import Input from "../Components/Input";
@@ -8,10 +8,11 @@ import AuthContext from "../Context/AuthContext";
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
+import NavBar from "../Components/NavBar/NavBar";
 
-
+// ✅ Validation Schema with Correct Field Names
 const schema = yup.object().shape({
-  name: yup.string().required("Full Name is required"),
+  username: yup.string().required("Username is required"), // ✅ Changed from 'name' to 'username'
   email: yup.string().email("Invalid email format").required("Email is required"),
   password: yup
     .string()
@@ -20,21 +21,24 @@ const schema = yup.object().shape({
 });
 
 export default function RegisterPage() {
+  const { registerUser } = useContext(AuthContext);
+  
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schema),
-    mode: "onChange", 
+    mode: "onChange",
   });
 
   const onSubmit = (data) => {
-    console.log("Registration data:", data);
+    registerUser(data);
   };
 
   return (
     <Page className="min-h-screen bg-gradient-to-b from-green-50 to-green-100 flex flex-col">
+      <NavBar/>
       <div className="flex flex-col items-center justify-center px-6 py-16 space-y-12">
         <div className="text-center max-w-2xl space-y-4">
           <h1 className="text-3xl font-bold text-green-700">
@@ -60,22 +64,25 @@ export default function RegisterPage() {
 
           <form onSubmit={handleSubmit(onSubmit)} className="mt-6 space-y-6">
             <div className="space-y-5">
+              {/* ✅ Username Field (Corrected from 'name' to 'username') */}
               <div>
-                <Label htmlFor="name" className="sr-only">
+                <Label htmlFor="username" className="sr-only">
                   Username
                 </Label>
                 <Input
-                  id="name"
-                  name="name"
+                  id="username"
+                  name="username"
                   type="text"
                   className="w-full text-black placeholder-gray-500 border border-green-300 bg-green-50 rounded-lg px-4 py-3"
-                  placeholder="Full Name"
-                  {...register("name")}
+                  placeholder="Username"
+                  {...register("username")} // ✅ Corrected
                 />
-                {errors.name && (
-                  <p className="text-red-600 text-sm mt-1">{errors.name.message}</p>
+                {errors.username && (
+                  <p className="text-red-600 text-sm mt-1">{errors.username.message}</p>
                 )}
               </div>
+
+              {/* ✅ Email Field */}
               <div>
                 <Label htmlFor="email" className="sr-only">
                   Email address
@@ -93,6 +100,8 @@ export default function RegisterPage() {
                   <p className="text-red-600 text-sm mt-1">{errors.email.message}</p>
                 )}
               </div>
+
+              {/* ✅ Password Field */}
               <div>
                 <Label htmlFor="password" className="sr-only">
                   Password
@@ -111,6 +120,8 @@ export default function RegisterPage() {
                 )}
               </div>
             </div>
+
+            {/* ✅ Submit Button */}
             <div>
               <Button type="submit" className="w-full bg-green-600 hover:bg-green-700 py-3 rounded-lg text-lg">
                 Sign Up
