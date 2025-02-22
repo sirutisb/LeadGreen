@@ -95,7 +95,6 @@ export default function Home() {
           </div>
         </div>
 
-        {/* <div className="w-full flex justify-center mt-8 md:mt-[51px] mb-12 md:mb-[187px] relative z-1">
         
   
       <ScrollVelocity
