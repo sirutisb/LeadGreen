@@ -107,7 +107,6 @@ export default function Home() {
         <div className="bg-green-100 rounded-lg shadow-lg p-4 md:p-8">
           <h2 className="text-2xl md:text-3xl font-semibold text-green-700 mb-4">Join Lead Green and be part of the solution.</h2>
           <div className="text-2xl md:text-3xl font-bold text-green-700 mb-2 font-serif ">Every small action counts towards a greener future.</div>
-          <div className="text-2xl md:text-3xl font-bold text-green-700 mb-2 font-serif ">Every small action counts towards a greener future.</div>
           <div className="text-green-800"></div>
         </div>
       </section>
