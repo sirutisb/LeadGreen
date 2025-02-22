@@ -176,50 +176,53 @@ const OverLeaf = () => {
 
 
   return (
-    <VFXProvider>
+    <>
       {showConfetti && <Confetti numberOfPieces={200} />}
-      <div className={`flex flex-col items-center justify-center min-h-screen max- relative`}>
+  
+      {/* 🌿 Main Container */}
+      <div className="flex flex-col items-center justify-center min-h-screen w-full px-4 sm:px-6 lg:px-8 relative">
         <OverLeafBar setSelectedIcon={setSelectedIcon} />
         <RouletteButton user={user} setUser={setUser} />
-
+  
         {/* 🌱 Plant Container */}
         <motion.div
           ref={plantRef}
           animate={wiggle ? { rotate: [0, -5, 5, -5, 5, 0] } : {}}
           transition={{ duration: 0.5, ease: "easeInOut" }}
-          className="relative -mt-30"
+          className="relative mt-6 sm:mt-8 md:mt-10 lg:mt-12"
           onClick={handleAction}
         >
           <motion.img
             src={getCurrentPlant().image}
             alt={getCurrentPlant().name}
-            className="w-[150px] h-[150px]"
+            className="w-[120px] h-[120px] sm:w-[140px] sm:h-[140px] md:w-[160px] md:h-[160px] lg:w-[180px] lg:h-[180px]"
             animate={{ scale }}
             transition={{ type: "spring", stiffness: 150, damping: 10 }}
             draggable={false}
           />
-
+  
           {/* 🐛 Insect Display */}
           {currentInsect && (
             <motion.img
               src={currentInsect.insect}
               alt={currentInsect.name}
-              className="absolute -top-6 left-1/2 transform -translate-x-1/2 w-12 h-12"
+              className="absolute -top-6 left-1/2 transform -translate-x-1/2 w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14"
               animate={{ y: [0, -5, 0] }}
               transition={{ duration: 1, repeat: Infinity, repeatType: "reverse", ease: "easeInOut" }}
             />
           )}
         </motion.div>
-
+  
         {/* 📊 Stats UI */}
-        <div className="absolute top-5 right-5 bg-[#DEFDE9] px-4 py-2 rounded-lg shadow-md">
-          <p className="text-[#1B6630] font-semibold">🌱 Tree Level: {Math.floor(user.tree_level)}</p>
-          <p className="text-[#1B6630] font-semibold">💰 Points: {user.points_balance}</p>
-          <p className="text-[#1B6630] font-semibold">🌿 Plant: {getCurrentPlant().name}</p>
+        <div className="absolute top-8 left-5 sm:top-5 sm:right-5 bg-[#DEFDE9] px-3 py-2 sm:px-4 sm:py-3 rounded-lg shadow-md w-fit">
+          <p className="text-[#1B6630] text-sm sm:text-base font-semibold">🌿 Plant: {getCurrentPlant().name}</p>
+          <p className="text-[#1B6630] text-sm sm:text-base font-semibold">🌱 Tree Level: {Math.floor(user.tree_level)}</p>
+          <p className="text-[#1B6630] text-sm sm:text-base font-semibold">💰 Points: {user.points_balance}</p>
         </div>
       </div>
-    </VFXProvider>
+    </>
   );
+  
 };
 
 export default OverLeaf;
