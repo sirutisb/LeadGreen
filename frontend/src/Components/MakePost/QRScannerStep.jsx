@@ -35,7 +35,7 @@ const QRScannerStep = ({ qrValue, setQrValue, nextStep }) => {
         borderRadius: "12px",
         border: "2px solid #ccc",
         backgroundColor: "#FFF",
-        width: { xs: "90%", sm: "70%", md: "60%" },
+        width: { xs: "90%", sm: "80%", md: "100%" },
         mx: "auto",
       }}
     >
@@ -51,6 +51,15 @@ const QRScannerStep = ({ qrValue, setQrValue, nextStep }) => {
 
       {isScanning ? (
         <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          minHeight: '100', // This centers vertically in the viewport
+          width: '100%',
+        }}
+      >
+        <Box
           sx={{
             width: { xs: "250px", sm: "300px", md: "320px" },
             height: { xs: "250px", sm: "300px", md: "320px" },
@@ -62,11 +71,16 @@ const QRScannerStep = ({ qrValue, setQrValue, nextStep }) => {
         >
           <QrReader
             delay={100}
-            style={{ width: "100%", height: "100%",objectFit: "cover", }}
+            style={{ 
+              width: "100%", 
+              height: "100%",
+              objectFit: "cover",
+            }}
             onError={handleError}
             onScan={handleScan}
           />
         </Box>
+      </Box>
       ) : (
         <Typography
           variant="body2"
