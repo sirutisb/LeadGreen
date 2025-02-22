@@ -36,6 +36,8 @@ class PostModelTest(TestCase):
         self.assertTrue(self.post.approved)
         self.assertEqual(self.post.points_received, 1)
 
+        self.assertEqual(True, False) # bad test for testing tests
+
     # check the tostring method 
 
     def test_post_str(self):
