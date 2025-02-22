@@ -1,8 +1,8 @@
 export default function UserFeedBack(){
     return(
-        <section className="w-full py-20 px-4 bg-[#f3f1ea]">
+        <section className="w-full py-4 px-4 bg-[#f3f1ea]">
           <div className="max-w-6xl mx-auto">
-            <h2 className="text-5xl md:text-5xl font-serif text-center mb-16 text-black">What Our Users Say</h2>
+            <h2 className="text-5xl md:text-[64px] font-serif text-center mb-16 text-black">What Our Users Say</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               <div className="bg-green-50 p-6 rounded-lg shadow-lg">
                 <p className="text-gray-600 italic mb-4">

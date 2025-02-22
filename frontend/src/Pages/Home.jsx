@@ -50,9 +50,9 @@ export default function Home() {
               <motion.div
                 className="font-serif text-5xl md:text-[64px] text-center text-black"
                 style={{
-                  marginTop: "100px",
+                  marginTop: "60px",
                   "@media (min-width: 768px)": {
-                      marginTop: "181px"
+                      marginTop: "90px"
                   }
                 }}
                 initial={{ opacity: 0, y: 30 }}
@@ -64,7 +64,7 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="w-full flex justify-center mt-8 md:mt-[51px] mb-12 md:mb-[96px] relative z-1 ">
+          <div className="w-full flex justify-center mt-8 md:mt-[51px] mb-12 md:mb-[24px] relative z-1 ">
             <div className="grid grid-cols-1 md:grid-cols-3 max-w-[1024px] mx-auto gap-4 md:gap-8 px-4">
               {[
                 {
@@ -95,7 +95,7 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="w-full flex justify-center mt-8 md:mt-[51px] mb-12 md:mb-[187px] relative z-1">
+        {/* <div className="w-full flex justify-center mt-8 md:mt-[51px] mb-12 md:mb-[187px] relative z-1">
             <div className="grid grid-cols-3 max-w-[1024px] mx-auto gap-4 md:gap-8">
               <img
                 src= ''
@@ -118,14 +118,14 @@ export default function Home() {
                 className="mx-auto"
               />
             </div>
-          </div>
+          </div> */}
 
       <UserFeedBack/>
       <FAQ/>
       <section className="text-center mb-16 px-2">
         <div className="bg-green-100 rounded-lg shadow-lg p-4 md:p-8">
           <h2 className="text-2xl md:text-3xl font-semibold text-green-700 mb-4">Join Lead Green and be part of the solution.</h2>
-          <div className="text-3xl md: text-4xl font-bold text-green-700 mb-2 font-serif ">Every small action counts towards a greener future.</div>
+          <div className="text-2xl md:text-3xl font-bold text-green-700 mb-2 font-serif ">Every small action counts towards a greener future.</div>
           <div className="text-green-800"></div>
         </div>
       </section>

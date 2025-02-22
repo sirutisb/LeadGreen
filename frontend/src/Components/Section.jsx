@@ -7,10 +7,10 @@ export default function Section(){
 
         <div className="w-full">
           <motion.p
-            className="font-sans uppercase tracking-[0.3em] md:tracking-[0.51em] leading-[133%] text-center md:text-[24px] text-green-700"
+            className="font-sans uppercase tracking-[0.3em] md:tracking-[0.51em] leading-[133%] text-center md:text-[24px] text-green-700 "
             style={{
               paddingTop: "12px",
-              marginBottom: "16px",
+              marginBottom: "48px",
               "@media (min-width: 768px)": {
                 paddingTop: "20px",
                 marginBottom: "32px",
@@ -25,7 +25,7 @@ export default function Section(){
         </div>
 
         <motion.h1
-          className="text-[48px] md:text-[64px] leading-tight md:leading-[83px] text-center px-4 md:px-16 lg:px-[314px] text-black"
+          className="text-[32px] md:text-[64px] leading-tight md:leading-[83px] text-center px-4 md:px-16 lg:px-[314px] text-black"
           style={{ marginTop: "0px", marginBottom: "0px" }}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -39,7 +39,7 @@ export default function Section(){
           <div className="font-serif font-normal">encouraging eco-friendly lifestyle</div>
         </motion.h1>
 
-        <motion.p className="text-3xl md:text-[32px] text-center text-green-600 font-sans font-light px-4 lg:px-[314px] mt-[25px] mb-12 md:mb-[48px] leading-[133%]"
+        <motion.p className="text-2xl md:text-[32px] text-center text-green-600 font-sans font-light px-4 lg:px-[314px] mt-[48px] mmd:mb-[48px] leading-[133%]"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.6 }}
