@@ -10,7 +10,7 @@ export default function LoginPage() {
     let { loginUser } = useContext(AuthContext);
 
     const [loginData, setLoginData] = useState({
-        username: "", // ✅ Changed from "email" to "username"
+        username: "", 
         password: "",
     });
 

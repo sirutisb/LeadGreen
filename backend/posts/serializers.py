@@ -1,33 +1,9 @@
 from rest_framework import serializers
-from django.contrib.auth.models import User
-from base.models import UserProfile, Post, QRCode
+from .models import Post
+from qrcodes.models import QRCode
 
-class UserProfileSerializer(serializers.ModelSerializer):
-    #password = serializers.CharField(write_only=True) # for safety on all fields (maybe not needed)
-    class Meta:
-        model = UserProfile
-        fields = ['id', 'username', 'points_balance', 'lifetime_points', 'tree_level', 'tree_growth', 'has_snail']
-        #fields = '__all__'
-
-class RegisterSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True)
-
-    class Meta:
-        model = UserProfile
-        fields = ["username", "email", "password"]
-
-    def create(self, validated_data):
-        user = UserProfile.objects.create_user(
-            username=validated_data["username"],
-            email=validated_data["email"],
-            password=validated_data["password"],
-        )
-        return user
-
-class QRCodeSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = QRCode
-        fields = ['id', 'code', 'location_name', 'category']
+from users.serializers import UserProfileSerializer
+from qrcodes.serializers import QRCodeSerializer
 
 class PostSerializer(serializers.ModelSerializer):
     user = UserProfileSerializer(read_only=True)

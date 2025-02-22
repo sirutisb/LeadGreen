@@ -29,12 +29,11 @@ const cards = [
 export default function Home() {
     let {user, logoutUser} = useContext(AuthContext)
   return (
-    // <Page className="bg-[#f3f1ea]">
-    //   <Section />
-    <Page>
-        {user && user.username}
-        {user ? <p onClick={logoutUser}>Log out</p> : <p>Log in</p>}
-
+    <Page className="bg-[#f3f1ea]">
+      <Section />
+    {/* // <Page>
+    //     {user && user.username}
+    //     {user ? <p onClick={logoutUser}>Log out</p> : <p>Log in</p>} */}
       <div>
         <GreenCircles 
           title="" 

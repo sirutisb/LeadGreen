@@ -5,6 +5,10 @@ import Input from "../Components/Input";
 import Label from "../Components/Label";
 import Page from "./Page";
 import AuthContext from "../Context/AuthContext";
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
+
 
 const schema = yup.object().shape({
   name: yup.string().required("Full Name is required"),
