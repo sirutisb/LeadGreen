@@ -37,14 +37,14 @@ export default function Home() {
     {/* // <Page>
     //     {user && user.username}
     //     {user ? <p onClick={logoutUser}>Log out</p> : <p>Log in</p>} */}
-      <div>
+      {/* <div>
         <GreenCircles 
           title="" 
           description="" 
           initialVariant="secondary"
           showVariantToggle={true}
         />
-      </div>
+      </div> */}
 
       <div className="container mx-auto p-4 relative " style={{ minHeight: "600px", height: "auto" }}>
           <div className="w-full flex justify-center ">
