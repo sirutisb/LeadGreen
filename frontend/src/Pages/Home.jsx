@@ -56,7 +56,7 @@ export default function Home() {
         />
       </div> */}
 
-      <div className="container mx-auto p-4 relative " style={{ minHeight: "480px", height: "auto" }}>
+      <div className="container mx-auto p-4 relative mb-24" style={{ minHeight: "480px", height: "auto" }}>
           <div className="w-full flex justify-center ">
             <div className="max-w-[1024px] w-full">
               <motion.div
@@ -96,29 +96,12 @@ export default function Home() {
         </div>
 
         {/* <div className="w-full flex justify-center mt-8 md:mt-[51px] mb-12 md:mb-[187px] relative z-1">
-            <div className="grid grid-cols-3 max-w-[1024px] mx-auto gap-4 md:gap-8">
-              <img
-                src= ''
-                alt="Banner"
-              />
-              <img
-                src=""
-                alt="LLM Powered Banner"
-                width={336}
-                height={332}
-                priority
-                className="mx-auto"
-              />
-              <img
-                src=""
-                alt="Third Banner"
-                width={336}
-                height={332}
-                priority
-                className="mx-auto"
-              />
-            </div>
-          </div>
+        
+  
+      <ScrollVelocity
+        texts={['Lead Green', 'Make Exeter Green Again']} 
+        className="custom-scroll-text"
+      />
 
       <UserFeedBack/>
       <FAQ/>
