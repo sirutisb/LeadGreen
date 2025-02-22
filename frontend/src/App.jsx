@@ -16,7 +16,6 @@ function App() {
 
   return (
     <div className="h-screen w-screen ">
-      {/* <NavBar/> */}
       <AuthProvider>
         <Routes>
             {/* Private Routes */}
@@ -29,7 +28,7 @@ function App() {
             />
 
             {/* Public Routes */}
-            {/* <Route path="/" element={<Home />} /> */}
+            <Route path="/" element={<Home />} />
             <Route path="/leaderboard" element={<Leaderboard />} />
             <Route path="/feed" element={<FeedPage />} />
             <Route path="/register" element={<RegisterPage />} />

@@ -10,6 +10,7 @@ function FeedPage() {
   return (
     <Page>
       <div className="min-h-screen flex flex-col bg-[#F3F1EA]">
+      <NavBar/>
           <Box
           sx={{
               width: "100%",

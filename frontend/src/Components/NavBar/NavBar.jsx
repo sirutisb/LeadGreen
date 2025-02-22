@@ -57,7 +57,7 @@ export default function NavBar(){
 
   return(
     <>
-      <motion.div className="flex justify-between items-center py-8 z-50 backdrop-blur-lg shadow-md bg-transparent"
+      <motion.div className="flex justify-between items-center py-8 z-50 backdrop-blur-lg shadow-md bg-transparent "
       initial = "hidden"
       animate = "visible"
       variants={navbarVariants}>

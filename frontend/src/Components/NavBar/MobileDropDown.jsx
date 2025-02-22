@@ -1,12 +1,13 @@
 import { motion, AnimatePresence } from "framer-motion"
 import { Link } from "react-router-dom"
+import { useEffect } from "react"
 
 const mobileMenuVariants = {
   closed: {
     opacity: 0,
     height: 0,
     transition: {
-      duration: 0.3,
+      duration: 0.1,
       ease: "easeInOut",
     },
   },
@@ -14,13 +15,34 @@ const mobileMenuVariants = {
     opacity: 1,
     height: "auto",
     transition: {
-      duration: 0.3,
+      duration: 0.2,
       ease: "easeInOut",
     },
   },
 }
 
 const MobileDropdown = ({ isOpen, setIsOpen, navLinks, UserNav }) => {
+  useEffect(() => {
+    // Define the scroll handler
+    let lastScroll = window.scrollY
+    const handleScroll = () => {
+      const currentScroll = window.scrollY
+      if (currentScroll > lastScroll && isOpen) {
+        // Scrolling down
+        setIsOpen(false)
+      }
+      lastScroll = currentScroll
+    }
+
+    // Add scroll event listener
+    window.addEventListener('scroll', handleScroll, { passive: true })
+
+    // Cleanup
+    return () => {
+      window.removeEventListener('scroll', handleScroll)
+    }
+  }, [isOpen, setIsOpen])
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -29,7 +51,7 @@ const MobileDropdown = ({ isOpen, setIsOpen, navLinks, UserNav }) => {
           animate="open"
           exit="closed"
           variants={mobileMenuVariants}
-          className="md:hidden fixed w-full backdrop-blur-lg shadow-md bg-transparent z-40 top-[88px]"
+          className="absolute md:hidden fixed  backdrop-blur-lg shadow-md right-0 bg-transparent z-50 rounded-bl-xl"
         >
           <div className="flex flex-col space-y-4 p-6">
             {navLinks.map((link) => (

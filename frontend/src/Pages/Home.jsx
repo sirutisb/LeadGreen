@@ -31,6 +31,7 @@ const cards = [
 export default function Home() {
   return (
     <Page className="bg-[#f3f1ea]">
+      <NavBar/>
       <Section />
     {/* // <Page>
     //     {user && user.username}
