@@ -41,7 +41,6 @@ const cards = [
 export default function Home() {
   return (
     <Page className="bg-[#f3f1ea]">
-      <NavBar/>
       <Section />
     {/* // <Page>
     //     {user && user.username}
@@ -86,7 +85,7 @@ export default function Home() {
                   transition={{ duration: 0.5, delay: 1.4 + index * 0.2 }}
                 >
                   <h3 className="text-xl font-semibold mb-2 text-green-700">{feature.title}</h3>
-                  <img src={feature.image} alt={feature.title} className="w-full h-48 object-contain mb-4 py-4" />
+                  <img src={feature.image}  className="w-full h-48 object-contain mb-4 py-4" alt="" />
                   <p className="text-black text-lg font-medium">{feature.description}</p>
                 </motion.div>
               ))}

@@ -8,9 +8,8 @@ import Footer from "../Components/Footer";
 
 function FeedPage() {
   return (
-    <Page>
+    <Page className="relative">
       <div className="min-h-screen flex flex-col bg-[#F3F1EA]">
-      <NavBar/>
           <Box
           sx={{
               width: "100%",
