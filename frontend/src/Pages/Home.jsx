@@ -56,7 +56,7 @@ export default function Home() {
         />
       </div> */}
 
-      <div className="container mx-auto p-4 relative mb-24" style={{ minHeight: "480px", height: "auto" }}>
+      <div className="container mx-auto p-4 relative mb-24" style={{ minHeight: "200x", height: "auto" }}>
           <div className="w-full flex justify-center ">
             <div className="max-w-[1024px] w-full">
               <motion.div

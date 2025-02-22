@@ -5,7 +5,7 @@ import TrueFocus from "./Effects/TrueFocus"
 
 export default function Section(){
     return(
-      <div className="flex-1 flex flex-col items-center bg-[#f3f1ea] py-8 md:py-12" >
+      <div className="flex-1 flex flex-col items-center bg-[#f3f1ea] py-6 md:py-8" >
         <div className="w-full">
           <motion.p
             className="font-sans uppercase tracking-[0.3em] md:tracking-[0.51em] leading-[133%] text-center md:text-[24px] text-green-700"
