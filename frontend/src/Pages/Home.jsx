@@ -37,22 +37,25 @@ export default function Home() {
     {/* // <Page>
     //     {user && user.username}
     //     {user ? <p onClick={logoutUser}>Log out</p> : <p>Log in</p>} */}
-      <div>
+      {/* <div>
         <GreenCircles 
           title="" 
           description="" 
           initialVariant="secondary"
           showVariantToggle={true}
         />
-      </div>
+      </div> */}
 
-      <div className="container mx-auto relative " style={{ height: "887px" }}>
+      <div className="container mx-auto p-4 relative " style={{ minHeight: "600px", height: "auto" }}>
           <div className="w-full flex justify-center ">
             <div className="max-w-[1024px] w-full">
               <motion.div
-                className="font-serif text-[64px] text-center text-black"
+                className="font-serif text-5xl md:text-[64px] text-center text-black"
                 style={{
-                  marginTop: "181px",
+                  marginTop: "100px",
+                  "@media (min-width: 768px)": {
+                      marginTop: "181px"
+                  }
                 }}
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -63,8 +66,8 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="w-full flex justify-center mt-[51px] mb-[96px] relative z-1 ">
-            <div className="grid grid-cols-1 md:grid-cols-3 max-w-[1024px] mx-auto gap-8">
+          <div className="w-full flex justify-center mt-8 md:mt-[51px] mb-12 md:mb-[96px] relative z-1 ">
+            <div className="grid grid-cols-1 md:grid-cols-3 max-w-[1024px] mx-auto gap-4 md:gap-8 px-4">
               {[
                 {
                   title: "Scan & Post",
@@ -94,8 +97,8 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="w-full flex justify-center mt-[51px] mb-[187px] relative z-1">
-            <div className="grid grid-cols-3 max-w-[1024px] mx-auto" style={{ gap: "8px" }}>
+        <div className="w-full flex justify-center mt-8 md:mt-[51px] mb-12 md:mb-[187px] relative z-1">
+            <div className="grid grid-cols-3 max-w-[1024px] mx-auto gap-4 md:gap-8">
               <img
                 src= ''
                 alt="Banner"
@@ -121,10 +124,10 @@ export default function Home() {
 
       <UserFeedBack/>
       <FAQ/>
-      <section className="text-center mb-16">
-        <div className="bg-green-100 rounded-lg shadow-lg p-8">
-          <h2 className="text-3xl font-semibold text-green-700 mb-4">Join Lead Green and be part of the solution.</h2>
-          <div className="text-4xl font-bold text-green-700 mb-2 font-serif ">Every small action counts towards a greener future.</div>
+      <section className="text-center mb-16 px-2">
+        <div className="bg-green-100 rounded-lg shadow-lg p-4 md:p-8">
+          <h2 className="text-2xl md:text-3xl font-semibold text-green-700 mb-4">Join Lead Green and be part of the solution.</h2>
+          <div className="text-3xl md: text-4xl font-bold text-green-700 mb-2 font-serif ">Every small action counts towards a greener future.</div>
           <div className="text-green-800"></div>
         </div>
       </section>
