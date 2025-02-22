@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import ShopItem, UserItem
+from .models import ShopItem, UserItem, GameState
 
 class ShopItemSerializer(serializers.ModelSerializer):
     class Meta:
@@ -11,7 +11,7 @@ class UserItemSerializer(serializers.ModelSerializer):
         model = UserItem
         fields = ['user', 'item', 'quantity']
 
-class GameStateSerializer(serializers.ModelSerializers):
+class GameStateSerializer(serializers.ModelSerializer):
     class Meta:
         model = GameState
-        fields = ['tree_level', 'points', 'spins', 'plant', 'snail']
+        fields = ['tree_level', 'growth', 'points', 'spins', 'plant', 'snail']
