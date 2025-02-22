@@ -53,15 +53,34 @@ const LeaderboardPage = () => {
   const totalPages = Math.ceil(filteredLeaderboard.length / entriesPerPage);
 
   return (
-      <Page className="min-h-screen bg-gradient-to-b from-green-50 to-green-200">
-        {/* Hero Section */}
-        <section className="text-green-700 py-20">
-          <div className="container mx-auto px-4 text-center">
-            <h1 className="text-4xl font-bold mb-4">Sustainability Leaderboard</h1>
-            <p className="text-xl mb-8">Join the movement and make a difference!</p>
-            <button className="bg-white text-green-600 font-bold py-2 px-6 rounded-full hover:bg-green-100 transition duration-300">
-              Join the Challenge
-            </button>
+    <Page className="min-h-screen bg-gradient-to-b from-green-50 to-green-200">
+      {/* Hero Section */}
+      <section className="text-green-700 py-20">
+        <div className="container mx-auto px-4 text-center">
+          <h1 className="text-4xl font-bold mb-4">Sustainability Leaderboard</h1>
+          <p className="text-xl mb-8">Join the movement and make a difference!</p>
+          <button className="bg-white text-green-600 font-bold py-2 px-6 rounded-full hover:bg-green-100 transition duration-300">
+            Join the Challenge
+          </button>
+        </div>
+      </section>
+
+      {/* Stats Section */}
+      <section className="py-16">
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="text-center">
+              <div className="text-4xl font-bold text-green-600 mb-2">1,234</div>
+              <div className="text-gray-600">Active Participants</div>
+            </div>
+            <div className="text-center">
+              <div className="text-4xl font-bold text-green-600 mb-2">56,789</div>
+              <div className="text-gray-600">Total Tree Score</div>
+            </div>
+            <div className="text-center">
+              <div className="text-4xl font-bold text-green-600 mb-2">98,765</div>
+              <div className="text-gray-600">kg CO₂ Saved</div>
+            </div>
           </div>
         </section>
 

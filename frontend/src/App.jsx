@@ -16,24 +16,25 @@ function App() {
 
   return (
     <div className="h-screen w-screen ">
-        <AuthProvider>
-            <Routes>
-                {/* Private Routes */}
-                <Route
-                    path="/game"
-                    element={
-                    // <PrivateRoute element={OverLeafPage}/>
-                    <OverLeafPage /> 
-                    }
-                />
+      {/* <NavBar/> */}
+      <AuthProvider>
+        <Routes>
+            {/* Private Routes */}
+            <Route
+                path="/game"
+                element={
+                // <PrivateRoute element={OverLeafPage}/>
+                <OverLeafPage /> 
+                }
+            />
 
-                {/* Public Routes */}
-                <Route path="/" element={<Home />} />
-                <Route path="/leaderboard" element={<Leaderboard />} />
-                <Route path="/feed" element={<FeedPage />} />
-                <Route path="/register" element={<RegisterPage />} />
-                <Route path="/login" element={<LoginPage />} />
-            </Routes>
+            {/* Public Routes */}
+            {/* <Route path="/" element={<Home />} /> */}
+            <Route path="/leaderboard" element={<Leaderboard />} />
+            <Route path="/feed" element={<FeedPage />} />
+            <Route path="/register" element={<RegisterPage />} />
+            <Route path="/login" element={<LoginPage />} />
+        </Routes>
         </AuthProvider>
       <ToastContainer />
     </div>
