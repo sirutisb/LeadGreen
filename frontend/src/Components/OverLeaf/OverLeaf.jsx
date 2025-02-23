@@ -20,16 +20,13 @@ import { toastError, toastSuccess, toastWarning } from "../utils/toastCustom";
 import axiosInstance from "../../Context/axiosInstance"; // ✅ Import Axios instance
 
 const OverLeaf = () => {
-  const [user, setUser] = useState({
-    points_balance: 1000,
-    tree_level: 1,
-    spins: 5
-  });
+    const [user, setUser] = useState(null);
 
   const [scale, setScale] = useState(1);
   const [selectedIcon, setSelectedIcon] = useState(null);
   const [currentInsect, setCurrentInsect] = useState(null);
-  const [prevLevel, setPrevLevel] = useState(Math.floor(user.tree_level));
+  const [prevLevel, setPrevLevel] = useState(0); // ✅ Store the previous level
+    const [initialLoad, setInitialLoad] = useState(true);
   const [showConfetti, setShowConfetti] = useState(false);
   const [wiggle, setWiggle] = useState(false);
   const [sparkColor, setSparkColor] = useState("#248335");
@@ -45,7 +42,6 @@ const OverLeaf = () => {
 
   // 🌟 Mo.js burst animation
   const burst = useRef(null);
-
   useEffect(() => {
     burst.current = new mojs.Burst({
       parent: plantRef.current, 
@@ -60,64 +56,89 @@ const OverLeaf = () => {
       },
     });
   }, []);
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const response = await axiosInstance.get("/game/gameprofile");
+        const data = response.data;
+  
+        setUser({
+          points_balance: data.points_balance,
+          tree_level: data.plant.level,
+          spins: data.spins_remaining,
+          has_insect: data.insect?.exists || false, // ✅ Save if insect exists
+        });
 
-  const handleLevelUp = () => {
+        setScale(1 + data.plant.growth); // ✅ Update scale
+
+        if (data.insect?.exists) {
+          setCurrentInsect({ name: data.insect.name }); // ✅ Store insect name
+          playInsect();
+          toastWarning(`🐛 A wild ${data.insect.name} appeared! Use the glove to remove it.`);
+        } else {
+          setCurrentInsect(null);
+        }
+
+        setPrevLevel(data.plant.level);
+        setInitialLoad(false);
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+        toastError("❌ Failed to load user data!");
+      }
+    };
+  
+    fetchUserData();
+}, []);
+
+
+const handleLevelUp = () => {
     const currentPlant = plants[Math.min(Math.floor(user.tree_level) - 1, plants.length - 1)];
-    toastSuccess(`🎉 Congratulations! Your ${currentPlant.name} leveled up!`)
+    toastSuccess(`🎉 Congratulations! Your ${currentPlant.name} leveled up!`);
     playLevelUp();
     setShowConfetti(true);
     setTimeout(() => setShowConfetti(false), 4000);
-    setScale(1);
+    
+    setScale(1); // ✅ Reset size after level-up!
 
     if (burst.current) {
       burst.current.replay();
     }
-  };
+};
 
-  const handleInsectAppearance = (level) => {
-    // Adjust the calculation to start from insect1 at level 5
-    const insectIndex = Math.floor(level / 5) - 1;
-    const newInsect = insects[insectIndex % insects.length];
-    
-    setCurrentInsect(newInsect);
-    playInsect();
-    toastWarning(`${newInsect.name} has appeared! Use the glove to remove it.`)
-  };
+
+  const handleInsect = () => {
+    if (user?.has_insect) {
+        const newInsect = insects[0]; // Select the first insect (snail)
+        setCurrentInsect(newInsect);
+        playInsect();
+        toastWarning(`${newInsect.name} has appeared! Use the glove to remove it.`);
+      } else {
+        setCurrentInsect(null);
+      }
+  }
+  useEffect(() => {
+    handleInsect()
+  }, [user?.has_insect]);
 
   useEffect(() => {
-    const newLevelInt = Math.floor(user.tree_level);
-    const prevLevelInt = Math.floor(prevLevel);
-
-    if (newLevelInt !== prevLevelInt) {
+    if (!initialLoad && Math.floor(user.tree_level) > Math.floor(prevLevel)) {
       handleLevelUp();
     }
+    setPrevLevel(user?.tree_level); // ✅ Only update when we detect a real change
+  }, [user?.tree_level]);
 
-    if (newLevelInt % 5 === 0 && newLevelInt !== prevLevelInt) {
-      handleInsectAppearance(newLevelInt);
-    }
-
-    setPrevLevel(user.tree_level);
-  }, [user.tree_level]);
-
-
+  // ✅ Handles Actions (Water, Soil, Glove)
   const handleAction = async () => {
     if (!selectedIcon) {
       setWiggle(true);
       setTimeout(() => setWiggle(false), 500);
-      return; // 🔹 If no icon selected, just wiggle the plant and do nothing.
-    }
-  
-    if (user.points_balance <= 0) {
-      playAlert();
-      toastError("❌ Not enough points to perform this action!");
       return;
     }
-  
+
     let endpoint = "";
     let soundEffect = null;
     let sparkColor = "";
-  
-    // ✅ Assign the correct API endpoint & effects
+
     if (selectedIcon === "soil") {
       endpoint = "/game/tree/soil/";
       soundEffect = playsoil;
@@ -131,52 +152,57 @@ const OverLeaf = () => {
       soundEffect = playGlove;
       sparkColor = "#FFD700";
     }
-  
+
     try {
       const response = await axiosInstance.post(endpoint);
       const data = response.data;
-  
+        console.log(data)
       if (data.success) {
-        if (selectedIcon === "glove") {
-            toastSuccess(data.message);
-        }
-  
+
+
         setUser((prev) => ({
           ...prev,
           points_balance: data.points_balance,
           tree_level: data.tree_level,
+          has_insect: data.has_insect, // ✅ Now updates the insect status
         }));
-  
-        setCurrentInsect(data.has_snail ? currentInsect : null); // ✅ Remove insect if it's gone
+
         soundEffect && soundEffect();
         setSparkColor(sparkColor);
-        setScale((prevScale) => prevScale + 0.1); // ✅ Growth effect
-  
+        console.log(Math.round((1 + data.tree_growth) * 100) / 100)
+        setScale(Math.round((1 + data.tree_growth) * 100) / 100);
       } else {
-        // ❌ Backend returned an error message
         playAlert();
         toastError(data.message);
       }
     } catch (error) {
-      console.error("API Error:", error);
       playAlert();
-      toastError("❌ Network error! Try again.");
+      if (error.response && error.response.data && error.response.data.message) {
+        toastError(error.response.data.message);
+      } 
     }
   };
   
   
 
   const getCurrentPlant = () => {
+    if (!user) {
+      return { image: plants[0].plant, name: plants[0].name }; // ✅ Prevents crash
+    }
+    
     const plantIndex = Math.min(Math.floor(user.tree_level) - 1, plants.length - 1);
     return {
       image: plants[plantIndex].plant,
       name: plants[plantIndex].name
     };
   };
+  
+  // ✅ Use the safe function
+  const currentPlant = getCurrentPlant();
 
 
-  return (
-    <>
+  return !user? <div>Loading...</div> : (
+    <div>
       {showConfetti && <Confetti numberOfPieces={200} />}
   
       {/* 🌿 Main Container */}
@@ -193,8 +219,8 @@ const OverLeaf = () => {
           onClick={handleAction}
         >
           <motion.img
-            src={getCurrentPlant().image}
-            alt={getCurrentPlant().name}
+            src={currentPlant.image}
+            alt={currentPlant.name}
             className="w-[120px] h-[120px] sm:w-[140px] sm:h-[140px] md:w-[160px] md:h-[160px] lg:w-[180px] lg:h-[180px] -mt-20"
             animate={{ scale }}
             transition={{ type: "spring", stiffness: 150, damping: 10 }}
@@ -220,7 +246,7 @@ const OverLeaf = () => {
           <p className="text-[#1B6630] text-sm sm:text-base font-semibold">💰 Points: {user.points_balance}</p>
         </div>
       </div>
-    </>
+    </div>
   );
   
 };
