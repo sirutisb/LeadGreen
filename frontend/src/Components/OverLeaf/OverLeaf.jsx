@@ -56,7 +56,6 @@ const OverLeaf = () => {
       },
     });
   }, []);
-
   useEffect(() => {
     const fetchUserData = async () => {
       try {
@@ -67,17 +66,19 @@ const OverLeaf = () => {
           points_balance: data.points_balance,
           tree_level: data.plant.level,
           spins: data.spins_remaining,
-          has_insect: data.insect !== null
+          has_insect: data.insect?.exists || false, // ✅ Save if insect exists
         });
 
-        setScale(Math.round((1 + data.plant.growth) * 100) / 100); // ✅ Set initial scale using growth from API
+        setScale(1 + data.plant.growth); // ✅ Update scale
 
-        if (data.insect) {
-          setCurrentInsect(insects[0]); // ✅ Assign the first insect (snail)
+        if (data.insect?.exists) {
+          setCurrentInsect({ name: data.insect.name }); // ✅ Store insect name
           playInsect();
-          toastWarning(`${insects[0].name} has appeared! Use the glove to remove it.`);
+          toastWarning(`🐛 A wild ${data.insect.name} appeared! Use the glove to remove it.`);
+        } else {
+          setCurrentInsect(null);
         }
-  
+
         setPrevLevel(data.plant.level);
         setInitialLoad(false);
       } catch (error) {
@@ -88,6 +89,7 @@ const OverLeaf = () => {
   
     fetchUserData();
 }, []);
+
 
 const handleLevelUp = () => {
     const currentPlant = plants[Math.min(Math.floor(user.tree_level) - 1, plants.length - 1)];
@@ -154,8 +156,9 @@ const handleLevelUp = () => {
     try {
       const response = await axiosInstance.post(endpoint);
       const data = response.data;
-
+        console.log(data)
       if (data.success) {
+
 
         setUser((prev) => ({
           ...prev,
@@ -166,7 +169,8 @@ const handleLevelUp = () => {
 
         soundEffect && soundEffect();
         setSparkColor(sparkColor);
-        setScale((prevScale) => prevScale + 0.1);
+        console.log(Math.round((1 + data.tree_growth) * 100) / 100)
+        setScale(Math.round((1 + data.tree_growth) * 100) / 100);
       } else {
         playAlert();
         toastError(data.message);
@@ -175,9 +179,7 @@ const handleLevelUp = () => {
       playAlert();
       if (error.response && error.response.data && error.response.data.message) {
         toastError(error.response.data.message);
-      } else {
-        toastError("❌ Network error! Try again.");
-      }
+      } 
     }
   };
   
