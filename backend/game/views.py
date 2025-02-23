@@ -32,10 +32,16 @@ class TreeGrowAction(APIView):
                 "success": False,
                 "message": "There is an insect on the tree! Remove it first.",
                 "points_balance": profile.points_balance,
-                "tree_name": profile.current_plant.name,
-                "tree_level": profile.plant_level,
-                "tree_growth": profile.plant_growth,
-                "has_insect": profile.current_insect is not None,
+                "tree": {
+                    "name": profile.current_plant.name,
+                    "level": profile.plant_level,
+                    "growth": profile.plant_growth,
+                },
+                "insect": {
+                    "exists": profile.current_insect is not None,
+                    "name": profile.current_insect.name,
+                    "level": profile.current_insect.level,
+                }
             }, status=status.HTTP_400_BAD_REQUEST)
 
         # adjust level and points
@@ -44,10 +50,18 @@ class TreeGrowAction(APIView):
                 "success": False,
                 "message": f"Not enough points, you have only {profile.points_balance}, you need {self.action_cost}",
                 "points_balance": profile.points_balance,
-                "tree_name": profile.current_plant.name,
-                "tree_level": profile.plant_level,
-                "tree_growth": profile.plant_growth,
-                "has_insect": profile.current_insect is not None,
+                "tree": {
+                    "name": profile.current_plant.name,
+                    "level": profile.plant_level,
+                    "growth": profile.plant_growth,
+                },
+                "insect": {
+                    "exists": profile.current_insect is not None,
+                    "name": profile.current_insect.name,
+                    "level": profile.current_insect.level,
+                }
+
+
             }, status=status.HTTP_400_BAD_REQUEST)
 
         profile.plant_growth += self.growth_amount
@@ -79,10 +93,16 @@ class TreeGrowAction(APIView):
             "success": True,
             "message": "action applied successfully",
             "points_balance": profile.points_balance,
-            "tree_name": profile.current_plant.name,
-            "tree_level": profile.plant_level,
-            "tree_growth": profile.plant_growth,
-            "has_insect": profile.current_insect is not None,
+            "tree": {
+                    "name": profile.current_plant.name,
+                    "level": profile.plant_level,
+                    "growth": profile.plant_growth,
+                },
+                "insect": {
+                    "exists": profile.current_insect is not None,
+                    "name": profile.current_insect.name,
+                    "level": profile.current_insect.level,
+                }
         }, status=status.HTTP_200_OK)
 
 
@@ -112,10 +132,16 @@ class GloveTreeAction(APIView):
                 "success": False,
                 "message": "Remove what? There is no insect on the tree.",
                 "points_balance": profile.points_balance,
-                "tree_name": profile.current_plant.name,
-                "tree_level": profile.plant_level,
-                "tree_growth": profile.plant_growth,
-                "has_insect": profile.current_insect is not None,
+                "tree": {
+                    "name": profile.current_plant.name,
+                    "level": profile.plant_level,
+                    "growth": profile.plant_growth,
+                },
+                "insect": {
+                    "exists": profile.current_insect is not None,
+                    "name": profile.current_insect.name,
+                    "level": profile.current_insect.level,
+                }
             }, status=status.HTTP_400_BAD_REQUEST)
 
         # adjust level and points
@@ -124,10 +150,16 @@ class GloveTreeAction(APIView):
                 "success": False,
                 "message": f"Not enough points, you have only {profile.points_balance}, you need {self.action_cost}",
                 "points_balance": profile.points_balance,
-                "tree_name": profile.current_plant.name,
-                "tree_level": profile.plant_level,
-                "tree_growth": profile.plant_growth,
-                "has_insect": profile.current_insect is not None,
+                "tree": {
+                    "name": profile.current_plant.name,
+                    "level": profile.plant_level,
+                    "growth": profile.plant_growth,
+                },
+                "insect": {
+                    "exists": profile.current_insect is not None,
+                    "name": profile.current_insect.name,
+                    "level": profile.current_insect.level,
+                }
             }, status=status.HTTP_400_BAD_REQUEST)
 
         profile.current_insect = None
@@ -154,10 +186,16 @@ class GloveTreeAction(APIView):
             "success": True,
             "message": "action applied successfully",
             "points_balance": profile.points_balance,
-            "tree_name": profile.current_plant.name,
-            "tree_level": profile.plant_level,
-            "tree_growth": profile.plant_growth,
-            "has_insect": profile.current_insect is not None,
+            "tree": {
+                    "name": profile.current_plant.name,
+                    "level": profile.plant_level,
+                    "growth": profile.plant_growth,
+                },
+                "insect": {
+                    "exists": profile.current_insect is not None,
+                    "name": profile.current_insect.name,
+                    "level": profile.current_insect.level,
+                }
         }, status=status.HTTP_200_OK)
 
 
