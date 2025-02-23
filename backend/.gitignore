@@ -2,7 +2,7 @@
 
 # Database
 #*.sqlite3 # Allow database files now because its a pain to migrate
-media
+# media Allow shared media
 
 # Python cache files
 __pycache__/
