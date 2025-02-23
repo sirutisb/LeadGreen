@@ -23,7 +23,8 @@ const OverLeaf = () => {
   const [user, setUser] = useState({
     points_balance: 1000,
     tree_level: 1,
-    spins: 5
+    spins: 5,
+    has_insect: false
   });
 
   const [scale, setScale] = useState(1);
@@ -63,7 +64,7 @@ const OverLeaf = () => {
 
   const handleLevelUp = () => {
     const currentPlant = plants[Math.min(Math.floor(user.tree_level) - 1, plants.length - 1)];
-    toastSuccess(`🎉 Congratulations! Your ${currentPlant.name} leveled up!`)
+    toastSuccess(`🎉 Congratulations! Your ${currentPlant.name} leveled up!`);
     playLevelUp();
     setShowConfetti(true);
     setTimeout(() => setShowConfetti(false), 4000);
@@ -73,16 +74,19 @@ const OverLeaf = () => {
       burst.current.replay();
     }
   };
-
-  const handleInsectAppearance = (level) => {
-    // Adjust the calculation to start from insect1 at level 5
-    const insectIndex = Math.floor(level / 5) - 1;
-    const newInsect = insects[insectIndex % insects.length];
-    
-    setCurrentInsect(newInsect);
-    playInsect();
-    toastWarning(`${newInsect.name} has appeared! Use the glove to remove it.`)
-  };
+  const handleInsect = () => {
+    if (user.has_insect) {
+        const newInsect = insects[0]; // Select the first insect (snail)
+        setCurrentInsect(newInsect);
+        playInsect();
+        toastWarning(`${newInsect.name} has appeared! Use the glove to remove it.`);
+      } else {
+        setCurrentInsect(null);
+      }
+  }
+  useEffect(() => {
+    handleInsect()
+  }, [user.has_insect]);
 
   useEffect(() => {
     const newLevelInt = Math.floor(user.tree_level);
@@ -92,32 +96,21 @@ const OverLeaf = () => {
       handleLevelUp();
     }
 
-    if (newLevelInt % 5 === 0 && newLevelInt !== prevLevelInt) {
-      handleInsectAppearance(newLevelInt);
-    }
-
     setPrevLevel(user.tree_level);
   }, [user.tree_level]);
 
-
+  // ✅ Handles Actions (Water, Soil, Glove)
   const handleAction = async () => {
     if (!selectedIcon) {
       setWiggle(true);
       setTimeout(() => setWiggle(false), 500);
-      return; // 🔹 If no icon selected, just wiggle the plant and do nothing.
-    }
-  
-    if (user.points_balance <= 0) {
-      playAlert();
-      toastError("❌ Not enough points to perform this action!");
       return;
     }
-  
+
     let endpoint = "";
     let soundEffect = null;
     let sparkColor = "";
-  
-    // ✅ Assign the correct API endpoint & effects
+
     if (selectedIcon === "soil") {
       endpoint = "/game/tree/soil/";
       soundEffect = playsoil;
@@ -131,36 +124,34 @@ const OverLeaf = () => {
       soundEffect = playGlove;
       sparkColor = "#FFD700";
     }
-  
+
     try {
       const response = await axiosInstance.post(endpoint);
       const data = response.data;
-  
+
       if (data.success) {
-        if (selectedIcon === "glove") {
-            toastSuccess(data.message);
-        }
-  
+
         setUser((prev) => ({
           ...prev,
           points_balance: data.points_balance,
           tree_level: data.tree_level,
+          has_insect: data.has_insect, // ✅ Now updates the insect status
         }));
-  
-        setCurrentInsect(data.has_snail ? currentInsect : null); // ✅ Remove insect if it's gone
+
         soundEffect && soundEffect();
         setSparkColor(sparkColor);
-        setScale((prevScale) => prevScale + 0.1); // ✅ Growth effect
-  
+        setScale((prevScale) => prevScale + 0.1);
       } else {
-        // ❌ Backend returned an error message
         playAlert();
         toastError(data.message);
       }
     } catch (error) {
-      console.error("API Error:", error);
       playAlert();
-      toastError("❌ Network error! Try again.");
+      if (error.response && error.response.data && error.response.data.message) {
+        toastError(error.response.data.message);
+      } else {
+        toastError("❌ Network error! Try again.");
+      }
     }
   };
   
