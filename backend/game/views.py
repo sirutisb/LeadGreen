@@ -21,61 +21,74 @@ class TreeGrowAction(APIView):
     permission_classes = [IsAuthenticated]
     action_cost = 0
     growth_amount = 0
-    snail_chance = 0
+    insect_spawn_chance = 0
 
     def post(self, request, *args, **kwargs):
         user = request.user
-        
-        if user.has_snail:
+        profile = user.game_profile
+
+        if profile.current_insect is not None:
             return Response({
                 "success": False,
-                "message": "There is a snail on the tree! Remove it first.",
-                "points_balance": user.points_balance,
-                "tree_level": user.tree_level,
-                "has_snail": user.has_snail,
+                "message": "There is an insect on the tree! Remove it first.",
+                "points_balance": profile.points_balance,
+                "tree_level": profile.plant_level,
+                "has_insect": profile.current_insect is not None,
             }, status=status.HTTP_400_BAD_REQUEST)
 
         # adjust level and points
-        if user.points_balance < self.action_cost:
+        if profile.points_balance < self.action_cost:
             return Response({
                 "success": False,
-                "message": f"Not enough points, you have only {user.points_balance}, you need {self.action_cost}",
-                "points_balance": user.points_balance,
-                "tree_level": user.tree_level,
-                "has_snail": user.has_snail,
+                "message": f"Not enough points, you have only {profile.points_balance}, you need {self.action_cost}",
+                "points_balance": profile.points_balance,
+                "tree_level": profile.plant_level,
+                "has_insect": profile.current_insect is not None,
             }, status=status.HTTP_400_BAD_REQUEST)
 
-        user.tree_growth += self.growth_amount
-        while user.tree_growth >= 1.0:
-            user.tree_growth -= 1.0
-            user.tree_level += 1
-        user.points_balance -= self.action_cost
+        profile.plant_growth += self.growth_amount
+        while profile.plant_growth >= 1.0:
+            profile.plant_growth -= 1.0
+            profile.plant_level += 1
+        profile.points_balance -= self.action_cost
 
         # chance for snail to spawn
         # TODO: make it so theres a cooldown and you cant get the snail again for x amount of actions
-        if random.random() < self.snail_chance:
-            user.has_snail = True
+        if random.random() < self.insect_spawn_chance:
+            print("Spawning insect")
+            profile.spawn_insect()
 
-        user.save()
+        profile.save()
+
+
+        # # Serialize the updated game profile
+        # serializer = GameProfileSerializer(profile)
+        # response_data = serializer.data
+        # # Optionally add custom messages
+        # response_data.update({
+        #     "success": True,
+        #     "message": "Action applied successfully.",
+        # })
+        # return Response(response_data, status=status.HTTP_200_OK)
 
         return Response({
             "success": True,
             "message": "action applied successfully",
-            "points_balance": user.points_balance,
-            "tree_level": user.tree_level,
-            "has_snail": user.has_snail,
+            "points_balance": profile.points_balance,
+            "tree_level": profile.plant_level,
+            "has_insect": profile.current_insect is not None,
         }, status=status.HTTP_200_OK)
 
 
 class WaterTreeAction(TreeGrowAction):
     action_cost = 10
     growth_amount = 0.1
-    snail_chance = 0.45
+    insect_spawn_chance = 0.45
 
 class SoilTreeAction(TreeGrowAction):
     action_cost = 20
     growth_amount = 0.3
-    snail_chance = 0.15
+    insect_spawn_chance = 0.15
 
 
 # TODO: Make cleaner by inheriting
@@ -83,42 +96,56 @@ class GloveTreeAction(APIView):
     action_cost = 50
     growth_amount = 0.0
     permission_classes = [IsAuthenticated]
+
     def post(self, request, *args, **kwargs):
         user = request.user
-        
-        if not user.has_snail:
+        profile = user.game_profile
+
+        if profile.current_insect is None:
             return Response({
                 "success": False,
-                "message": "There is no snail to remove!",
-                "points_balance": user.points_balance,
-                "tree_level": user.tree_level,
-                "has_snail": user.has_snail,
-            }, status=status.HTTP_400_BAD_REQUEST)
-        
-        # adjust level and points
-        if (user.points_balance < self.action_cost):
-            return Response({
-                "success": False,
-                "message": f"Not enough points, you have only {user.points_balance}, you need {self.action_cost}",
-                "points_balance": user.points_balance,
-                "tree_level": user.tree_level,
-                "has_snail": user.has_snail,
+                "message": "Remove what? There is no insect on the tree.",
+                "points_balance": profile.points_balance,
+                "tree_level": profile.plant_level,
+                "has_insect": profile.current_insect is not None,
             }, status=status.HTTP_400_BAD_REQUEST)
 
-        user.has_snail = False
-        user.tree_growth += self.growth_amount
-        while user.tree_growth >= 1.0:
-            user.tree_growth -= 1.0
-            user.tree_level += 1
-        user.points_balance -= self.action_cost
-        user.save()
+        # adjust level and points
+        if profile.points_balance < self.action_cost:
+            return Response({
+                "success": False,
+                "message": f"Not enough points, you have only {profile.points_balance}, you need {self.action_cost}",
+                "points_balance": profile.points_balance,
+                "tree_level": profile.plant_level,
+                "has_insect": profile.current_insect is not None,
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        profile.current_insect = None
+        profile.plant_growth += self.growth_amount
+        while profile.plant_growth >= 1.0:
+            profile.plant_growth -= 1.0
+            profile.plant_level += 1
+        profile.points_balance -= self.action_cost
+
+        profile.save()
+
+
+        # # Serialize the updated game profile
+        # serializer = GameProfileSerializer(profile)
+        # response_data = serializer.data
+        # # Optionally add custom messages
+        # response_data.update({
+        #     "success": True,
+        #     "message": "Action applied successfully.",
+        # })
+        # return Response(response_data, status=status.HTTP_200_OK)
 
         return Response({
             "success": True,
             "message": "action applied successfully",
-            "points_balance": user.points_balance,
-            "tree_level": user.tree_level,
-            "has_snail": user.has_snail,
+            "points_balance": profile.points_balance,
+            "tree_level": profile.plant_level,
+            "has_insect": profile.current_insect is not None,
         }, status=status.HTTP_200_OK)
 
 
