@@ -166,7 +166,7 @@ class SpinView(APIView):
         
         user = request.user
         userprof = GameProfile.objects.get(user=user)
-        points_won = request.data.get("points")
+        points_won = int(request.data.get("points"))
         
         if userprof.spins_remaining <= 0:
             return Response({ 
@@ -176,7 +176,7 @@ class SpinView(APIView):
                 "points_balance": userprof.points_balance,
             }, status=status.HTTP_400_BAD_REQUEST)
         
-        elif points_won == "No Reward":
+        elif points_won == 0:
                 userprof.spins_remaining -= 1
                 userprof.save()
                 return Response({
