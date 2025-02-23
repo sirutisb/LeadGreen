@@ -18,7 +18,6 @@ function App() {
     <div className="h-screen w-screen ">
         
       <AuthProvider>
-      <NavBar/>
 
         <Routes>
             {/* Private Routes */}

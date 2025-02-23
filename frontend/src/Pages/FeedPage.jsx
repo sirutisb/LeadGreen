@@ -9,11 +9,12 @@ import Footer from "../Components/Footer";
 function FeedPage() {
   return (
     <Page className="relative">
-      <div className="min-h-screen flex flex-col bg-[#F3F1EA]">
+      <div className="min-h-screen flex flex-col bg-white">
+        <NavBar />
           <Box
           sx={{
               width: "100%",
-              minHeight: "100vh", // Full screen height
+              minHeight: "100vh", 
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
@@ -29,7 +30,7 @@ function FeedPage() {
           <Box
               sx={{
               width: "100%",
-              maxWidth: "600px", // Keeps feed compact
+              maxWidth: "600px", 
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
