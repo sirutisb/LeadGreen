@@ -17,6 +17,7 @@ import gloveSound from "../../assets/sounds/glove.mp3";
 import levelSound from "../../assets/sounds/level.mp3";
 import RouletteButton from "./RouletteButton";
 import { toastError, toastSuccess, toastWarning } from "../utils/toastCustom";
+import axiosInstance from "../../Context/axiosInstance"; // ✅ Import Axios instance
 
 const OverLeaf = () => {
   const [user, setUser] = useState({
@@ -98,7 +99,8 @@ const OverLeaf = () => {
     setPrevLevel(user.tree_level);
   }, [user.tree_level]);
 
-  const handleAction = () => {
+
+  const handleAction = async () => {
     if (!selectedIcon) {
       setWiggle(true);
       setTimeout(() => setWiggle(false), 500);
@@ -107,63 +109,61 @@ const OverLeaf = () => {
   
     if (user.points_balance <= 0) {
       playAlert();
-      toastError("❌ Not enough points to perform this action!")
-      return; // 🔹 Only trigger error when an icon is selected and points are 0.
-    }
-  
-    if (currentInsect && selectedIcon !== "glove") {
-      playAlert();
-      toastError(`${currentInsect.name} is blocking your plant! Use the glove first.`)
+      toastError("❌ Not enough points to perform this action!");
       return;
     }
   
-    let growth = 0;
-    if (selectedIcon === "soil" && user.points_balance >= 20) {
-      setUser((prev) => ({
-        ...prev,
-        points_balance: prev.points_balance - 20,
-        tree_level: prev.tree_level + 0.3,
-      }));
-      growth = 0.3;
-      playsoil();
-      setSparkColor("#805A36");
-    } else if (selectedIcon === "water" && user.points_balance >= 10) {
-      setUser((prev) => ({
-        ...prev,
-        points_balance: prev.points_balance - 10,
-        tree_level: prev.tree_level + 0.1,
-      }));
-      growth = 0.1;
-      playWaterDrop();
-      setSparkColor("#94f9ff");
+    let endpoint = "";
+    let soundEffect = null;
+    let sparkColor = "";
+  
+    // ✅ Assign the correct API endpoint & effects
+    if (selectedIcon === "soil") {
+      endpoint = "/game/tree/soil/";
+      soundEffect = playsoil;
+      sparkColor = "#805A36";
+    } else if (selectedIcon === "water") {
+      endpoint = "/game/tree/water/";
+      soundEffect = playWaterDrop;
+      sparkColor = "#94f9ff";
     } else if (selectedIcon === "glove") {
-      if (user.points_balance >= 50 && currentInsect) {
-        setUser((prev) => ({
-          ...prev,
-          points_balance: prev.points_balance - 50,
-          tree_level: prev.tree_level + 0.1,
-        }));
-        setCurrentInsect(null);
-        growth = 0.1;
-        playGlove();
-        setSparkColor("#FFD700");
-        toastSuccess(`${currentInsect.name} removed successfully!`)
-      } else if (!currentInsect) {
-        playAlert();
-        toastError("😭 The plant is already cleaned!")
-      } else {
-        playAlert();
-        toastError("❌ Not enough points to remove the pest!")
-      }
-    } else {
-      playAlert();
-      toastError("❌ Not enough points to perform this action!")
+      endpoint = "/game/tree/glove/";
+      soundEffect = playGlove;
+      sparkColor = "#FFD700";
     }
   
-    if (growth > 0) {
-      setScale((prevScale) => prevScale + growth);
+    try {
+      const response = await axiosInstance.post(endpoint);
+      const data = response.data;
+  
+      if (data.success) {
+        if (selectedIcon === "glove") {
+            toastSuccess(data.message);
+        }
+  
+        setUser((prev) => ({
+          ...prev,
+          points_balance: data.points_balance,
+          tree_level: data.tree_level,
+        }));
+  
+        setCurrentInsect(data.has_snail ? currentInsect : null); // ✅ Remove insect if it's gone
+        soundEffect && soundEffect();
+        setSparkColor(sparkColor);
+        setScale((prevScale) => prevScale + 0.1); // ✅ Growth effect
+  
+      } else {
+        // ❌ Backend returned an error message
+        playAlert();
+        toastError(data.message);
+      }
+    } catch (error) {
+      console.error("API Error:", error);
+      playAlert();
+      toastError("❌ Network error! Try again.");
     }
-  };  
+  };
+  
   
 
   const getCurrentPlant = () => {
