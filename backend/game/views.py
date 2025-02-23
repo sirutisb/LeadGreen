@@ -159,7 +159,42 @@ class GameProfileView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-
+class SpinView(APIView):
+    
+    permission_classes = [IsAuthenticated]
+    def post(self, request, *args, **kwargs):
+        
+        user = request.user
+        userprof = GameProfile.objects.get(user=user)
+        points_won = request.data.get("points")
+        
+        if userprof.spins_remaining <= 0:
+            return Response({ 
+                "success": False,
+                "message": "You have no spins left!",
+                "spins": userprof.spins_remaining,
+                "points_balance": userprof.points_balance,
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        elif points_won == "No Reward":
+                userprof.spins_remaining -= 1
+                userprof.save()
+                return Response({
+                    "success": True,
+                    "message": "Better luck next time! No points won.",
+                    "spins": userprof.spins_remaining,
+                    "points_balance": userprof.points_balance,
+                }, status=status.HTTP_200_OK)
+        else:
+            userprof.points_balance += int(points_won)
+            userprof.spins_remaining -= 1
+            userprof.save()
+            return Response({
+                "success": True,
+                "message": f"Congratulations! You won {points_won} points!",
+                "spins": userprof.spins_remaining,
+                "points_balance": userprof.points_balance,
+            }, status=status.HTTP_200_OK)
 # Original GameProfileView
 # class GameProfileView(APIView):
 #     permission_classes = [IsAuthenticated]
