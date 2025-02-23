@@ -3,6 +3,7 @@
 # Database
 #*.sqlite3 # Allow database files now because its a pain to migrate
 # media Allow shared media
+media/posts/ # Dont add posts yet
 
 # Python cache files
 __pycache__/
