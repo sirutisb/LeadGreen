@@ -27,6 +27,11 @@ from users.models import UserProfile
 class Plant(models.Model):
     name = models.CharField(max_length=32)  # e.g., "Leafy", "Sprouto"
     level = models.IntegerField(unique=True)  # Each level has exactly one plant
+    image = models.ImageField(
+        upload_to="plants/",
+        blank=True,
+        null=True
+    )
 
     class Meta:
         ordering = ['level']  # Order plants by level
@@ -38,6 +43,11 @@ class Insect(models.Model):
     name = models.CharField(max_length=32)  # e.g., "Buzzly", "Creepsy"
     level = models.IntegerField(default=1)  # Level requirement to appear
     spawn_chance = models.FloatField(default=0.2)  # Probability of spawning
+    image = models.ImageField(
+        upload_to="insects/",
+        blank=True,
+        null=True
+    )
 
     def __str__(self):
         return self.name
