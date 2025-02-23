@@ -21,7 +21,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
-    path('api/admin/', admin.site.urls),
+    path('admin/', admin.site.urls),
     path('api/auth/', include('authentication.urls')),
     path('api/game/', include('game.urls')),
     path('api/leaderboard/', include('leaderboard.urls')),
@@ -30,6 +30,8 @@ urlpatterns = [
     path('api/users/', include('users.urls')),
 ]
 
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
-
-
+admin.site.site_header = "Leadgreen Game Keeper"
+admin.site.site_title = "Test1111"
