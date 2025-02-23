@@ -40,7 +40,8 @@ const cards = [
 
 export default function Home() {
   return (
-    <Page className="bg-[#f3f1ea]">
+    <Page className="bg-white">
+      <NavBar />
       <Section />
       <div className="container mx-auto p-4 relative mb-24" style={{ minHeight: "200x", height: "auto" }}>
           <div className="w-full flex justify-center ">

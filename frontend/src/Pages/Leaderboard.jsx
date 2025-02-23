@@ -90,6 +90,7 @@ const LeaderboardPage = () => {
 
   return (
       <Page className="min-h-screen bg-gradient-to-b from-green-50 to-green-200">
+        <NavBar />
         {/* Hero Section - unchanged */}
         <section className="text-green-700 py-20">
           <div className="container mx-auto px-4 text-center">
