@@ -9,7 +9,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 # Create your tests here.
 
 class PostModelTest(TestCase):
-    # set up post test 
+    # set up post test
     def setUp(self):
         self.user = UserProfile.objects.create(username="test")
         self.image = SimpleUploadedFile("test.jpg", b"content", content_type="image/jpg")
