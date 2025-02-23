@@ -120,3 +120,27 @@ class GloveTreeAction(APIView):
             "tree_level": user.tree_level,
             "has_snail": user.has_snail,
         }, status=status.HTTP_200_OK)
+
+class SpinView(APIView):
+    
+    permission_classes = [IsAuthenticated]
+    def post(self, request, *args, **kwargs):
+        
+        user = request.user
+        
+        points_won = random.choice([50,100,200,500,1000,"No Reward"])
+
+        if points_won != "No Reward":
+            user.points_balance += points_won
+            user.save()
+            return Response({
+                "success": True,
+                "message": f"Congratulations! You won {points_won} points!",
+                "points_balance": user.points_balance,
+            }, status=status.HTTP_200_OK)
+        else:
+            return Response({
+                "success": True,
+                "message": "Better luck next time! No points won.",
+                "points_balance": user.points_balance,
+            }, status=status.HTTP_200_OK)
