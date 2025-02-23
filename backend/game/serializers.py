@@ -15,11 +15,12 @@ class PlantProgressSerializer(serializers.Serializer):
     name = serializers.CharField(source='current_plant.name')
     level = serializers.IntegerField(source='plant_level')
     growth = serializers.FloatField(source='plant_growth')
+    image = serializers.ImageField(source='current_plant.image')
 
 class InsectSerializer(serializers.ModelSerializer):
     class Meta:
         model = Insect
-        fields = ['name', 'level', 'spawn_chance']
+        fields = ['name', 'level', 'spawn_chance', 'image']
 
     def to_representation(self, instance):
         if instance is None:
