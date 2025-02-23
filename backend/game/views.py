@@ -8,14 +8,23 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticate
 from django.shortcuts import get_object_or_404
 
 from .models import GameProfile
-from .serializers import GameProfileSerializer
+from .serializers import GameProfileSerializer, PlantProgressSerializer, InsectSerializer
 
 from rest_framework import generics
 from django.db import models
 
 import random
 
-# Create your views here.
+def build_response(profile, success, message, status_code):
+    plant_serializer = PlantProgressSerializer(profile)
+    insect_data = InsectSerializer(profile.current_insect).data if profile.current_insect is not None else None
+    return Response({
+        "success": success,
+        "message": message,
+        "points_balance": profile.points_balance,
+        "tree": plant_serializer.data,
+        "insect": insect_data
+    }, status=status_code)
 
 class TreeGrowAction(APIView):
     permission_classes = [IsAuthenticated]
@@ -28,41 +37,11 @@ class TreeGrowAction(APIView):
         profile = user.game_profile # instance of gameprofile model
 
         if profile.current_insect is not None:
-            return Response({
-                "success": False,
-                "message": "There is an insect on the tree! Remove it first.",
-                "points_balance": profile.points_balance,
-                "tree": {
-                    "name": profile.current_plant.name,
-                    "level": profile.plant_level,
-                    "growth": profile.plant_growth,
-                },
-                "insect": {
-                    "exists": profile.current_insect is not None,
-                    "name": profile.current_insect.name,
-                    "level": profile.current_insect.level,
-                }
-            }, status=status.HTTP_400_BAD_REQUEST)
+            return build_response(profile, False, "There is an insect on the tree! Remove it first.", status.HTTP_200_OK)
 
         # adjust level and points
         if profile.points_balance < self.action_cost:
-            return Response({
-                "success": False,
-                "message": f"Not enough points, you have only {profile.points_balance}, you need {self.action_cost}",
-                "points_balance": profile.points_balance,
-                "tree": {
-                    "name": profile.current_plant.name,
-                    "level": profile.plant_level,
-                    "growth": profile.plant_growth,
-                },
-                "insect": {
-                    "exists": profile.current_insect is not None,
-                    "name": profile.current_insect.name,
-                    "level": profile.current_insect.level,
-                }
-
-
-            }, status=status.HTTP_400_BAD_REQUEST)
+            return build_response(profile, False, f"Not enough points, you have only {profile.points_balance}, you need {self.action_cost}", status.HTTP_200_OK)
 
         profile.plant_growth += self.growth_amount
         while profile.plant_growth >= 1.0:
@@ -88,22 +67,7 @@ class TreeGrowAction(APIView):
         #     "message": "Action applied successfully.",
         # })
         # return Response(response_data, status=status.HTTP_200_OK)
-
-        return Response({
-            "success": True,
-            "message": "action applied successfully",
-            "points_balance": profile.points_balance,
-            "tree": {
-                    "name": profile.current_plant.name,
-                    "level": profile.plant_level,
-                    "growth": profile.plant_growth,
-                },
-                "insect": {
-                    "exists": profile.current_insect is not None,
-                    "name": profile.current_insect.name,
-                    "level": profile.current_insect.level,
-                }
-        }, status=status.HTTP_200_OK)
+        return build_response(profile, True, "Action applied successfully.", status.HTTP_200_OK)
 
 
 class WaterTreeAction(TreeGrowAction):
@@ -128,39 +92,11 @@ class GloveTreeAction(APIView):
         profile = user.game_profile
 
         if profile.current_insect is None:
-            return Response({
-                "success": False,
-                "message": "Remove what? There is no insect on the tree.",
-                "points_balance": profile.points_balance,
-                "tree": {
-                    "name": profile.current_plant.name,
-                    "level": profile.plant_level,
-                    "growth": profile.plant_growth,
-                },
-                "insect": {
-                    "exists": profile.current_insect is not None,
-                    "name": profile.current_insect.name,
-                    "level": profile.current_insect.level,
-                }
-            }, status=status.HTTP_400_BAD_REQUEST)
+            return build_response(profile, False, "Remove what? There is no insect on the tree.", status.HTTP_200_OK)
 
         # adjust level and points
         if profile.points_balance < self.action_cost:
-            return Response({
-                "success": False,
-                "message": f"Not enough points, you have only {profile.points_balance}, you need {self.action_cost}",
-                "points_balance": profile.points_balance,
-                "tree": {
-                    "name": profile.current_plant.name,
-                    "level": profile.plant_level,
-                    "growth": profile.plant_growth,
-                },
-                "insect": {
-                    "exists": profile.current_insect is not None,
-                    "name": profile.current_insect.name,
-                    "level": profile.current_insect.level,
-                }
-            }, status=status.HTTP_400_BAD_REQUEST)
+            return build_response(profile, False, f"Not enough points, you have only {profile.points_balance}, you need {self.action_cost}", status.HTTP_200_OK)
 
         profile.current_insect = None
         profile.plant_growth += self.growth_amount
@@ -182,21 +118,7 @@ class GloveTreeAction(APIView):
         # })
         # return Response(response_data, status=status.HTTP_200_OK)
 
-        return Response({
-            "success": True,
-            "message": "action applied successfully",
-            "points_balance": profile.points_balance,
-            "tree": {
-                    "name": profile.current_plant.name,
-                    "level": profile.plant_level,
-                    "growth": profile.plant_growth,
-                },
-                "insect": {
-                    "exists": profile.current_insect is not None,
-                    "name": profile.current_insect.name,
-                    "level": profile.current_insect.level,
-                }
-        }, status=status.HTTP_200_OK)
+        return build_response(profile, True, "Action applied successfully.", status.HTTP_200_OK)
 
 
 
@@ -207,6 +129,15 @@ class GameProfileView(APIView):
         profile = user.game_profile
         serializer = GameProfileSerializer(profile)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+class DebugSerializerView(APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request, *args, **kwargs):
+        user = request.user
+        profile = user.game_profile
+        serializer = InsectSerializer(profile.current_insect)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
 
 
 class SpinView(APIView):
@@ -224,7 +155,7 @@ class SpinView(APIView):
                 "message": "You have no spins left!",
                 "spins": userprof.spins_remaining,
                 "points_balance": userprof.points_balance,
-            }, status=status.HTTP_400_BAD_REQUEST)
+            }, status=status.HTTP_200_OK)
         
         elif points_won == 0:
                 userprof.spins_remaining -= 1
@@ -245,6 +176,8 @@ class SpinView(APIView):
                 "spins": userprof.spins_remaining,
                 "points_balance": userprof.points_balance,
             }, status=status.HTTP_200_OK)
+            
+
 # Original GameProfileView
 # class GameProfileView(APIView):
 #     permission_classes = [IsAuthenticated]

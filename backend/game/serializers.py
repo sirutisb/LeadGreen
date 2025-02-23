@@ -17,22 +17,18 @@ class PlantProgressSerializer(serializers.Serializer):
     growth = serializers.FloatField(source='plant_growth')
 
 class InsectSerializer(serializers.ModelSerializer):
-    exists = serializers.SerializerMethodField()
-
-    def get_exists(self, obj):
-        return obj is not None
-
     class Meta:
         model = Insect
-        fields = ['exists', 'name', 'level', 'spawn_chance']
+        fields = ['name', 'level', 'spawn_chance']
 
     def to_representation(self, instance):
         if instance is None:
-            return {'exists': False}
+            return None
         return super().to_representation(instance)
 
 class GameProfileSerializer(serializers.ModelSerializer):
     plant = PlantProgressSerializer(source='*')  # source='*' means use the GameProfile instance itself
+    #insect = InsectSerializer(source='current_insect')
     insect = InsectSerializer(source='current_insect')
 
     class Meta:
