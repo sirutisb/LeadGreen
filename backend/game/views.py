@@ -7,8 +7,8 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticate
 
 from django.shortcuts import get_object_or_404
 
-from .models import ShopItem, UserItem
-from .serializers import ShopItemSerializer, UserItemSerializer
+from .models import ShopItem, UserItem, UserGameProfile
+from .serializers import ShopItemSerializer, UserItemSerializer, GameProfileSerializer
 
 from rest_framework import generics
 from django.db import models
@@ -127,20 +127,34 @@ class SpinView(APIView):
     def post(self, request, *args, **kwargs):
         
         user = request.user
+        GameProfile = UserGameProfile.objects.get(user=user)
+        points_won = request.data.get("points")
         
-        points_won = random.choice([50,100,200,500,1000,"No Reward"])
-
-        if points_won != "No Reward":
-            user.points_balance += points_won
+        if GameProfile.spins <= 0:
+            return Response({ 
+                "success": False,
+                "message": "You have no spins left!",
+                "spins": GameProfile.spins,
+                "points_balance": user.points_balance,
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        elif points_won == "No Reward":
+                GameProfile.spins -= 1
+                GameProfile.save()
+                return Response({
+                    "success": True,
+                    "message": "Better luck next time! No points won.",
+                    "spins": GameProfile.spins,
+                    "points_balance": user.points_balance,
+                }, status=status.HTTP_200_OK)
+        else:
+            user.points_balance += int(points_won)
+            GameProfile.spins -= 1
             user.save()
+            GameProfile.save()
             return Response({
                 "success": True,
                 "message": f"Congratulations! You won {points_won} points!",
-                "points_balance": user.points_balance,
-            }, status=status.HTTP_200_OK)
-        else:
-            return Response({
-                "success": True,
-                "message": "Better luck next time! No points won.",
+                "spins": GameProfile.spins,
                 "points_balance": user.points_balance,
             }, status=status.HTTP_200_OK)
