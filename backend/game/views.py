@@ -7,8 +7,8 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticate
 
 from django.shortcuts import get_object_or_404
 
-from .models import ShopItem, UserItem
-from .serializers import ShopItemSerializer, UserItemSerializer
+from .models import GameProfile
+from .serializers import GameProfileSerializer
 
 from rest_framework import generics
 from django.db import models
@@ -120,3 +120,26 @@ class GloveTreeAction(APIView):
             "tree_level": user.tree_level,
             "has_snail": user.has_snail,
         }, status=status.HTTP_200_OK)
+
+
+
+class GameProfileView(APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request, *args, **kwargs):
+        user = request.user
+        profile = user.game_profile
+        serializer = GameProfileSerializer(profile)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+
+# Original GameProfileView
+# class GameProfileView(APIView):
+#     permission_classes = [IsAuthenticated]
+#     def get(self, request, *args, **kwargs):
+#         user = request.user
+#         profile = user.game_profile
+#         #profile = GameProfile.objects.get(user=user)
+#         serializer = GameProfileSerializer(profile)
+#         return Response(serializer.data, status=status.HTTP_200_OK)
+    
