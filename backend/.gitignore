@@ -1,7 +1,7 @@
 ### Django ###
 
 # Database
-*.sqlite3
+#*.sqlite3 # Allow database files now because its a pain to migrate
 media
 
 # Python cache files
