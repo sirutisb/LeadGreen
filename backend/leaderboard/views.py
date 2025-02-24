@@ -1,6 +1,6 @@
 # backend/leaderboard/views.py
 from rest_framework import generics
-from .serializers import GameProfileSerializer
+from .serializers import GameProfileLeaderboardSerializer
 from game.models import GameProfile
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
@@ -12,7 +12,7 @@ class StandardResultsSetPagination(PageNumberPagination):
 
 # List all users in order of points balance
 class list_pointsBalance(generics.ListAPIView):
-    serializer_class = GameProfileSerializer
+    serializer_class = GameProfileLeaderboardSerializer
     pagination_class = StandardResultsSetPagination
 
     def get_queryset(self):
@@ -34,7 +34,7 @@ class list_pointsBalance(generics.ListAPIView):
 
 # List all users in order of lifetime points
 class list_lifetimePoints(generics.ListAPIView):
-    serializer_class = GameProfileSerializer
+    serializer_class = GameProfileLeaderboardSerializer
     pagination_class = StandardResultsSetPagination
 
     def get_queryset(self):
@@ -56,7 +56,7 @@ class list_lifetimePoints(generics.ListAPIView):
 
 # List all users in order of tree level
 class list_treeLevel(generics.ListAPIView):
-    serializer_class = GameProfileSerializer
+    serializer_class = GameProfileLeaderboardSerializer
     pagination_class = StandardResultsSetPagination
 
     def get_queryset(self):

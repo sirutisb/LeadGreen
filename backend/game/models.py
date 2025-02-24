@@ -78,8 +78,13 @@ class GameProfile(models.Model):
     lifetime_points = models.IntegerField(default=0)
     
     # Plant progress
+<<<<<<< HEAD
     plant_level = models.IntegerField(default=1)  # start at level 1
     plant_growth = models.FloatField(default=0.0)  # go towards next level
+=======
+    tree_level = models.IntegerField(default=1)  # Start at level 1
+    tree_growth = models.FloatField(default=0.0)  # Progress towards next level (0.0 to 1.0)
+>>>>>>> a32fbd743357a36c0fb7f9c1b9d01d3a20d44556
     #current_plant = models.ForeignKey(Plant, on_delete=models.PROTECT)  # Changed to PROTECT and removed null=True
     current_plant = models.ForeignKey(Plant, on_delete=models.SET_NULL, null=True, blank=True)
     
@@ -91,6 +96,7 @@ class GameProfile(models.Model):
     spins_remaining = models.IntegerField(default=5)
 
     def save(self, *args, **kwargs):
+<<<<<<< HEAD
         """
         Save to database - make sure plant exists 
         """
@@ -104,12 +110,24 @@ class GameProfile(models.Model):
         """
         #get all insects up to current level
         available_insects = Insect.objects.filter(level__lte=self.plant_level)
+=======
+        # Ensure we have a plant before saving
+        if not self.current_plant_id or self.current_plant.level != self.tree_level:
+            self.current_plant = Plant.objects.get(level=self.tree_level)
+        super().save(*args, **kwargs)
+
+    def spawn_insect(self):
+        """Randomly spawn an insect appropriate for the current level"""
+        from random import choice
+        # Get all insects up to current level
+        available_insects = Insect.objects.filter(level__lte=self.tree_level)
+>>>>>>> a32fbd743357a36c0fb7f9c1b9d01d3a20d44556
         if available_insects.exists():
             self.current_insect = choice(available_insects)
             self.save()
 
     def __str__(self):
-        return f"{self.user.username}'s Game Profile | Level {self.plant_level}"
+        return f"{self.user.username}'s Game Profile | Level {self.tree_level}"
 
 @receiver(post_save, sender=UserProfile)
 def create_game_profile(sender, instance, created, **kwargs):
@@ -121,8 +139,8 @@ def create_game_profile(sender, instance, created, **kwargs):
         GameProfile.objects.create(
             user=instance,
             points_balance=100,  # Default starting points
-            plant_level=1,       # Starting level
-            plant_growth=0.0     # Starting growth
+            tree_level=1,       # Starting level
+            tree_growth=0.0     # Starting growth
         )
 
 # Connect the signal

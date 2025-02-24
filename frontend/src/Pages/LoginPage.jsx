@@ -10,7 +10,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import NavBar from "../Components/NavBar/NavBar";
 
-// ✅ Validation Schema using Yup
+//  Validation Schema
 const schema = yup.object().shape({
   username: yup.string().required("Username is required"),
   password: yup.string().required("Password is required"),
@@ -19,22 +19,24 @@ const schema = yup.object().shape({
 export default function LoginPage() {
   const { loginUser } = useContext(AuthContext);
 
+  // Initialise form handling with useForm
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schema),
-    mode: "onChange", 
+    mode: "onChange", // Validation runs on input change
   });
 
   const onSubmit = (data) => {
-    loginUser(data);
+    loginUser(data);// Calls loginUser with the form data
   };
 
   return (
-    <Page className="min-h-screen bg-gradient-to-b from-green-50 to-green-100 flex flex-col">
-      <div className="flex flex-col items-center justify-center px-6 py-16 space-y-12">
+    <Page className="bg-gradient-to-b from-green-50 to-green-100">
+      <NavBar/>
+      <div className=" min-h-screen bg-gradient-to-b from-green-50 to-green-100 flex flex-col items-center justify-center px-6 py-16 space-y-12">
         {/* Header */}
         <div className="text-center max-w-2xl space-y-4">
           <h1 className="text-3xl font-bold text-green-700">Log in</h1>
@@ -67,7 +69,7 @@ export default function LoginPage() {
                   autoComplete="username"
                   className="w-full text-black placeholder-gray-500 border border-green-300 bg-green-50 rounded-lg px-4 py-3"
                   placeholder="Username"
-                  {...register("username")} // ✅ Register input
+                  {...register("username")} // Register input
                 />
                 {errors.username && (
                   <p className="text-red-600 text-sm mt-1">{errors.username.message}</p>
@@ -82,7 +84,7 @@ export default function LoginPage() {
                   autoComplete="new-password"
                   className="w-full text-black placeholder-gray-500 border border-green-300 bg-green-50 rounded-lg px-4 py-3"
                   placeholder="Password"
-                  {...register("password")} // ✅ Register input
+                  {...register("password")} // Register input
                 />
                 {errors.password && (
                   <p className="text-red-600 text-sm mt-1">{errors.password.message}</p>

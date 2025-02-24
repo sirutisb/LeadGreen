@@ -93,7 +93,6 @@ const QRScannerStep = ({ qrValue, setQrValue, nextStep }) => {
         </Typography>
       )}
 
-      {/* ✅ Buttons stay on the same row at all screen sizes */}
       {qrValue && (
         <Stack direction="row" spacing={2} justifyContent="center" mt={3} width="100%">
           <Button

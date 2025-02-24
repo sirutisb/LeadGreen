@@ -16,8 +16,8 @@ class PlantProgressSerializer(serializers.Serializer):
     Create serializer for getting plant information from frontend
     """
     name = serializers.CharField(source='current_plant.name')
-    level = serializers.IntegerField(source='plant_level')
-    growth = serializers.FloatField(source='plant_growth')
+    level = serializers.IntegerField(source='tree_level')
+    growth = serializers.FloatField(source='tree_growth')
     image = serializers.ImageField(source='current_plant.image')
 
 class InsectSerializer(serializers.ModelSerializer):
@@ -43,4 +43,4 @@ class GameProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = GameProfile
-        fields = ['points_balance', 'plant', 'insect', 'spins_remaining']
+        fields = ['points_balance', 'tree', 'insect', 'spins_remaining']
