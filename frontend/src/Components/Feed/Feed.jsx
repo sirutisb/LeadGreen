@@ -22,7 +22,7 @@ const Feed = () => {
       const response = await axiosInstance.get(nextPage);
       const data = response.data;
 
-      // Deduplicate posts based on a unique identifier 
+      // Deduplicate posts 
       setPosts((prev) => {
         const newPosts = data.results.filter(
           (newPost) => !prev.some((existingPost) => existingPost.id === newPost.id)
@@ -75,7 +75,7 @@ const Feed = () => {
       {posts.map((post, index) => (
         <Box
           ref={index === posts.length - 1 ? observeLastElement : null}
-          key={post.id} // Changed from index to post.id
+          key={post.id}
           sx={{
             mb: { xs: 2, md: 4 },
           }}
