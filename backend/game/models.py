@@ -56,6 +56,7 @@ class Insect(models.Model):
 class GameProfile(models.Model):
     user = models.OneToOneField(UserProfile, on_delete=models.CASCADE, related_name='game_profile')
     points_balance = models.IntegerField(default=0)
+    lifetime_points = models.IntegerField(default=0)
     
     # Plant progress
     plant_level = models.IntegerField(default=1)  # Start at level 1

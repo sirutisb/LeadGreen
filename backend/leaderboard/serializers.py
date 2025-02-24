@@ -1,11 +1,14 @@
 from django.utils import timezone
-from rest_framework import serializers, generics
-from rest_framework.filters import OrderingFilter
-#from django_filters.rest_framework import DjangoFilterBackend
-from users.models import UserProfile
+from rest_framework import serializers
+from game.models import GameProfile
+from users.models import UserProfile  # Assuming UserProfile is in the users app
 
-class UserProfileSerializer(serializers.ModelSerializer):
+class GameProfileSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(source='user.username', read_only=True)  # Get the username from the related UserProfile model
+
     class Meta:
-        model = UserProfile
-        fields = ['username', 'points_balance', 'tree_level', 'lifetime_points', ]
-        read_only_fields = [ 'username', 'points_balance', 'tree_level', 'lifetime_points']
+        model = GameProfile
+        fields = [
+            'username', 'points_balance', 'lifetime_points', 'plant_level', 
+        ]
+        read_only_fields = ['username', 'points_balance', 'lifetime_points', 'plant_level',]
