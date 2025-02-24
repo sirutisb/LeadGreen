@@ -42,7 +42,9 @@ export default function Home() {
   return (
     <Page className="bg-white">
       <NavBar />
+      
       <Section />
+
       <div className="container mx-auto p-4 relative mb-24" style={{ minHeight: "200x", height: "auto" }}>
           <div className="w-full flex justify-center ">
             <div className="max-w-[1024px] w-full">
@@ -82,8 +84,6 @@ export default function Home() {
           </div>
         </div>
 
-        
-  
       <ScrollVelocity
         texts={['Lead Green', 'Make Exeter Green Again']} 
         className="custom-scroll-text"
@@ -92,10 +92,12 @@ export default function Home() {
       <UserFeedBack/>
     
       <FAQ/>
+
       <div className="container mx-auto px-4 text-center text-black py-8">
             <p>&copy; 2025 Lead Green. All rights reserved.</p>
             <p className="mt-2">Committed to a sustainable future.</p>
       </div>
+
     </Page>
   )
 } 

@@ -2,6 +2,7 @@ from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from users.models import UserProfile
+from random import choice
 
 
 # Shop Items and transactions
@@ -25,8 +26,12 @@ from users.models import UserProfile
     
 
 class Plant(models.Model):
-    name = models.CharField(max_length=32)  # e.g., "Leafy", "Sprouto"
-    level = models.IntegerField(unique=True)  # Each level has exactly one plant
+    """
+    Model for plant, includes name, level, image 
+    Allows for ordering through level
+    """
+    name = models.CharField(max_length=32)  # exampe - "Leafy", "Sprouto"
+    level = models.IntegerField(unique=True)  # each level - one plant
     image = models.ImageField(
         upload_to="plants/",
         blank=True,
@@ -40,9 +45,12 @@ class Plant(models.Model):
         return f"{self.name} (Level {self.level})"
 
 class Insect(models.Model):
-    name = models.CharField(max_length=32)  # e.g., "Buzzly", "Creepsy"
-    level = models.IntegerField(default=1)  # Level requirement to appear
-    spawn_chance = models.FloatField(default=0.2)  # Probability of spawning
+    """
+    Model for insect, include name of bug, level to appear, spawn chance, image
+    """
+    name = models.CharField(max_length=32)  # example "Buzzly", "Creepsy"
+    level = models.IntegerField(default=1)  # level requirement to appear
+    spawn_chance = models.FloatField(default=0.2)  # prob of spawning
     image = models.ImageField(
         upload_to="insects/",
         blank=True,
@@ -54,49 +62,85 @@ class Insect(models.Model):
 
 
 class GameProfile(models.Model):
+    """
+    Game profile model
+    Seperate from standard user model - contains other functionality and variable
+    Uses one to one relationship to assign each game profile to a user profile
+    Includes:
+      link to user
+      current points, overall lifetime points
+      plant level, growth, current plant
+      current insect and last insect spawn
+      spins remaining for roulette wheel
+    """
     user = models.OneToOneField(UserProfile, on_delete=models.CASCADE, related_name='game_profile')
     points_balance = models.IntegerField(default=0)
     lifetime_points = models.IntegerField(default=0)
     
     # Plant progress
-    plant_level = models.IntegerField(default=1)  # Start at level 1
-    plant_growth = models.FloatField(default=0.0)  # Progress towards next level (0.0 to 1.0)
+<<<<<<< HEAD
+    plant_level = models.IntegerField(default=1)  # start at level 1
+    plant_growth = models.FloatField(default=0.0)  # go towards next level
+=======
+    tree_level = models.IntegerField(default=1)  # Start at level 1
+    tree_growth = models.FloatField(default=0.0)  # Progress towards next level (0.0 to 1.0)
+>>>>>>> a32fbd743357a36c0fb7f9c1b9d01d3a20d44556
     #current_plant = models.ForeignKey(Plant, on_delete=models.PROTECT)  # Changed to PROTECT and removed null=True
     current_plant = models.ForeignKey(Plant, on_delete=models.SET_NULL, null=True, blank=True)
     
     # Insect mechanics
     current_insect = models.ForeignKey(Insect, on_delete=models.SET_NULL, null=True, blank=True)
-    last_insect_spawn = models.DateTimeField(null=True, blank=True) # For insect spawn cooldown
+    last_insect_spawn = models.DateTimeField(null=True, blank=True) # insect spawn cooldown
     
     # Game mechanics
     spins_remaining = models.IntegerField(default=5)
 
     def save(self, *args, **kwargs):
-        # Ensure we have a plant before saving
+<<<<<<< HEAD
+        """
+        Save to database - make sure plant exists 
+        """
         if not self.current_plant_id or self.current_plant.level != self.plant_level:
             self.current_plant = Plant.objects.get(level=self.plant_level)
+        super().save(*args, **kwargs)
+
+    def spawn_insect(self):
+        """
+        Randomly spawn an insect appropriate for the current level
+        """
+        #get all insects up to current level
+        available_insects = Insect.objects.filter(level__lte=self.plant_level)
+=======
+        # Ensure we have a plant before saving
+        if not self.current_plant_id or self.current_plant.level != self.tree_level:
+            self.current_plant = Plant.objects.get(level=self.tree_level)
         super().save(*args, **kwargs)
 
     def spawn_insect(self):
         """Randomly spawn an insect appropriate for the current level"""
         from random import choice
         # Get all insects up to current level
-        available_insects = Insect.objects.filter(level__lte=self.plant_level)
+        available_insects = Insect.objects.filter(level__lte=self.tree_level)
+>>>>>>> a32fbd743357a36c0fb7f9c1b9d01d3a20d44556
         if available_insects.exists():
             self.current_insect = choice(available_insects)
             self.save()
 
     def __str__(self):
-        return f"{self.user.username}'s Game Profile | Level {self.plant_level}"
+        return f"{self.user.username}'s Game Profile | Level {self.tree_level}"
 
 @receiver(post_save, sender=UserProfile)
 def create_game_profile(sender, instance, created, **kwargs):
+    """
+    Creates game profile
+    Create when user first exists
+    """
     if created:  # only when the user is first created
         GameProfile.objects.create(
             user=instance,
             points_balance=100,  # Default starting points
-            plant_level=1,       # Starting level
-            plant_growth=0.0     # Starting growth
+            tree_level=1,       # Starting level
+            tree_growth=0.0     # Starting growth
         )
 
 # Connect the signal

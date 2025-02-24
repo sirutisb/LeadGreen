@@ -16,6 +16,9 @@ from django.db import models
 import random
 
 def build_response(profile, success, message, status_code):
+    """
+    Serapate method to build the response to frontend after game logic complete
+    """
     plant_serializer = PlantProgressSerializer(profile)
     insect_data = InsectSerializer(profile.current_insect).data if profile.current_insect is not None else None
     return Response({
@@ -27,6 +30,11 @@ def build_response(profile, success, message, status_code):
     }, status=status_code)
 
 class TreeGrowAction(APIView):
+    """
+    APIView
+    Holds logic with Tree growth 
+    Returns post request based on input from frontend (used soil, water, etc)
+    """
     permission_classes = [IsAuthenticated]
     action_cost = 0
     growth_amount = 0
@@ -71,11 +79,13 @@ class TreeGrowAction(APIView):
 
 
 class WaterTreeAction(TreeGrowAction):
+    """Child class of tree growth action for water action (different parameters)"""
     action_cost = 10
     growth_amount = 0.1
     insect_spawn_chance = 0.45
 
 class SoilTreeAction(TreeGrowAction):
+    """Child class of Tree growth action with different paramters"""
     action_cost = 20
     growth_amount = 0.3
     insect_spawn_chance = 0.15
@@ -83,6 +93,11 @@ class SoilTreeAction(TreeGrowAction):
 
 # TODO: Make cleaner by inheriting
 class GloveTreeAction(APIView):
+    """
+    Glove action too different from soil + water to be child class of Tree Growth
+    Returns post request removing the insect and changing state in db - if there is insect
+    if no insect exists - returns this fact
+    """
     action_cost = 50
     growth_amount = 0.0
     permission_classes = [IsAuthenticated]
@@ -123,6 +138,9 @@ class GloveTreeAction(APIView):
 
 
 class GameProfileView(APIView):
+    """
+    Get request made by frontend for the user infomation in db
+    """
     permission_classes = [IsAuthenticated]
     def get(self, request, *args, **kwargs):
         user = request.user
@@ -141,7 +159,10 @@ class DebugSerializerView(APIView):
 
 
 class SpinView(APIView):
-    
+    """
+    APIview for spin
+    Checks if authenticaated, returns post request based on outcome of spin
+    """
     permission_classes = [IsAuthenticated]
     def post(self, request, *args, **kwargs):
         
@@ -149,7 +170,7 @@ class SpinView(APIView):
         userprof = GameProfile.objects.get(user=user)
         points_won = int(request.data.get("points"))
         
-        if userprof.spins_remaining <= 0:
+        if userprof.spins_remaining <= 0: # if not more spins remaining - cant spin
             return Response({ 
                 "success": False,
                 "message": "You have no spins left!",
@@ -157,7 +178,7 @@ class SpinView(APIView):
                 "points_balance": userprof.points_balance,
             }, status=status.HTTP_200_OK)
         
-        elif points_won == 0:
+        elif points_won == 0: # if no points won - return info
                 userprof.spins_remaining -= 1
                 userprof.save()
                 return Response({
@@ -166,7 +187,7 @@ class SpinView(APIView):
                     "spins": userprof.spins_remaining,
                     "points_balance": userprof.points_balance,
                 }, status=status.HTTP_200_OK)
-        else:
+        else: # if spin valid + points are won - return amount of points won
             userprof.points_balance += int(points_won)
             userprof.spins_remaining -= 1
             userprof.save()

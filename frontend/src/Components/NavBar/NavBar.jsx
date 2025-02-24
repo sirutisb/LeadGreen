@@ -38,7 +38,7 @@ const mobileMenuVariants = {
   },
   open: {
     opacity: 1,
-    height: "auto",
+    height: 1,
     transition:{
       duration: 0.3,
       ease: "easeInOut",
@@ -50,7 +50,7 @@ export default function NavBar(){
   const [isOpen, setIsOpen] = useState(false)
 
   const navLinks = [
-    {to: "/feed", text: "Feeds"},
+    {to: "/feed", text: "Feed"},
     {to: "/leaderboard", text: "Leaderboard"},
     {to: "/game", text: "Game"},
   ]

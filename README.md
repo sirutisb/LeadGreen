@@ -153,11 +153,27 @@ Ensure CORS settings as needed in `backend/backend/settings.py`.
 
 ## Project Structure
 
-```
-Needs to be remade
-```
+.
+├── .venv/                # Virtual environment for dependencies
+├── backend/              # Django backend application
+│   ├── authentication/   # User authentication and authorization
+│   ├── backend/          # Core backend settings and configurations
+│   ├── base/             # Common utilities and helper functions
+│   ├── game/             # Game-related models, views, and logic
+│   ├── leaderboard/      # Leaderboard functionality for game scoring
+│   ├── media/            # Uploaded media files (e.g., images, documents)
+│   ├── posts/            # Blog or post-related functionality (if applicable)
+│   ├── qrcodes/          # QR code generation and management
+│   ├── users/            # User profile management
+│   ├── .gitignore        # Files and folders to ignore in version control
+│   ├── db.sqlite3        # SQLite database for development
+│   ├── manage.py         # Django's management command-line tool
+│   ├── README.md         # Project documentation for the backend
+│   └── requirements.txt  # Backend Python package dependencies
+├── env/                  # Environment variables and settings (if used)
+├── frontend/             # Frontend codebase (React, HTML, CSS, JS)
+├── README.md             # Project documentation (main)
 
----
 
 ## License
 This project is licensed under the MIT License. See the LICENSE file for details.
