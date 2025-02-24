@@ -14,19 +14,19 @@ const MakePostModal = ({ open, onClose }) => {
   const [step, setStep] = useState(1);
   const [direction, setDirection] = useState("left");
 
-  // ✅ Handles forward navigation
+
   const handleNextStep = () => {
     setDirection("left");
     setStep((prev) => prev + 1);
   };
 
-  // ✅ Handles backward navigation
+
   const handlePrevStep = () => {
     setDirection("right");
     setStep((prev) => prev - 1);
   };
 
-  // ✅ Handles post submission
+
   const onSubmit = async (data) => {
     if (images.length === 0) {
       toastError("Please select an image!")
@@ -60,7 +60,6 @@ const MakePostModal = ({ open, onClose }) => {
 
   return (
     <Modal open={open} onClose={onClose} closeAfterTransition sx={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-      {/* ✅ Move Zoom Outside to Prevent Layout Shift */}
       <Zoom in={open} timeout={300}>
         <Box
           sx={{
@@ -75,10 +74,10 @@ const MakePostModal = ({ open, onClose }) => {
             p: { xs: 2, sm: 3 },
             borderRadius: 3,
             outline: "none",
-            overflow: "hidden", // ✅ Ensures only one step is visible
+            overflow: "hidden",
           }}
         >
-          {/* 🔥 Modal Header */}
+
           <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
             <Typography
               variant="h6"
@@ -94,7 +93,6 @@ const MakePostModal = ({ open, onClose }) => {
             </IconButton>
           </Box>
 
-          {/* 🔥 Step Transitions (Only One Step Visible) */}
           <Box sx={{ position: "relative", minHeight: "200px", overflow: "hidden" }}>
             {step === 1 && (
               <Slide direction={direction} in={step === 1} mountOnEnter unmountOnExit>

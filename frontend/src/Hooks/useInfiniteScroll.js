@@ -13,7 +13,7 @@ const useInfiniteScroll = (fetchNextPage, hasNextPage, isFetchingNextPage, setIs
       observerRef.current = new IntersectionObserver(
         ([entry]) => {
           if (entry.isIntersecting) {
-            setIsFetchingNextPage(true); // ✅ Show "Loading..." immediately
+            setIsFetchingNextPage(true); //
             if (timeoutRef.current) clearTimeout(timeoutRef.current);
             timeoutRef.current = setTimeout(() => {
               fetchNextPage();
