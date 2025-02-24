@@ -105,7 +105,7 @@ const ImageUploadStep = ({ images, setImages, nextStep, prevStep }) => {
         justifyContent="space-between" 
         mt={3} 
         width="100%"
-        sx={{ flexWrap: "wrap", gap: 1, justifyContent: { xs: "center", sm: "space-between" } }} // ✅ Centered on mobile
+        sx={{ flexWrap: "wrap", gap: 1, justifyContent: { xs: "center", sm: "space-between" } }} // Centered on mobile
       >
         <Button
           variant="outlined"

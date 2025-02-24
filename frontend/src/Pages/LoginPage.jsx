@@ -17,6 +17,7 @@ const schema = yup.object().shape({
 });
 
 export default function LoginPage() {
+   // Get the loginUser function from the AuthContext
   const { loginUser } = useContext(AuthContext);
 
   // Initialise form handling with useForm

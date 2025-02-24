@@ -42,7 +42,7 @@ const Post = ({ post }) => {
 
       <Box display="flex" alignItems="center" mb={2}>
         <Avatar
-          src={post.user.profile_picture} // ✅ Uses profile picture if available
+          src={post.user.profile_picture} // Uses profile picture if available
           sx={{
             width: 40,
             height: 40,

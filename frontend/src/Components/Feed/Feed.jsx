@@ -30,6 +30,7 @@ const Feed = () => {
         return [...prev, ...newPosts];
       });
       
+      // Store the URL for the next page of results (null if no more pages)
       setNextPage(data.next);
       setHasNextPage(!!data.next);
     } catch (error) {
