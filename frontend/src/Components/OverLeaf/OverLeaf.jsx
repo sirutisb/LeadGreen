@@ -5,7 +5,6 @@ import Confetti from "react-confetti";
 import useSound from "use-sound";
 import mojs from "@mojs/core";
 import OverLeafBar from "./OverLeafBar";
-import plants from "../../assets/plants";
 import waterDropSound from "../../assets/sounds/drop.mp3";
 import snailSound from "../../assets/sounds/snail.mp3";
 import alertSound from "../../assets/sounds/alert.mp3";
@@ -100,8 +99,7 @@ const OverLeaf = () => {
   };
 
   const handleLevelUp = () => {
-    const currentPlant = plants[Math.min(Math.floor(user.tree_level) - 1, plants.length - 1)];
-    toastSuccess(`🎉 Congratulations! Your ${currentPlant.name} leveled up!`);
+    toastSuccess(`🎉 Congratulations! Your ${user?.plant_name} leveled up!`);
     playLevelUp();
     setShowConfetti(true);
     setTimeout(() => setShowConfetti(false), 4000);
