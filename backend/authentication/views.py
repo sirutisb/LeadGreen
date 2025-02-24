@@ -7,6 +7,11 @@ from users.serializers import BasicUserProfileSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 
 class RegisterView(APIView):
+    """
+    Creates post request for registering
+    Returns access token if registrations is valid
+    Saves new user to DB
+    """
     def post(self, request):
         serializer = RegisterSerializer(data=request.data)
         if serializer.is_valid():
@@ -25,6 +30,10 @@ class RegisterView(APIView):
         }, status=status.HTTP_400_BAD_REQUEST)
 
 class LoginView(TokenObtainPairView):
+    """
+    Creates post request for logging in
+    Returns tokens along with user information if valid
+    """
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         try:
