@@ -20,16 +20,13 @@ import { toastError, toastSuccess, toastWarning } from "../utils/toastCustom";
 import axiosInstance from "../../Context/axiosInstance"; // ✅ Import Axios instance
 
 const OverLeaf = () => {
-  const [user, setUser] = useState({
-    points_balance: 1000,
-    tree_level: 1,
-    spins: 5
-  });
+    const [user, setUser] = useState(null);
 
   const [scale, setScale] = useState(1);
   const [selectedIcon, setSelectedIcon] = useState(null);
   const [currentInsect, setCurrentInsect] = useState(null);
-  const [prevLevel, setPrevLevel] = useState(Math.floor(user.tree_level));
+  const [prevLevel, setPrevLevel] = useState(0); // ✅ Store the previous level
+    const [initialLoad, setInitialLoad] = useState(true);
   const [showConfetti, setShowConfetti] = useState(false);
   const [wiggle, setWiggle] = useState(false);
   const [sparkColor, setSparkColor] = useState("#248335");
@@ -45,7 +42,6 @@ const OverLeaf = () => {
 
   // 🌟 Mo.js burst animation
   const burst = useRef(null);
-
   useEffect(() => {
     burst.current = new mojs.Burst({
       parent: plantRef.current, 
@@ -60,64 +56,97 @@ const OverLeaf = () => {
       },
     });
   }, []);
+  useEffect(() => {
+    const fetchUserData = async () => {
+        try {
+            const response = await axiosInstance.get("/game");
+            const data = response.data;
 
-  const handleLevelUp = () => {
+            const updatedUser = {
+                points_balance: data.points_balance,
+                tree_level: data.plant.level,
+                plant_name: data.plant.name,
+                plant_image: data.plant.image,
+                spins: data.spins_remaining,
+                has_insect: !!data.insect, // ✅ True if insect exists, false otherwise
+                insect: data.insect || null, // ✅ Store insect data directly
+            };
+
+            setUser(updatedUser); // ✅ Set user first
+            setScale(1 + data.plant.growth); // ✅ Update scale
+
+            if (data.insect) {
+                setTimeout(() => handleInsect(data.insect), 0); // ✅ Ensure it runs after state update
+            } else {
+                setCurrentInsect(null);
+            }
+
+            setPrevLevel(data.plant.level);
+            setInitialLoad(false);
+        } catch (error) {
+            console.error("Error fetching user data:", error);
+            toastError("Failed to load user data!");
+        }
+    };
+
+    fetchUserData();
+}, []); // ✅ Runs once when component mounts
+
+// ✅ Runs only when `user?.insect` changes
+useEffect(() => {
+    if (user?.insect) {
+        handleInsect(user.insect);
+    } else {
+        setCurrentInsect(null);
+    }
+}, [user?.insect]);
+
+const handleInsect = (insectData) => {
+    console.log(insectData)
+    if (insectData) { // ✅ Simply check if insectData exists
+        if (!currentInsect || currentInsect.name !== insectData.name) {
+            setCurrentInsect({ name: insectData.name, image: insectData.image || "" });
+            playInsect();
+            toastWarning(`${insectData.name} is blocking your tree! Use the glove to remove it.`);
+        }
+    } else {
+        setCurrentInsect(null);
+    }
+};
+
+const handleLevelUp = () => {
     const currentPlant = plants[Math.min(Math.floor(user.tree_level) - 1, plants.length - 1)];
-    toastSuccess(`🎉 Congratulations! Your ${currentPlant.name} leveled up!`)
+    toastSuccess(`🎉 Congratulations! Your ${currentPlant.name} leveled up!`);
     playLevelUp();
     setShowConfetti(true);
     setTimeout(() => setShowConfetti(false), 4000);
-    setScale(1);
+    
+    setScale(1); // ✅ Reset size after level-up!
 
     if (burst.current) {
       burst.current.replay();
     }
-  };
-
-  const handleInsectAppearance = (level) => {
-    // Adjust the calculation to start from insect1 at level 5
-    const insectIndex = Math.floor(level / 5) - 1;
-    const newInsect = insects[insectIndex % insects.length];
-    
-    setCurrentInsect(newInsect);
-    playInsect();
-    toastWarning(`${newInsect.name} has appeared! Use the glove to remove it.`)
-  };
+};
 
   useEffect(() => {
-    const newLevelInt = Math.floor(user.tree_level);
-    const prevLevelInt = Math.floor(prevLevel);
-
-    if (newLevelInt !== prevLevelInt) {
+    if (!initialLoad && Math.floor(user.tree_level) > Math.floor(prevLevel)) {
       handleLevelUp();
     }
+    setPrevLevel(user?.tree_level); // ✅ Only update when we detect a real change
+  }, [user?.tree_level]);
 
-    if (newLevelInt % 5 === 0 && newLevelInt !== prevLevelInt) {
-      handleInsectAppearance(newLevelInt);
-    }
-
-    setPrevLevel(user.tree_level);
-  }, [user.tree_level]);
-
-
+  // ✅ Handles Actions (Water, Soil, Glove)
   const handleAction = async () => {
     if (!selectedIcon) {
       setWiggle(true);
       setTimeout(() => setWiggle(false), 500);
-      return; // 🔹 If no icon selected, just wiggle the plant and do nothing.
-    }
-  
-    if (user.points_balance <= 0) {
-      playAlert();
-      toastError("❌ Not enough points to perform this action!");
       return;
     }
-  
+
     let endpoint = "";
     let soundEffect = null;
     let sparkColor = "";
-  
-    // ✅ Assign the correct API endpoint & effects
+
     if (selectedIcon === "soil") {
       endpoint = "/game/tree/soil/";
       soundEffect = playsoil;
@@ -131,52 +160,54 @@ const OverLeaf = () => {
       soundEffect = playGlove;
       sparkColor = "#FFD700";
     }
-  
+
     try {
       const response = await axiosInstance.post(endpoint);
       const data = response.data;
-  
-      if (data.success) {
-        if (selectedIcon === "glove") {
-            toastSuccess(data.message);
+        if (data.success) {
+            setUser((prev) => ({
+                ...prev,
+                points_balance: data.points_balance,
+                tree_level: data.tree.level, // ✅ Update level from new API response
+                has_insect: data.insect ? true : false, // ✅ Update insect existence
+            }));
+        
+            if (data.insect) {
+                setUser((prev) => ({
+                  ...prev,
+                  has_insect: data.insect ? true : false, // Ensure insect presence is updated
+                }));
+                if (data.insect) {
+                    setCurrentInsect({ name: data.insect.name, insect: insects[0].insect });
+                  playInsect();
+                  toastWarning(`🐛 ${data.insect.name} is blocking your tree! Use the glove to remove it.`);
+                } else {
+                  setCurrentInsect(null);
+                }
+              } else {
+                setCurrentInsect(null);
+                setUser((prev) => ({ ...prev, has_insect: false })); // Ensure `has_insect` is false if null
+              }
+              
+        
+            setSparkColor(sparkColor);
+            setScale(Math.round((1 + data.tree.growth) * 100) / 100); // ✅ Update scale correctly
+        } else {
+            playAlert();
+            toastError(data.message);
         }
-  
-        setUser((prev) => ({
-          ...prev,
-          points_balance: data.points_balance,
-          tree_level: data.tree_level,
-        }));
-  
-        setCurrentInsect(data.has_snail ? currentInsect : null); // ✅ Remove insect if it's gone
-        soundEffect && soundEffect();
-        setSparkColor(sparkColor);
-        setScale((prevScale) => prevScale + 0.1); // ✅ Growth effect
-  
-      } else {
-        // ❌ Backend returned an error message
-        playAlert();
-        toastError(data.message);
-      }
+        
     } catch (error) {
-      console.error("API Error:", error);
       playAlert();
-      toastError("❌ Network error! Try again.");
+      if (error.response && error.response.data && error.response.data.message) {
+        toastError(error.response.data.message);
+      } 
     }
   };
-  
-  
-
-  const getCurrentPlant = () => {
-    const plantIndex = Math.min(Math.floor(user.tree_level) - 1, plants.length - 1);
-    return {
-      image: plants[plantIndex].plant,
-      name: plants[plantIndex].name
-    };
-  };
 
 
-  return (
-    <>
+  return !user? <div>Loading...</div> : (
+    <div>
       {showConfetti && <Confetti numberOfPieces={200} />}
   
       {/* 🌿 Main Container */}
@@ -193,8 +224,8 @@ const OverLeaf = () => {
           onClick={handleAction}
         >
           <motion.img
-            src={getCurrentPlant().image}
-            alt={getCurrentPlant().name}
+            src={"http://127.0.0.1:8000"+user?.plant_image}
+            alt={""}
             className="w-[120px] h-[120px] sm:w-[140px] sm:h-[140px] md:w-[160px] md:h-[160px] lg:w-[180px] lg:h-[180px] -mt-20"
             animate={{ scale }}
             transition={{ type: "spring", stiffness: 150, damping: 10 }}
@@ -204,7 +235,7 @@ const OverLeaf = () => {
           {/* 🐛 Insect Display */}
           {currentInsect && (
             <motion.img
-              src={currentInsect.insect}
+              src={"http://127.0.0.1:8000"+currentInsect.image}
               alt={currentInsect.name}
               className="absolute -top-6 left-1/2 transform -translate-x-1/2 w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14"
               animate={{ y: [0, -5, 0] }}
@@ -215,12 +246,12 @@ const OverLeaf = () => {
   
         {/* 📊 Stats UI */}
         <div className="absolute top-8 left-5 sm:top-5 sm:right-5 bg-[#DEFDE9] px-3 py-2 sm:px-4 sm:py-3 rounded-lg shadow-md w-fit">
-          <p className="text-[#1B6630] text-sm sm:text-base font-semibold">🌿 Plant: {getCurrentPlant().name}</p>
+          <p className="text-[#1B6630] text-sm sm:text-base font-semibold">🌿 Plant: {user.plant_name}</p>
           <p className="text-[#1B6630] text-sm sm:text-base font-semibold">🌱 Tree Level: {Math.floor(user.tree_level)}</p>
           <p className="text-[#1B6630] text-sm sm:text-base font-semibold">💰 Points: {user.points_balance}</p>
         </div>
       </div>
-    </>
+    </div>
   );
   
 };

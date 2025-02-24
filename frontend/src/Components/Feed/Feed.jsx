@@ -16,11 +16,20 @@ const Feed = () => {
   const fetchNextPage = async () => {
     if (!nextPage || isFetchingNextPage) return;
 
+    setIsFetchingNextPage(true); // Set loading state before fetch
+    
     try {
       const response = await axiosInstance.get(nextPage);
       const data = response.data;
 
-      setPosts((prev) => [...prev, ...data.results]);
+      // Deduplicate posts based on a unique identifier 
+      setPosts((prev) => {
+        const newPosts = data.results.filter(
+          (newPost) => !prev.some((existingPost) => existingPost.id === newPost.id)
+        );
+        return [...prev, ...newPosts];
+      });
+      
       setNextPage(data.next);
       setHasNextPage(!!data.next);
     } catch (error) {
@@ -30,8 +39,11 @@ const Feed = () => {
     }
   };
 
+  // Initial fetch
   useEffect(() => {
-    fetchNextPage();
+    if (posts.length === 0) { // Only fetch if no posts exist
+      fetchNextPage();
+    }
   }, []);
 
   const observeLastElement = useInfiniteScroll(fetchNextPage, hasNextPage, isFetchingNextPage, setIsFetchingNextPage, 800);
@@ -55,17 +67,17 @@ const Feed = () => {
   return (
     <Box
       sx={{
-        maxWidth: "900px", // ✅ Keeps it centered on desktop
+        maxWidth: "900px",
         mx: "auto",
-        p: { xs: 3, sm: 2, md: 4 }, // ✅ Adjust padding (1px for mobile, 2px for tablets, 4px for desktops)
+        p: { xs: 3, sm: 2, md: 4 },
       }}
     >
       {posts.map((post, index) => (
         <Box
           ref={index === posts.length - 1 ? observeLastElement : null}
-          key={index}
+          key={post.id} // Changed from index to post.id
           sx={{
-            mb: { xs: 2, md: 4 }, // ✅ Smaller margin between posts on mobile, normal on desktop
+            mb: { xs: 2, md: 4 },
           }}
         >
           <Post post={post} />
@@ -73,9 +85,7 @@ const Feed = () => {
       ))}
 
       {isFetchingNextPage && <LinearProgress color="success" />}
-      {/* {!hasNextPage && <p className="text-black">No more posts</p>} */}
 
-      {/* 🔥 Floating "Back to Top" Button */}
       <Zoom in={showScrollTop}>
         <Fab
           color="success"
@@ -85,7 +95,7 @@ const Feed = () => {
             bottom: 20,
             right: 20,
             backgroundColor: "#1B6630",
-            padding: { xs: "10px 14px", md: "12px 20px" }, // ✅ Adjust padding for mobile
+            padding: { xs: "10px 14px", md: "12px 20px" },
             fontSize: "16px",
             fontWeight: "bold",
             textTransform: "none",
