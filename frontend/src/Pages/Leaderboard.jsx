@@ -6,6 +6,7 @@ import NavBar from "../Components/NavBar/NavBar.jsx";
 
 const API_BASE_URL = "http://127.0.0.1:8000/api/leaderboard";
 
+// State for search input, sorting method, leaderboard data, loading, and errors
 const LeaderboardPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("lifetime-points");
@@ -15,13 +16,14 @@ const LeaderboardPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const entriesPerPage = 10;
 
+  // Sorting options for the leaderboard
   const sortOptions = [
     { key: "points", label: "Point Balance" },
     { key: "tree-level", label: "Tree Level" },
     { key: "lifetime-points", label: "Overall Points" },
   ];
 
-
+  // Fetch leaderboard data whenever the sorting method changes
   useEffect(() => {
     const fetchLeaderboard = async () => {
       setLoading(true);
@@ -40,15 +42,18 @@ const LeaderboardPage = () => {
     fetchLeaderboard();
   }, [sortBy]);
 
+  // Filter leaderboard based on the search term
   const filteredLeaderboard = leaderboardData.filter((user) =>
       user.username.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  // Pagination logic
   const indexOfLastEntry = currentPage * entriesPerPage;
   const indexOfFirstEntry = indexOfLastEntry - entriesPerPage;
   const currentEntries = filteredLeaderboard.slice(indexOfFirstEntry, indexOfLastEntry);
   const totalPages = Math.ceil(filteredLeaderboard.length / entriesPerPage);
 
+  // Component for rendering each leaderboard row (desktop & mobile view)
   const TableRow = ({ user, index, isMobile }) => {
     if (isMobile) {
       return (
@@ -201,7 +206,7 @@ const LeaderboardPage = () => {
                   )}
                 </div>
 
-            {/* Pagination */}
+            {/* Pagination allignement */}
             {currentEntries.length > 0 && (
                 <div className="mt-6 flex flex-wrap justify-center items-center gap-4">
                   <button
@@ -226,7 +231,7 @@ const LeaderboardPage = () => {
           </div>
         </section>
 
-        {/* Footer remains unchanged */}
+        {/* Footer */}
         <footer className="text-green-600 py-12">
           <div className="container mx-auto px-4">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
