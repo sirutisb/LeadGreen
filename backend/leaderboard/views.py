@@ -17,7 +17,7 @@ class list_pointsBalance(generics.ListAPIView):
     pagination_class = StandardResultsSetPagination
 
     def get_queryset(self):
-        # Get all GameProfile objects ordered by points balance in descending order
+        # get all  GameProfile objects ordered by points balance in descending order
         queryset = GameProfile.objects.all().order_by('-points_balance')
         return queryset
 
@@ -28,10 +28,10 @@ class list_pointsBalance(generics.ListAPIView):
        
         serializer = self.get_serializer(queryset, many=True)
         
-        # Add rank to each user in the serialized data
+        #add rank to each user in the serialized data
         ranked_data = []
         for i, user in enumerate(serializer.data, 1):
-            user['rank'] = i
+            user['rank'] =i
             ranked_data.append(user)
         
         
