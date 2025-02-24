@@ -34,10 +34,7 @@ class InsectSerializer(serializers.ModelSerializer):
         return super().to_representation(instance)
 
 class GameProfileSerializer(serializers.ModelSerializer):
-    """
-    Serializer for getting game profile information from frontend
-    """
-    plant = PlantProgressSerializer(source='*')  # source='*' means use the GameProfile instance itself
+    tree = PlantProgressSerializer(source='*')  # source='*' means use the GameProfile instance itself
     #insect = InsectSerializer(source='current_insect')
     insect = InsectSerializer(source='current_insect')
 

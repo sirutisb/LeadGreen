@@ -8,7 +8,8 @@ export default AuthContext;
 export const AuthProvider = ({ children }) => {
   const navigate = useNavigate();
 
-// Retrieve stored authentication data
+
+  // Retrieve stored auth tokens and user data from localStorage
   const storedTokens = localStorage.getItem("authTokens");
   const storedUser = localStorage.getItem("user");
 
@@ -24,7 +25,7 @@ export const AuthProvider = ({ children }) => {
         email: e.email,
         password: e.password,
       });
-// Save user data and tokens
+// Store tokens and user data in state and localStorage
       setAuthTokens(data.tokens);
       setUser(data.user);
       localStorage.setItem("authTokens", JSON.stringify(data.tokens));
@@ -43,7 +44,7 @@ export const AuthProvider = ({ children }) => {
         username: e.username,
         password: e.password,
       });
- // Save user data and tokens
+      // Store tokens and user data in state and localStorage
       setAuthTokens(data.tokens);
       setUser(data.user);
       localStorage.setItem("authTokens", JSON.stringify(data.tokens));
@@ -55,15 +56,16 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-
+// User logout function
   const logoutUser = () => {
+
     setAuthTokens(null);
     setUser(null);
     localStorage.removeItem("authTokens");
     localStorage.removeItem("user");
     navigate("/login");
   };
-
+// Function to refresh authentication tokens
   const updateToken = async () => {
     if (!authTokens?.refresh) {
       logoutUser();
@@ -74,7 +76,7 @@ export const AuthProvider = ({ children }) => {
       const { data } = await axiosInstance.post(`/auth/token/refresh/`, {
         refresh: authTokens.refresh,
       });
-
+// Update tokens in state and localStorage
       setAuthTokens(data);
       localStorage.setItem("authTokens", JSON.stringify(data));
     } catch (error) {

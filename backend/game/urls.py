@@ -7,5 +7,4 @@ urlpatterns = [
     path('tree/soil/', views.SoilTreeAction.as_view()),
     path('tree/glove/', views.GloveTreeAction.as_view()),
     path('spin/', views.SpinView.as_view()),
-    #path('debug/', views.DebugSerializerView.as_view()),
 ]

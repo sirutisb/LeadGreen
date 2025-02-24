@@ -5,7 +5,8 @@ import dayjs from "dayjs";
 const baseURL = import.meta.env.BACKEND+"/api/";
 
 let authTokens = localStorage.getItem("authTokens") ? JSON.parse(localStorage.getItem("authTokens")) : null;
-
+// Retrieve stored authentication tokens from localStorage
+// Create an Axios instance with a base URL and initial authorization header
 const axiosInstance = axios.create({
   baseURL,
   headers: {
@@ -13,28 +14,35 @@ const axiosInstance = axios.create({
   },
 });
 
+// Add an interceptor to handle token expiration and refresh automatically
 axiosInstance.interceptors.request.use(async (req) => {
+  // Re-fetch auth tokens from localStorage before every request
   authTokens = localStorage.getItem("authTokens") ? JSON.parse(localStorage.getItem("authTokens")) : null;
-
+// If no tokens are available, proceed without modifying the request
   if (!authTokens) return req;
 
+  // Decode JWT token to check expiration
   const user = jwtDecode(authTokens.access);
   const isExpired = dayjs.unix(user.exp).isBefore(dayjs());
 
   if (!isExpired) {
+    // Token is still valid, attach it to the request
     req.headers.Authorization = `Bearer ${authTokens.access}`;
     return req;
   }
 
+  // Token is expired, attempt to refresh it
   try {
     const response = await axios.post(`${baseURL}auth/token/refresh/`, {
       refresh: authTokens.refresh,
     });
 
     localStorage.setItem("authTokens", JSON.stringify(response.data));
+    // Attach the new access token to the request heade
     req.headers.Authorization = `Bearer ${response.data.access}`;
   } catch (error) {
     console.error("Token Refresh Failed:", error);
+    // If refresh fails, remove tokens from localStorage to force logout
     localStorage.removeItem("authTokens");
     localStorage.removeItem("user");
     

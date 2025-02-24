@@ -1,5 +1,3 @@
-
-
 const Button = ({ children, type = "button", className = "", ...props }) => {
     return (
       <button

@@ -51,10 +51,10 @@ class TreeGrowAction(APIView):
         if profile.points_balance < self.action_cost:
             return build_response(profile, False, f"Not enough points, you have only {profile.points_balance}, you need {self.action_cost}", status.HTTP_200_OK)
 
-        profile.plant_growth += self.growth_amount
-        while profile.plant_growth >= 1.0:
-            profile.plant_growth -= 1.0
-            profile.plant_level += 1
+        profile.tree_growth += self.growth_amount
+        while profile.tree_growth >= 1.0:
+            profile.tree_growth -= 1.0
+            profile.tree_level += 1
         profile.points_balance -= self.action_cost
 
         # chance for snail to spawn
@@ -63,7 +63,10 @@ class TreeGrowAction(APIView):
             print("Spawning insect")
             profile.spawn_insect()
 
-        profile.save()
+        try:
+            profile.save()
+        except:
+            pass
 
 
         # # Serialize the updated game profile
@@ -82,13 +85,13 @@ class WaterTreeAction(TreeGrowAction):
     """Child class of tree growth action for water action (different parameters)"""
     action_cost = 10
     growth_amount = 0.1
-    insect_spawn_chance = 0.45
+    insect_spawn_chance = 0.15
 
 class SoilTreeAction(TreeGrowAction):
     """Child class of Tree growth action with different paramters"""
     action_cost = 20
     growth_amount = 0.3
-    insect_spawn_chance = 0.15
+    insect_spawn_chance = 0.01
 
 
 # TODO: Make cleaner by inheriting
@@ -114,10 +117,10 @@ class GloveTreeAction(APIView):
             return build_response(profile, False, f"Not enough points, you have only {profile.points_balance}, you need {self.action_cost}", status.HTTP_200_OK)
 
         profile.current_insect = None
-        profile.plant_growth += self.growth_amount
-        while profile.plant_growth >= 1.0:
-            profile.plant_growth -= 1.0
-            profile.plant_level += 1
+        profile.tree_growth += self.growth_amount
+        while profile.tree_growth >= 1.0:
+            profile.tree_growth -= 1.0
+            profile.tree_level += 1
         profile.points_balance -= self.action_cost
 
         profile.save()
