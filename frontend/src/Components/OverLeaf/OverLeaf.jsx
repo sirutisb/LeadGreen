@@ -51,11 +51,12 @@ const OverLeaf = () => {
     });
   }, []);
 
+  // Fetch user data from API
   const fetchUserData = async () => {
     try {
       const response = await axiosInstance.get("/game");
       const data = response.data;
-
+// Update user state
       const updatedUser = {
         points_balance: data.points_balance,
         tree_level: data.plant.level,
@@ -68,7 +69,7 @@ const OverLeaf = () => {
 
       setUser(updatedUser);
       setScale(1 + data.plant.growth);
-
+// Handle insect logic
       if (data.insect) {
         handleInsect(data.insect);
       } else {
@@ -86,7 +87,7 @@ const OverLeaf = () => {
   useEffect(() => {
     fetchUserData();
   }, []);
-
+// Handle insect event
   const handleInsect = (insectData) => {
     if (insectData) {
       if (!currentInsect || currentInsect.name !== insectData.name) {
@@ -98,7 +99,7 @@ const OverLeaf = () => {
       setCurrentInsect(null);
     }
   };
-
+// Trigger level-up animation and refresh data
   const handleLevelUp = () => {
     const currentPlant = plants[Math.min(Math.floor(user.tree_level) - 1, plants.length - 1)];
     toastSuccess(`🎉 Congratulations! Your ${currentPlant.name} leveled up!`);
@@ -120,7 +121,7 @@ const OverLeaf = () => {
     }
     setPrevLevel(user?.tree_level);
   }, [user?.tree_level, initialLoad, prevLevel]);
-
+  // Handle soil, water, and glove actions
   const handleAction = async () => {
     if (!selectedIcon) {
       setWiggle(true);
