@@ -1,9 +1,9 @@
 from django.utils import timezone
 from rest_framework import serializers
 from game.models import GameProfile
-from users.models import UserProfile  # Assuming UserProfile is in the users app
 
-class GameProfileSerializer(serializers.ModelSerializer):
+# creating serializer for gameprofiles in leaderboard
+class GameProfileLeaderboardSerializer(serializers.ModelSerializer):
     username = serializers.CharField(source='user.username', read_only=True)  # Get the username from the related UserProfile model
 
     class Meta:
