@@ -87,7 +87,6 @@ const RouletteButton = ({ user, setUser }) => {
 
   return (
     <>
-      {/* 🎰 Button to Open Roulette */}
       <motion.button
         className={`absolute top-32 left-5 ${
           user.spins === 0 ? "bg-gray-400 cursor-not-allowed" : "bg-gradient-to-r from-red-500 to-black"
