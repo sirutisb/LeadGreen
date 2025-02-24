@@ -55,7 +55,10 @@ class TreeGrowAction(APIView):
             print("Spawning insect")
             profile.spawn_insect()
 
-        profile.save()
+        try:
+            profile.save()
+        except:
+            pass
 
 
         # # Serialize the updated game profile
