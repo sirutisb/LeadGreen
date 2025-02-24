@@ -82,8 +82,6 @@ export default function Home() {
           </div>
         </div>
 
-        
-  
       <ScrollVelocity
         texts={['Lead Green', 'Make Exeter Green Again']} 
         className="custom-scroll-text"

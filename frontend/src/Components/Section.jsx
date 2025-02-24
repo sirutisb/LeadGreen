@@ -21,6 +21,7 @@ export default function Section(){
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.1, delay: 0.1 }}
           >
+            {/* Add effect */}
             <TrueFocus 
           sentence="Lead Green"
           manualMode={false}
