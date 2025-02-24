@@ -34,8 +34,9 @@ export default function LoginPage() {
   };
 
   return (
-    <Page className="min-h-screen bg-gradient-to-b from-green-50 to-green-100 flex flex-col">
-      <div className="flex flex-col items-center justify-center px-6 py-16 space-y-12">
+    <Page className="bg-gradient-to-b from-green-50 to-green-100">
+      <NavBar/>
+      <div className=" min-h-screen bg-gradient-to-b from-green-50 to-green-100 flex flex-col items-center justify-center px-6 py-16 space-y-12">
         {/* Header */}
         <div className="text-center max-w-2xl space-y-4">
           <h1 className="text-3xl font-bold text-green-700">Log in</h1>
