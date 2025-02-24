@@ -23,12 +23,12 @@ const mobileMenuVariants = {
 
 const MobileDropdown = ({ isOpen, setIsOpen, navLinks, UserNav }) => {
   useEffect(() => {
-    // Define the scroll handler
+    // Scroll handler
     let lastScroll = window.scrollY
     const handleScroll = () => {
       const currentScroll = window.scrollY
       if (currentScroll > lastScroll && isOpen) {
-        // Scrolling down
+        // Close when scroll down
         setIsOpen(false)
       }
       lastScroll = currentScroll
@@ -51,13 +51,12 @@ const MobileDropdown = ({ isOpen, setIsOpen, navLinks, UserNav }) => {
           animate="open"
           exit="closed"
           variants={mobileMenuVariants}
-          className="absolute md:hidden fixed  backdrop-blur-lg shadow-md right-0 bg-opacity-10 z-50 rounded-bl-xl"
+          className="absolute md:hidden fixed  backdrop-blur-xl backdrop-filter shadow-md right-0 bg-opacity-10 z-50 rounded-bl-xl"
         >
           <div className="flex flex-col space-y-4 p-6">
             {navLinks.map((link) => (
               <motion.div
                 key={link.to}
-                whileHover={{ scale: 1.05 }}
                 className="w-full"
               >
                 <Link
@@ -69,7 +68,7 @@ const MobileDropdown = ({ isOpen, setIsOpen, navLinks, UserNav }) => {
                 </Link>
               </motion.div>
             ))}
-            <motion.div whileHover={{ scale: 1.05 }}>
+            <motion.div>
               <UserNav />
             </motion.div>
           </div>

@@ -2,28 +2,20 @@ import { useRef } from 'react';
 
 const safeDocument = typeof document !== 'undefined' ? document : {};
 
-/**
- * Usage:
- * const [blockScroll, allowScroll] = useScrollBlock();
- */
 export default () => {
-  const scrollBlocked = useRef();
+  const scrollBlocked = useRef(); // Track whether scrolling is blocked
   const html = safeDocument.documentElement;
   const { body } = safeDocument;
 
   const blockScroll = () => {
-    if (!body || !body.style || scrollBlocked.current) return;
+    if (!body || !body.style || scrollBlocked.current) return; // Exit if scrolling is already blocked
 
-    const scrollBarWidth = window.innerWidth - html.clientWidth;
+
+    const scrollBarWidth = window.innerWidth - html.clientWidth; // Calculate scrollbar width
     const bodyPaddingRight =
       parseInt(window.getComputedStyle(body).getPropertyValue("padding-right")) || 0;
 
-    /**
-     * 1. Fixes a bug in iOS and desktop Safari whereby setting
-     *    `overflow: hidden` on the html/body does not prevent scrolling.
-     * 2. Fixes a bug in desktop Safari where `overflowY` does not prevent
-     *    scroll if an `overflow-x` style is also applied to the body.
-     */
+    // Prevent scrolling by setting overflow and adjusting layout
     html.style.position = 'relative'; /* [1] */
     html.style.overflow = 'hidden'; /* [2] */
     body.style.position = 'relative'; /* [1] */
@@ -35,7 +27,7 @@ export default () => {
 
   const allowScroll = () => {
     if (!body || !body.style || !scrollBlocked.current) return;
-
+    // Restore default scrolling behavior
     html.style.position = '';
     html.style.overflow = '';
     body.style.position = '';
