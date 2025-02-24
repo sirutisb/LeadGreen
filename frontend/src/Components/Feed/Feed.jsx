@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import axiosInstance from "../../Context/axiosInstance";
-import useInfiniteScroll from "../../hooks/useInfiniteScroll";
+import useInfiniteScroll from "../../Hooks/useInfiniteScroll";
 import Post from "./Post";
 import LinearProgress from '@mui/material/LinearProgress';
 import { Fab, Zoom, Box } from "@mui/material";
