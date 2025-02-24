@@ -8,7 +8,7 @@ export default AuthContext;
 export const AuthProvider = ({ children }) => {
   const navigate = useNavigate();
 
-  // ✅ Retrieve tokens & user from localStorage correctly
+
   const storedTokens = localStorage.getItem("authTokens");
   const storedUser = localStorage.getItem("user");
 
@@ -16,7 +16,7 @@ export const AuthProvider = ({ children }) => {
   let [user, setUser] = useState(storedUser ? JSON.parse(storedUser) : null);
   let [loading, setLoading] = useState(false);
 
-  // ✅ Register User
+
   const registerUser = async (e) => {
     try {
       const { data } = await axiosInstance.post(`/auth/register/`, {
@@ -36,7 +36,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // ✅ Login User
+
   const loginUser = async (e) => {
     try {
       const { data } = await axiosInstance.post(`/auth/login/`, {
@@ -55,7 +55,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // ✅ Logout User
+
   const logoutUser = () => {
     setAuthTokens(null);
     setUser(null);
@@ -84,23 +84,6 @@ export const AuthProvider = ({ children }) => {
 
     setLoading(false);
   };
-
-//   useEffect(() => {
-//     if (authTokens) {
-//       updateToken();
-//     } else {
-//       setLoading(false);
-//     }
-
-//     const mins = 1000 * 60 * 4;
-//     const interval = setInterval(() => {
-//       if (authTokens) {
-//         updateToken();
-//       }
-//     }, mins);
-
-//     return () => clearInterval(interval);
-//   }, []);
 
   let contextData = {
     loginUser,
