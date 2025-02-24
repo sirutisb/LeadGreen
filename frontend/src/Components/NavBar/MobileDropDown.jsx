@@ -23,12 +23,12 @@ const mobileMenuVariants = {
 
 const MobileDropdown = ({ isOpen, setIsOpen, navLinks, UserNav }) => {
   useEffect(() => {
-    // Define the scroll handler
+    // Scroll handler
     let lastScroll = window.scrollY
     const handleScroll = () => {
       const currentScroll = window.scrollY
       if (currentScroll > lastScroll && isOpen) {
-        // Scrolling down
+        // Close when scroll down
         setIsOpen(false)
       }
       lastScroll = currentScroll
