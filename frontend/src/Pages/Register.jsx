@@ -24,6 +24,7 @@ export default function RegisterPage() {
   // Get the registerUser function from the AuthContext
   const { registerUser } = useContext(AuthContext);
   
+
   const {
     register,
     handleSubmit,
@@ -31,9 +32,10 @@ export default function RegisterPage() {
     // useForm hook for form handling with validation
   } = useForm({
     resolver: yupResolver(schema),
-    mode: "onChange",
+    mode: "onChange", // Validation runs on input change
   });
 
+  
   const onSubmit = (data) => {
     registerUser(data);// Call registerUser with form data
   };

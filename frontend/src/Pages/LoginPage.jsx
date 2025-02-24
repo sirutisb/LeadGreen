@@ -19,18 +19,18 @@ const schema = yup.object().shape({
 export default function LoginPage() {
   const { loginUser } = useContext(AuthContext);
 
-
+  // Initialise form handling with useForm
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schema),
-    mode: "onChange", 
+    mode: "onChange", // Validation runs on input change
   });
 
   const onSubmit = (data) => {
-    loginUser(data);
+    loginUser(data);// Calls loginUser with the form data
   };
 
   return (
