@@ -10,7 +10,6 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import NavBar from "../Components/NavBar/NavBar";
 
-// ✅ Validation Schema with Correct Field Names
 const schema = yup.object().shape({
   username: yup.string().required("Username is required"), // ✅ Changed from 'name' to 'username'
   email: yup.string().email("Invalid email format").required("Email is required"),
@@ -37,7 +36,8 @@ export default function RegisterPage() {
   };
 
   return (
-    <Page className="min-h-screen bg-gradient-to-b from-green-50 to-green-100 flex flex-col">
+    <Page className="min-h-screen bg-gradient-to-b from-green-50 to-green-100">
+      <NavBar/>
       <div className="flex flex-col items-center justify-center px-6 py-16 space-y-12">
         <div className="text-center max-w-2xl space-y-4">
           <h1 className="text-3xl font-bold text-green-700">
@@ -63,7 +63,7 @@ export default function RegisterPage() {
 
           <form onSubmit={handleSubmit(onSubmit)} className="mt-6 space-y-6">
             <div className="space-y-5">
-              {/* ✅ Username Field (Corrected from 'name' to 'username') */}
+
               <div>
                 <Label htmlFor="username" className="sr-only">
                   Username
@@ -80,8 +80,6 @@ export default function RegisterPage() {
                   <p className="text-red-600 text-sm mt-1">{errors.username.message}</p>
                 )}
               </div>
-
-              {/* ✅ Email Field */}
               <div>
                 <Label htmlFor="email" className="sr-only">
                   Email address
@@ -100,7 +98,6 @@ export default function RegisterPage() {
                 )}
               </div>
 
-              {/* ✅ Password Field */}
               <div>
                 <Label htmlFor="password" className="sr-only">
                   Password
@@ -120,7 +117,6 @@ export default function RegisterPage() {
               </div>
             </div>
 
-            {/* ✅ Submit Button */}
             <div>
               <Button type="submit" className="w-full bg-green-600 hover:bg-green-700 py-3 rounded-lg text-lg">
                 Sign Up

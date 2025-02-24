@@ -1,8 +1,12 @@
+# game/migrations/0005_update_images.py
 from django.db import migrations
 
-def populate_plants(apps, schema_editor):
+def update_images(apps, schema_editor):
     Plant = apps.get_model('game', 'Plant')
-    plants = [
+    Insect = apps.get_model('game', 'Insect')
+
+    # Update Plants with images
+    plant_updates = [
         {'level': 1, 'name': 'Leafy', 'image': 'plants/plant1.svg'},
         {'level': 2, 'name': 'Sprouto', 'image': 'plants/plant2.svg'},
         {'level': 3, 'name': 'Thorny', 'image': 'plants/plant3.svg'},
@@ -64,19 +68,49 @@ def populate_plants(apps, schema_editor):
         {'level': 59, 'name': 'Quirko', 'image': 'plants/plant59.svg'},
         {'level': 60, 'name': 'Verdini', 'image': 'plants/plant60.svg'},
     ]
-    
-    for plant_data in plants:
-        Plant.objects.create(**plant_data)
+    for data in plant_updates:
+        plant = Plant.objects.get(level=data['level'])
+        # Only update image if it's not already set (to avoid overwriting manual changes)
+        if not plant.image:
+            plant.image = data['image']
+            plant.save()
 
-def reverse_populate(apps, schema_editor):
+    # Update Insects with images
+    insect_updates = [
+        {'name': 'Buzzly', 'level': 1, 'spawn_chance': 0.2, 'image': 'insects/insect1.svg'},
+        {'name': 'Creepsy', 'level': 2, 'spawn_chance': 0.2, 'image': 'insects/insect2.svg'},
+        {'name': 'Chitter', 'level': 3, 'spawn_chance': 0.2, 'image': 'insects/insect3.svg'},
+        {'name': 'Zigzag', 'level': 4, 'spawn_chance': 0.2, 'image': 'insects/insect4.svg'},
+        {'name': 'Flutter', 'level': 5, 'spawn_chance': 0.2, 'image': 'insects/insect5.svg'},
+        {'name': 'Stingster', 'level': 6, 'spawn_chance': 0.2, 'image': 'insects/insect6.svg'},
+        {'name': 'Munchy', 'level': 7, 'spawn_chance': 0.2, 'image': 'insects/insect7.svg'},
+        {'name': 'Gnatso', 'level': 8, 'spawn_chance': 0.2, 'image': 'insects/insect8.svg'},
+        {'name': 'Beetlo', 'level': 9, 'spawn_chance': 0.2, 'image': 'insects/insect9.svg'},
+        {'name': 'Clicksy', 'level': 10, 'spawn_chance': 0.2, 'image': 'insects/insect10.svg'},
+        {'name': 'Mosquibo', 'level': 11, 'spawn_chance': 0.2, 'image': 'insects/insect11.svg'},
+        {'name': 'Nettlebug', 'level': 12, 'spawn_chance': 0.2, 'image': 'insects/insect12.svg'},
+    ]
+    for data in insect_updates:
+        insect = Insect.objects.get(name=data['name'])
+        # Update fields if not already set
+        if not insect.image:
+            insect.image = data['image']
+        if insect.level == 1 and insect.spawn_chance == 0.2:  # Only update if still defaults
+            insect.level = data['level']
+            insect.spawn_chance = data['spawn_chance']
+        insect.save()
+
+def reverse_update(apps, schema_editor):
+    # Optional: Reset images to NULL if you want reversibility
     Plant = apps.get_model('game', 'Plant')
-    Plant.objects.all().delete()
+    Insect = apps.get_model('game', 'Insect')
+    Plant.objects.update(image=None)
+    Insect.objects.update(image=None)
 
 class Migration(migrations.Migration):
     dependencies = [
-        ('game', '0001_initial'),  # Adjust if you've added a new migration for ImageField
+        ('game', '0004_auto_20250224_0016'),  # Adjust to your last migration
     ]
-
     operations = [
-        migrations.RunPython(populate_plants, reverse_populate),
+        migrations.RunPython(update_images, reverse_update),
     ]

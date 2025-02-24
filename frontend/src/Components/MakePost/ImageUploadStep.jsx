@@ -15,7 +15,7 @@ const ImageUploadStep = ({ images, setImages, nextStep, prevStep }) => {
         fontWeight="bold" 
         mb={1} 
         color="black"
-        sx={{ fontSize: { xs: "1rem", sm: "1.2rem" } }} // ✅ Adjust font size for mobile
+        sx={{ fontSize: { xs: "1rem", sm: "1.2rem" } }}
       >
         Step 2: Upload Image
       </Typography>
@@ -23,13 +23,13 @@ const ImageUploadStep = ({ images, setImages, nextStep, prevStep }) => {
       <ImageUploading value={images} onChange={onImageChange} maxNumber={1} dataURLKey="data_url" acceptType={["jpg", "png", "jpeg"]}>
         {({ imageList, onImageUpload, onImageRemove }) => (
           <div className="p-3">
-            {/* ✅ Responsive Clickable Drop Zone */}
+
             <Box
               onClick={onImageUpload}
               sx={{
                 mt: 2,
-                width: { xs: "100%", sm: "320px" }, // ✅ Full width on mobile, square on desktop
-                height: { xs: "250px", sm: "320px" }, // ✅ Smaller height on mobile
+                width: { xs: "100%", sm: "320px" },
+                height: { xs: "250px", sm: "320px" },
                 borderRadius: "12px",
                 display: "flex",
                 alignItems: "center",
@@ -41,7 +41,7 @@ const ImageUploadStep = ({ images, setImages, nextStep, prevStep }) => {
                 transition: "all 0.3s ease-in-out",
                 "&:hover": { borderColor: "#555", backgroundColor: "#eee" },
                 position: "relative",
-                mx: "auto", // ✅ Centered on smaller screens
+                mx: "auto",
               }}
             >
               {imageList.length === 0 ? (
@@ -64,29 +64,29 @@ const ImageUploadStep = ({ images, setImages, nextStep, prevStep }) => {
                 />
               )}
 
-              {/* ✅ Remove button (only if image is selected) */}
+
               {imageList.length > 0 && (
   <Button
     onClick={(e) => {
-      e.stopPropagation(); // Prevents triggering upload click
+      e.stopPropagation();
       onImageRemove(0);
     }}
     sx={{
       position: "absolute",
-      top: "-12px", // ✅ Moves it slightly outside the top
-      right: "-12px", // ✅ Moves it slightly outside the right
-      width: "36px", // ✅ Ensure it's a perfect circle
+      top: "-12px",
+      right: "-12px",
+      width: "36px",
       height: "36px",
-      minWidth: "unset", // ✅ Fixes button sizing
+      minWidth: "unset",
       borderRadius: "50%",
       bgcolor: "red",
       color: "white",
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
-      zIndex: 10, // ✅ Ensures it's always on top
-      border: "3px solid white", // ✅ Makes it pop and prevents blending
-      boxShadow: "0px 4px 6px rgba(0,0,0,0.2)", // ✅ Adds depth
+      zIndex: 10,
+      border: "3px solid white",
+      boxShadow: "0px 4px 6px rgba(0,0,0,0.2)",
       "&:hover": { bgcolor: "darkred", transform: "scale(1.1)" },
     }}
   >
@@ -100,7 +100,6 @@ const ImageUploadStep = ({ images, setImages, nextStep, prevStep }) => {
         )}
       </ImageUploading>
 
-      {/* ✅ Buttons - Adjusted for Mobile */}
       <Stack 
         direction="row" 
         justifyContent="space-between" 
@@ -112,7 +111,7 @@ const ImageUploadStep = ({ images, setImages, nextStep, prevStep }) => {
           variant="outlined"
           sx={{
             transition: "all 0.3s ease-in-out",
-            fontSize: { xs: "0.9rem", sm: "1rem" }, // ✅ Adjust font size
+            fontSize: { xs: "0.9rem", sm: "1rem" },
             "&:hover": { bgcolor: "#ddd", transform: "scale(1.05)" },
           }}
           startIcon={<ArrowBack />}
@@ -126,7 +125,7 @@ const ImageUploadStep = ({ images, setImages, nextStep, prevStep }) => {
           sx={{
             bgcolor: images.length > 0 ? "#1B6630" : "#ccc",
             color: "white",
-            fontSize: { xs: "0.9rem", sm: "1rem" }, // ✅ Adjust font size
+            fontSize: { xs: "0.9rem", sm: "1rem" },
             transition: "all 0.3s ease-in-out",
             "&:hover": images.length > 0 ? { bgcolor: "#155724", transform: "scale(1.05)" } : {},
           }}

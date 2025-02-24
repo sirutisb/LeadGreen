@@ -1,7 +1,7 @@
 # backend/leaderboard/views.py
 from rest_framework import generics
-from .serializers import UserProfileSerializer
-from users.models import UserProfile
+from .serializers import GameProfileLeaderboardSerializer
+from game.models import GameProfile
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 
@@ -12,11 +12,11 @@ class StandardResultsSetPagination(PageNumberPagination):
 
 # List all users in order of points balance
 class list_pointsBalance(generics.ListAPIView):
-    serializer_class = UserProfileSerializer
+    serializer_class = GameProfileLeaderboardSerializer
     pagination_class = StandardResultsSetPagination
 
     def get_queryset(self):
-        queryset = UserProfile.objects.all().order_by('-points_balance')
+        queryset = GameProfile.objects.all().order_by('-points_balance')
         return queryset
 
     def list(self, request, *args, **kwargs):
@@ -34,11 +34,11 @@ class list_pointsBalance(generics.ListAPIView):
 
 # List all users in order of lifetime points
 class list_lifetimePoints(generics.ListAPIView):
-    serializer_class = UserProfileSerializer
+    serializer_class = GameProfileLeaderboardSerializer
     pagination_class = StandardResultsSetPagination
 
     def get_queryset(self):
-        queryset = UserProfile.objects.all().order_by('-lifetime_points')
+        queryset = GameProfile.objects.all().order_by('-lifetime_points')
         return queryset
     
     def list(self, request, *args, **kwargs):
@@ -56,11 +56,11 @@ class list_lifetimePoints(generics.ListAPIView):
 
 # List all users in order of tree level
 class list_treeLevel(generics.ListAPIView):
-    serializer_class = UserProfileSerializer
+    serializer_class = GameProfileLeaderboardSerializer
     pagination_class = StandardResultsSetPagination
 
     def get_queryset(self):
-        queryset = UserProfile.objects.all().order_by('-tree_level')
+        queryset = GameProfile.objects.all().order_by('-tree_level')
         return queryset
     
     def list(self, request, *args, **kwargs):

@@ -48,10 +48,10 @@ const OverLeafBar = ({ setSelectedIcon }) => {
       style={{
         display: "inline-flex", 
         maxWidth: "90vw", 
-        height: "clamp(80px, 12vw, 100px)", // ✅ Taller for spacing
+        height: "clamp(80px, 12vw, 100px)", 
         whiteSpace: "nowrap", 
         padding: window.innerWidth < 640? "50px 20px":"50px 30px",
-        gap: "40px", // ✅ Spacing between icons
+        gap: "40px",
       }}
     >
       {icons.map((icon) => (
@@ -61,7 +61,7 @@ const OverLeafBar = ({ setSelectedIcon }) => {
           onMouseEnter={() => setHoveredIcon(icon.id)}
           onMouseLeave={() => setHoveredIcon(null)}
         >
-          {/* 🔥 Tooltip - Now Higher Up */}
+
           <AnimatePresence>
             {hoveredIcon === icon.id && (
               <motion.div
@@ -76,7 +76,7 @@ const OverLeafBar = ({ setSelectedIcon }) => {
             )}
           </AnimatePresence>
 
-          {/* ✅ Button with Proper Spacing */}
+
           <motion.button
             className="flex flex-col items-center"
             whileTap={{ scale: 0.85 }}
