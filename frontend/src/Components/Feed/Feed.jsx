@@ -8,7 +8,7 @@ import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 
 const Feed = () => {
   const [posts, setPosts] = useState([]);
-  const [nextPage, setNextPage] = useState(import.meta.env.VITE_BACKEND+"/api/posts/?page=1");
+  const [nextPage, setNextPage] = useState(`${import.meta.env.VITE_BACKEND}/api/posts?page=1`);
   const [isFetchingNextPage, setIsFetchingNextPage] = useState(false);
   const [hasNextPage, setHasNextPage] = useState(true);
   const [showScrollTop, setShowScrollTop] = useState(false);
@@ -19,7 +19,6 @@ const Feed = () => {
     
     try {
         const response = await axiosInstance.get(nextPage);
-        console.log(response)
       const data = response.data;
 
       // Deduplicate posts 
@@ -47,6 +46,7 @@ const Feed = () => {
     if (posts.length === 0) { // Only fetch if no posts exist
       fetchNextPage();
     }
+    console.log('first')
   }, []);
 
   const observeLastElement = useInfiniteScroll(fetchNextPage, hasNextPage, isFetchingNextPage, setIsFetchingNextPage, 800);

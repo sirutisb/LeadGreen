@@ -65,9 +65,8 @@ const OverLeaf = () => {
         has_insect: !!data.insect,
         insect: data.insect || null,
       };
-
       setUser(updatedUser);
-      setScale(1 + data.plant.growth);
+      setScale(1 + data.tree.growth);
 // Handle insect logic
       if (data.insect) {
         handleInsect(data.insect);

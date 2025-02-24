@@ -47,7 +47,6 @@ axiosInstance.interceptors.request.use(async (req) => {
     localStorage.removeItem("user");
     
   }
-
   return req;
 });
 
