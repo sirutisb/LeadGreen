@@ -7,6 +7,7 @@ export default function Section(){
     return(
       <div className="flex-1 flex flex-col items-center py-6 md:py-8" >
         <div className="w-full">
+          {/* Initialising animation */}
           <motion.p
             className="font-sans uppercase tracking-[0.3em] md:tracking-[0.51em] leading-[133%] text-center md:text-[24px] text-green-700 "
             style={{
@@ -21,6 +22,8 @@ export default function Section(){
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.1, delay: 0.1 }}
           >
+
+            {/* Animation effect for Logo */}
             <TrueFocus 
           sentence="Lead Green"
           manualMode={false}
@@ -32,6 +35,7 @@ export default function Section(){
           </motion.p>
         </div>
 
+        {/* Initialising animation */}
         <motion.h1
           className="text-[32px] md:text-[64px] leading-tight md:leading-[83px] text-center px-4 md:px-16 lg:px-[314px] text-black"
           style={{ marginTop: "0px", marginBottom: "0px" }}
@@ -47,6 +51,7 @@ export default function Section(){
           <div className="font-serif font-normal">encouraging eco-friendly lifestyle</div>
         </motion.h1>
 
+        {/* Initialising animation */}
         <motion.p className="text-2xl md:text-[32px] text-center text-green-600 font-sans font-light px-4 lg:px-[314px] mt-[48px] mmd:mb-[48px] leading-[133%]"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}

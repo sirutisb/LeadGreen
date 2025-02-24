@@ -3,6 +3,7 @@ import { Search } from "lucide-react";
 import axios from "axios";
 import Page from "./Page";
 import NavBar from "../Components/NavBar/NavBar.jsx";
+import Footer from "../Components/Footer.jsx";
 
 const API_BASE_URL = "http://127.0.0.1:8000/api/leaderboard";
 
@@ -247,7 +248,7 @@ const LeaderboardPage = () => {
                 </ul>
               </div>
             </div>
-            <div className="mt-8 text-center text-sm">© 2025 Lead Green. All rights reserved.</div>
+            <Footer/>
           </div>
         </footer>
       </Page>
