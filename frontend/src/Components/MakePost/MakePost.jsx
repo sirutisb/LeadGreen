@@ -10,7 +10,10 @@ const MakePost = () => {
   return (
     <>
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
       {/* Floating "Create Post" Button */}
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
       <Zoom in={visible}>
