@@ -5,7 +5,7 @@ import Page from "./Page";
 import NavBar from "../Components/NavBar/NavBar.jsx";
 import Footer from "../Components/Footer.jsx";
 
-const API_BASE_URL = import.meta.env.BACKEND+"/api/leaderboard";
+const API_BASE_URL = import.meta.env.VITE_BACKEND+"/api/leaderboard";
 
 // State for search input, sorting method, leaderboard data, loading, and errors
 const LeaderboardPage = () => {

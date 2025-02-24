@@ -2,7 +2,7 @@ import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import dayjs from "dayjs";
 
-const baseURL = import.meta.env.BACKEND+"/api/";
+const baseURL = import.meta.env.VITE_BACKEND+"/api/";
 
 let authTokens = localStorage.getItem("authTokens") ? JSON.parse(localStorage.getItem("authTokens")) : null;
 // Retrieve stored authentication tokens from localStorage
