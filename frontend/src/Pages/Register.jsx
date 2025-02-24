@@ -10,8 +10,9 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import NavBar from "../Components/NavBar/NavBar";
 
+// Validation Schema 
 const schema = yup.object().shape({
-  username: yup.string().required("Username is required"), // ✅ Changed from 'name' to 'username'
+  username: yup.string().required("Username is required"),
   email: yup.string().email("Invalid email format").required("Email is required"),
   password: yup
     .string()
@@ -20,19 +21,23 @@ const schema = yup.object().shape({
 });
 
 export default function RegisterPage() {
+  // Get the registerUser function from the AuthContext
   const { registerUser } = useContext(AuthContext);
   
+
   const {
     register,
     handleSubmit,
     formState: { errors },
+    // useForm hook for form handling with validation
   } = useForm({
     resolver: yupResolver(schema),
-    mode: "onChange",
+    mode: "onChange", // Validation runs on input change
   });
 
+  
   const onSubmit = (data) => {
-    registerUser(data);
+    registerUser(data);// Call registerUser with form data
   };
 
   return (
@@ -63,7 +68,7 @@ export default function RegisterPage() {
 
           <form onSubmit={handleSubmit(onSubmit)} className="mt-6 space-y-6">
             <div className="space-y-5">
-
+              {/*  Username Field */}
               <div>
                 <Label htmlFor="username" className="sr-only">
                   Username
@@ -74,12 +79,14 @@ export default function RegisterPage() {
                   type="text"
                   className="w-full text-black placeholder-gray-500 border border-green-300 bg-green-50 rounded-lg px-4 py-3"
                   placeholder="Username"
-                  {...register("username")} // ✅ Corrected
+                  {...register("username")}
                 />
                 {errors.username && (
                   <p className="text-red-600 text-sm mt-1">{errors.username.message}</p>
                 )}
               </div>
+
+              {/* Email Field */}
               <div>
                 <Label htmlFor="email" className="sr-only">
                   Email address
@@ -98,6 +105,7 @@ export default function RegisterPage() {
                 )}
               </div>
 
+              {/* Password Field */}
               <div>
                 <Label htmlFor="password" className="sr-only">
                   Password
@@ -117,6 +125,7 @@ export default function RegisterPage() {
               </div>
             </div>
 
+            {/* Submit Button */}
             <div>
               <Button type="submit" className="w-full bg-green-600 hover:bg-green-700 py-3 rounded-lg text-lg">
                 Sign Up

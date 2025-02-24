@@ -9,7 +9,7 @@ const MakePost = () => {
 
   return (
     <>
-      {/* 🔥 Floating "Create Post" Button */}
+      {/* Floating "Create Post" Button */}
       <Zoom in={visible}>
         <Fab
           color="success"

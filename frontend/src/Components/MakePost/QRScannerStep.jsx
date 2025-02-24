@@ -105,7 +105,7 @@ const QRScannerStep = ({ qrValue, setQrValue, nextStep }) => {
             }}
             onClick={handleReset}
           >
-            <Cancel sx={{ mr: 1 }} /> {/* ✅ Added margin-right for spacing */}
+            <Cancel sx={{ mr: 1 }} /> {/* Added margin-right for spacing */}
             Cancel
           </Button>
 
@@ -120,7 +120,7 @@ const QRScannerStep = ({ qrValue, setQrValue, nextStep }) => {
             onClick={nextStep}
           >
             Next
-            <ArrowForward sx={{ ml: 1 }} /> {/* ✅ Added margin-left for spacing */}
+            <ArrowForward sx={{ ml: 1 }} /> {/* Added margin-left for spacing */}
           </Button>
         </Stack>
       )}
