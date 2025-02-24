@@ -6,6 +6,7 @@ import { Link } from "react-router-dom"
 import { motion, AnimatePresence, easeIn  } from "framer-motion"
 import MobileDropDown from './MobileDropDown';
 //na
+
 const navbarVariants = {
   hidden: {opacity: 0, y: -50},
   visible: {
@@ -27,24 +28,6 @@ const linkVariants = {
   },
 }
 
-const mobileMenuVariants = {
-  closed: {
-    opacity: 0,
-    height: 0,
-    transition: {
-      duration: 0.3,
-      ease: "easeInOut",
-    },
-  },
-  open: {
-    opacity: 1,
-    height: 1,
-    transition:{
-      duration: 0.3,
-      ease: "easeInOut",
-    },
-  },
-}
 
 export default function NavBar(){
   const [isOpen, setIsOpen] = useState(false)
@@ -57,7 +40,9 @@ export default function NavBar(){
 
   return(
     <>
+      {/* Make NavBar transparent */}
       <motion.div className="flex justify-between items-center py-8 z-50 backdrop-blur-lg shadow-md bg-transparent "
+      // NavBar animation
       initial = "hidden"
       animate = "visible"
       variants={navbarVariants}>
@@ -66,7 +51,7 @@ export default function NavBar(){
           <Link to={"/"} className="text-2xl font-bold text-green-700">LeadGreen</Link>
         </motion.div>
 
-        {/* Desktop Nav */}
+        {/* Desktop NavBar */}
         <div className="hidden md:flex">
           <div className="flex items-center space-x-6 px-8">
             {navLinks.map((link) => (

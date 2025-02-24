@@ -38,7 +38,6 @@ class GameProfileSerializer(serializers.ModelSerializer):
     Serializer for getting game profile information from frontend
     """
     tree = PlantProgressSerializer(source='*')  # source='*' means use the GameProfile instance itself
-    #insect = InsectSerializer(source='current_insect')
     insect = InsectSerializer(source='current_insect')
 
     class Meta:

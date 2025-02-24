@@ -17,7 +17,7 @@ export const AuthProvider = ({ children }) => {
   let [user, setUser] = useState(storedUser ? JSON.parse(storedUser) : null);
   let [loading, setLoading] = useState(false);
 
-
+ // Register new user
   const registerUser = async (e) => {
     try {
       const { data } = await axiosInstance.post(`/auth/register/`, {
@@ -37,7 +37,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-
+  // Log in existing user
   const loginUser = async (e) => {
     try {
       const { data } = await axiosInstance.post(`/auth/login/`, {

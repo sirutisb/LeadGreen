@@ -50,11 +50,12 @@ const OverLeaf = () => {
     });
   }, []);
 
+  // Fetch user data from API
   const fetchUserData = async () => {
     try {
       const response = await axiosInstance.get("/game");
       const data = response.data;
-
+// Update user state
       const updatedUser = {
         points_balance: data.points_balance,
         tree_level: data.tree.level,
@@ -66,8 +67,8 @@ const OverLeaf = () => {
       };
 
       setUser(updatedUser);
-      setScale(1 + data.tree.growth);
-
+      setScale(1 + data.plant.growth);
+// Handle insect logic
       if (data.insect) {
         handleInsect(data.insect);
       } else {
@@ -85,7 +86,7 @@ const OverLeaf = () => {
   useEffect(() => {
     fetchUserData();
   }, []);
-
+// Handle insect event
   const handleInsect = (insectData) => {
     if (insectData) {
       if (!currentInsect || currentInsect.name !== insectData.name) {
@@ -97,7 +98,7 @@ const OverLeaf = () => {
       setCurrentInsect(null);
     }
   };
-
+// Trigger level-up animation and refresh data
   const handleLevelUp = () => {
     toastSuccess(`🎉 Congratulations! Your ${user?.plant_name} leveled up!`);
     playLevelUp();
@@ -118,7 +119,7 @@ const OverLeaf = () => {
     }
     setPrevLevel(user?.tree_level);
   }, [user?.tree_level, initialLoad, prevLevel]);
-
+  // Handle soil, water, and glove actions
   const handleAction = async () => {
     if (!selectedIcon) {
       setWiggle(true);
@@ -202,7 +203,7 @@ const OverLeaf = () => {
           onClick={handleAction}
         >
           <motion.img 
-            src={"http://127.0.0.1:8000" + user.plant_image}
+            src={import.meta.env.BACKEND + user.plant_image}
             alt={user.plant_name}
             className="w-[120px] h-[120px] sm:w-[140px] sm:h-[140px] md:w-[160px] md:h-[160px] lg:w-[180px] lg:h-[180px] -mt-20"
             animate={{ scale }}
@@ -212,7 +213,7 @@ const OverLeaf = () => {
 
           {currentInsect && (
             <motion.img
-              src={"http://127.0.0.1:8000" + currentInsect.image}
+              src={import.meta.env.BACKEND + currentInsect.image}
               alt={currentInsect.name}
               className="absolute -top-6 left-1/2 transform -translate-x-1/2 w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14"
               animate={{ y: [0, -5, 0] }}

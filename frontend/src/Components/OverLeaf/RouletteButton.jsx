@@ -15,7 +15,7 @@ const data = [
   { option: "☘️ 500 Points", weight: 4, style: { backgroundColor: "red", color: "white" } },
   { option: "🏆 1000 Points", weight: 1, style: { backgroundColor: "black", color: "white" } },
 ];
-
+// Determines prize index based on weight distribution
 const getWeightedPrizeIndex = () => {
   const weightedArray = data.flatMap((item, index) => Array(item.weight).fill(index));
   return weightedArray[Math.floor(Math.random() * weightedArray.length)];
@@ -26,7 +26,7 @@ const RouletteButton = ({ user, setUser }) => {
   const [mustSpin, setMustSpin] = useState(false);
   const [prizeIndex, setPrizeIndex] = useState(0);
   const [isSpinning, setIsSpinning] = useState(false);
-  const spinResultRef = useRef(null); // ✅ Store API result without triggering re-renders
+  const spinResultRef = useRef(null); 
 
   const [playSpin, { stop: stopSpin }] = useSound(spinSound, { volume: 1 });
 
@@ -49,6 +49,7 @@ const RouletteButton = ({ user, setUser }) => {
       const data = response.data;
 
       if (data.success) {
+        // Store result to update UI after spin stops
         spinResultRef.current = {
           success: true,
           message: data.message,
@@ -56,7 +57,7 @@ const RouletteButton = ({ user, setUser }) => {
           spins: data.spins,
         };
 
-        setMustSpin(true); // ✅ Ensure mustSpin is set AFTER API response
+        setMustSpin(true); 
         playSpin();
       } else {
         toastError("❌ Spin failed! Try again.");
@@ -73,7 +74,7 @@ const RouletteButton = ({ user, setUser }) => {
   const handleSpinStop = () => {
     stopSpin();
     setMustSpin(false);
-
+// Update user state with new points and spins after spin completes
     if (spinResultRef.current?.success) {
       setUser((prev) => ({
         ...prev,
