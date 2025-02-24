@@ -23,16 +23,18 @@ const Feed = () => {
       const data = response.data;
 
       // Deduplicate posts 
-      setPosts((prev) => {
-        const newPosts = data.results.filter(
-          (newPost) => !prev.some((existingPost) => existingPost.id === newPost.id)
-        );
-        return [...prev, ...newPosts];
-      });
+      if (data && data.results){
+        setPosts((prev) => {
+          const newPosts = data.results.filter(
+            (newPost) => !prev.some((existingPost) => existingPost.id === newPost.id)
+          );
+          return [...prev, ...newPosts];
+        });
       
       // Store the URL for the next page of results (null if no more pages)
       setNextPage(data.next);
       setHasNextPage(!!data.next);
+      }
     } catch (error) {
       console.error("Error fetching posts:", error);
     } finally {
