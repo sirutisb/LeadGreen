@@ -25,6 +25,7 @@ class PostAdmin(admin.ModelAdmin):
                     # Assumes a one-to-one relationship with related_name='game_profile'
                     game_profile = post.user.game_profile
                     game_profile.points_balance += reward
+                    game_profile.lifetime_points += reward
                     game_profile.save()
                 except Exception as e:
                     self.message_user(request, f"Error updating points for user {post.user.username}: {e}", level='error')

@@ -191,7 +191,8 @@ class SpinView(APIView):
                     "points_balance": userprof.points_balance,
                 }, status=status.HTTP_200_OK)
         else: # if spin valid + points are won - return amount of points won
-            userprof.points_balance += int(points_won)
+            userprof.lifetime_points += points_won
+            userprof.points_balance += points_won
             userprof.spins_remaining -= 1
             userprof.save()
             return Response({

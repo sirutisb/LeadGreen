@@ -118,6 +118,7 @@ def create_game_profile(sender, instance, created, **kwargs):
         GameProfile.objects.create(
             user=instance,
             points_balance=100,  # Default starting points
+            lifetime_points=100,
             tree_level=1,       # Starting level
             tree_growth=0.0     # Starting growth
         )
