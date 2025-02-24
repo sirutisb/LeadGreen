@@ -5,7 +5,7 @@ import { Plus, Minus, HelpCircle } from 'lucide-react';
 const faqs = [
   {
     question: "How do I start using LeadGreen?",
-    answer: "Download the app from your device's app store, create an account, and start logging your eco-friendly actions. You'll earn points and grow your virtual plant as you go!",
+    answer: "Create an account and start logging your eco-friendly actions. You'll earn points and grow your virtual plant as you go!",
     icon: "🌱"
   },
   {
