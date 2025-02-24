@@ -107,7 +107,11 @@ const QRScannerStep = ({ qrValue, setQrValue, nextStep }) => {
           >
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
             <Cancel sx={{ mr: 1 }} /> {/* Added margin-right for spacing */}
+=======
+            <Cancel sx={{ mr: 1 }} /> 
+>>>>>>> Stashed changes
 =======
             <Cancel sx={{ mr: 1 }} /> 
 >>>>>>> Stashed changes
@@ -130,7 +134,11 @@ const QRScannerStep = ({ qrValue, setQrValue, nextStep }) => {
             Next
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
             <ArrowForward sx={{ ml: 1 }} /> {/* Added margin-left for spacing */}
+=======
+            <ArrowForward sx={{ ml: 1 }} />
+>>>>>>> Stashed changes
 =======
             <ArrowForward sx={{ ml: 1 }} />
 >>>>>>> Stashed changes

@@ -11,7 +11,10 @@ const MakePost = () => {
     <>
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
       {/* Floating "Create Post" Button */}
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
 =======
