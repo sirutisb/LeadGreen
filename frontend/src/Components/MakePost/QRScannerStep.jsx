@@ -105,19 +105,8 @@ const QRScannerStep = ({ qrValue, setQrValue, nextStep }) => {
             }}
             onClick={handleReset}
           >
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-            <Cancel sx={{ mr: 1 }} /> {/* Added margin-right for spacing */}
-=======
+
             <Cancel sx={{ mr: 1 }} /> 
->>>>>>> Stashed changes
-=======
-            <Cancel sx={{ mr: 1 }} /> 
->>>>>>> Stashed changes
-=======
-            <Cancel sx={{ mr: 1 }} /> 
->>>>>>> Stashed changes
             Cancel
           </Button>
 
@@ -132,19 +121,9 @@ const QRScannerStep = ({ qrValue, setQrValue, nextStep }) => {
             onClick={nextStep}
           >
             Next
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-            <ArrowForward sx={{ ml: 1 }} /> {/* Added margin-left for spacing */}
-=======
+
             <ArrowForward sx={{ ml: 1 }} />
->>>>>>> Stashed changes
-=======
-            <ArrowForward sx={{ ml: 1 }} />
->>>>>>> Stashed changes
-=======
-            <ArrowForward sx={{ ml: 1 }} />
->>>>>>> Stashed changes
+
           </Button>
         </Stack>
       )}

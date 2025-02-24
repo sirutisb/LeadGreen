@@ -8,7 +8,7 @@ import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 
 const Feed = () => {
   const [posts, setPosts] = useState([]);
-  const [nextPage, setNextPage] = useState("http://127.0.0.1:8000/api/posts/?page=1");
+  const [nextPage, setNextPage] = useState(import.meta.env.BACKEND+"/api/posts/?page=1");
   const [isFetchingNextPage, setIsFetchingNextPage] = useState(false);
   const [hasNextPage, setHasNextPage] = useState(true);
   const [showScrollTop, setShowScrollTop] = useState(false);
