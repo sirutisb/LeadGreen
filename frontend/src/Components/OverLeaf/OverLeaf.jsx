@@ -318,16 +318,16 @@ const OverLeaf = () => {
 
       const updatedUser = {
         points_balance: data.points_balance,
-        tree_level: data.plant.level,
-        plant_name: data.plant.name,
-        plant_image: data.plant.image,
+        tree_level: data.tree.level,
+        plant_name: data.tree.name,
+        plant_image: data.tree.image,
         spins: data.spins_remaining,
         has_insect: !!data.insect,
         insect: data.insect || null,
       };
 
       setUser(updatedUser);
-      setScale(1 + data.plant.growth);
+      setScale(1 + data.tree.growth);
 
       if (data.insect) {
         handleInsect(data.insect);
@@ -335,7 +335,7 @@ const OverLeaf = () => {
         setCurrentInsect(null);
       }
 
-      setPrevLevel(data.plant.level);
+      setPrevLevel(data.tree.level);
       setInitialLoad(false);
     } catch (error) {
       console.error("Error fetching user data:", error);
