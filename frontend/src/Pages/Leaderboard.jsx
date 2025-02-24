@@ -14,7 +14,7 @@ const LeaderboardPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const entriesPerPage = 10;
+  const entriesPerPage = 100;
 
   const sortOptions = [
     { key: "points", label: "Point Balance" },
