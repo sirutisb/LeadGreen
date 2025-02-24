@@ -8,7 +8,7 @@ export default AuthContext;
 export const AuthProvider = ({ children }) => {
   const navigate = useNavigate();
 
-
+// Retrieve stored authentication data
   const storedTokens = localStorage.getItem("authTokens");
   const storedUser = localStorage.getItem("user");
 
@@ -16,7 +16,7 @@ export const AuthProvider = ({ children }) => {
   let [user, setUser] = useState(storedUser ? JSON.parse(storedUser) : null);
   let [loading, setLoading] = useState(false);
 
-
+ // Register new user
   const registerUser = async (e) => {
     try {
       const { data } = await axiosInstance.post(`/auth/register/`, {
@@ -24,7 +24,7 @@ export const AuthProvider = ({ children }) => {
         email: e.email,
         password: e.password,
       });
-
+// Save user data and tokens
       setAuthTokens(data.tokens);
       setUser(data.user);
       localStorage.setItem("authTokens", JSON.stringify(data.tokens));
@@ -36,14 +36,14 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-
+  // Log in existing user
   const loginUser = async (e) => {
     try {
       const { data } = await axiosInstance.post(`/auth/login/`, {
         username: e.username,
         password: e.password,
       });
-
+ // Save user data and tokens
       setAuthTokens(data.tokens);
       setUser(data.user);
       localStorage.setItem("authTokens", JSON.stringify(data.tokens));

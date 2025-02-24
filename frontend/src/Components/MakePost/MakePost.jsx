@@ -9,7 +9,6 @@ const MakePost = () => {
 
   return (
     <>
-      {/* Floating "Create Post" Button */}
       <Zoom in={visible}>
         <Fab
           color="success"
@@ -37,7 +36,6 @@ const MakePost = () => {
         </Fab>
       </Zoom>
 
-      {/* Modal for Creating a Post */}
       <MakePostModal open={open} onClose={() => setOpen(false)} />
     </>
   );
