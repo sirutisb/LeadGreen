@@ -14,10 +14,10 @@ const Post = ({ post }) => {
         p: 2,
         border: "2px solid #1B6630",
         position: "relative",
-        mb: 5, // Adjusted margin-bottom for spacing
+        mb: 5,
       }}
     >
-      {/* 🏆 Points Received (Top-Right Badge) */}
+
       <Box
         sx={{
           position: "absolute",
@@ -39,7 +39,7 @@ const Post = ({ post }) => {
         {post.points_received}
       </Box>
 
-      {/* 👤 User Info */}
+
       <Box display="flex" alignItems="center" mb={2}>
         <Avatar
           src={post.user.profile_picture} // ✅ Uses profile picture if available
@@ -56,7 +56,7 @@ const Post = ({ post }) => {
           {post.user.username}
         </Typography>
       </Box>
-            {/* 📝 Caption */}
+
             <Typography
               variant="body1"
               sx={{ color: "#1B6630", fontWeight: "bold", mt: 1 }}
@@ -64,7 +64,7 @@ const Post = ({ post }) => {
               {post.caption}
             </Typography>
 
-      {/* 🖼️ Image */}
+
       <Box
         sx={{
           backgroundColor: "#DEFDE9",

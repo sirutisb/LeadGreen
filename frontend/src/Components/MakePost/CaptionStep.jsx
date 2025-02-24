@@ -1,11 +1,11 @@
 import React from "react";
 import { Box, TextField, Button, Typography, Stack } from "@mui/material";
-import { ArrowBack, Send } from "@mui/icons-material"; // ✅ Icon for Post Button
+import { ArrowBack, Send } from "@mui/icons-material";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 
-// ✅ Validation Schema
+
 const schema = yup.object().shape({
   caption: yup.string().required("Caption is required"),
 });
@@ -26,7 +26,7 @@ const CaptionStep = ({ images, qrValue, prevStep, onSubmit }) => {
         fontWeight="bold" 
         mb={1} 
         color="black"
-        sx={{ fontSize: { xs: "1rem", sm: "1.2rem" } }} // ✅ Responsive font sizes
+        sx={{ fontSize: { xs: "1rem", sm: "1.2rem" } }}
       >
         Step 3: Add Caption & Post
       </Typography>
@@ -39,14 +39,13 @@ const CaptionStep = ({ images, qrValue, prevStep, onSubmit }) => {
         helperText={errors.caption?.message}
         margin="normal"
         multiline
-        rows={3} // ✅ More space for text input
+        rows={3}
         sx={{
           fontSize: { xs: "0.9rem", sm: "1rem" },
-          "& .MuiInputBase-root": { borderRadius: "12px" }, // ✅ Rounded corners
+          "& .MuiInputBase-root": { borderRadius: "12px" },
         }}
       />
 
-      {/* ✅ Buttons: Back & Post in SAME ROW */}
       <Stack 
         direction="row" 
         spacing={2} 
@@ -59,7 +58,7 @@ const CaptionStep = ({ images, qrValue, prevStep, onSubmit }) => {
         <Button
           variant="outlined"
           sx={{
-            flex: 1, // ✅ Ensures equal button size
+            flex: 1,
             transition: "all 0.3s ease-in-out",
             fontSize: { xs: "0.9rem", sm: "1rem" },
             "&:hover": { bgcolor: "#ddd", transform: "scale(1.05)" },
@@ -74,14 +73,14 @@ const CaptionStep = ({ images, qrValue, prevStep, onSubmit }) => {
           type="submit"
           variant="contained"
           sx={{
-            flex: 1, // ✅ Ensures equal button size
+            flex: 1,
             bgcolor: "#1B6630",
             color: "white",
             transition: "all 0.3s ease-in-out",
             fontSize: { xs: "0.9rem", sm: "1rem" },
             "&:hover": { bgcolor: "#155724", transform: "scale(1.05)" },
           }}
-          endIcon={<Send />} // ✅ Added Send Icon
+          endIcon={<Send />}
         >
           Post
         </Button>
