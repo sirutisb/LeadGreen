@@ -11,12 +11,6 @@ from users.models import UserProfile
 from .models import Plant, Insect
 
 
-# Create your tests here.
-
-
-
-# Create your tests here.
-
 
 class ShopItemTestCase(TestCase):
 
