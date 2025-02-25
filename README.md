@@ -44,10 +44,6 @@ Our technical documents are primarily managed on the github system. The link to 
 
 github link: [https://github.com/sirutisb/LeadGreen]
 
-We have also include the versioned source code for archiving.
-
-[./technical-documents/](./technical-documents/)
-
 Technical documents are broken down into front end and back end etc.
 
 ---
