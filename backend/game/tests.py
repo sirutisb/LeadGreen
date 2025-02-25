@@ -8,8 +8,7 @@ from django.urls import reverse
 
 from django.test import TestCase
 from users.models import UserProfile
-from .models import Plant, Insect
-
+from .models import Plant, Insect, ShopItem, UserItem
 
 
 class ShopItemTestCase(TestCase):
