@@ -174,10 +174,10 @@ python manage.py test
 ![Alt Text](https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExMm1pOWQ5NWp0NDYxN20xaHhzZHo0Y2xtaW90Y3hjNWh2ejJ6ZTZjNyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/SmBV5jMyNjGBQ1u6Ii/giphy.gif)
 
 ### 3. Leaderboard
-![Alt Text](https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExMm1pOWQ5NWp0NDYxN20xaHhzZHo0Y2xtaW90Y3hjNWh2ejJ6ZTZjNyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/SmBV5jMyNjGBQ1u6Ii/giphy.gif)
+![Alt Text](https://media.giphy.com/media/6ESJHByMEeR7mulQwf/giphy.gif)
 
 ### 4. Feed
-![Alt Text](https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExanh1NDJjdHpuajF2anY2MTc5bWQ5MHh3dG5jMXVjbm1jZGIxd3g0dSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/SmBV5jMyNjGBQ1u6Ii/giphy.gif)
+![Alt Text](https://media.giphy.com/media/6gcww76abRAG36Jb78/giphy.gif)
 
 ---
 
@@ -242,7 +242,7 @@ Ensure CORS settings as needed in `backend/backend/settings.py`.
 │
 └── README.md                # Root project documentation
 
-
+---
 ## License
 This project is licensed under the MIT License. See the LICENSE file for details.
 
