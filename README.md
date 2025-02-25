@@ -209,7 +209,7 @@ Ensure CORS settings as needed in `backend/backend/settings.py`.
 ---
 
 ## Project Structure
-
+```
 .
 ├── backend/                 # Django backend
 │   ├── authentication/      # User authentication module
@@ -241,7 +241,7 @@ Ensure CORS settings as needed in `backend/backend/settings.py`.
 │   ├── vite.config.js       # Vite configuration  
 │
 └── README.md                # Root project documentation
-
+```
 ---
 ## License
 This project is licensed under the MIT License. See the LICENSE file for details.
