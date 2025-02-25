@@ -242,7 +242,7 @@ Ensure CORS settings as needed in `backend/backend/settings.py`.
 │
 └── README.md                # Root project documentation
 
-
+---
 ## License
 This project is licensed under the MIT License. See the LICENSE file for details.
 
