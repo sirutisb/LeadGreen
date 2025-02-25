@@ -10,6 +10,9 @@ from rest_framework_simplejwt.tokens import RefreshToken
 UserProfile = get_user_model()
 
 class AuthenticationTest(APITestCase):
+    """
+    
+    """
 
     def setUp(self):
         self.register_url = "/api/auth/register/"
