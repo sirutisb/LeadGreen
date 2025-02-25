@@ -12,7 +12,7 @@ from .models import Plant, Insect, ShopItem, UserItem
 from rest_framework.test import APITestCase
 from rest_framework import status
 
-"""
+
 class ShopItemTestCase(TestCase):
 
     # add shop item to DB - test if DB stores expected results
@@ -50,15 +50,15 @@ class UserItemTestCase(TestCase):
 
         self.assertEqual(user_item.quantity, 1)
         self.assertEqual(str(user_item), "testname - x1 item1")
-"""
+
 
 class GameModelTest(TestCase):
     def setUp(self):
         self.user = UserProfile.objects.create(username='testuser')
-        self.plant1 = Plant.objects.create(name='Leafy', level=1)
-        self.plant2 = Plant.objects.create(name='Sprouto', level=2)
-        self.insect1 = Insect.objects.create(name='Buzzly', level=1, spawn_chance=0.5)
-        self.insect2 = Insect.objects.create(name='Creepsy', level=2, spawn_chance=0.3)
+        self.plant1 = Plant.objects.create(name='Leafy', level=999)
+        self.plant2 = Plant.objects.create(name='Sprouto', level=998)
+        self.insect1 = Insect.objects.create(name='Buzzly', level=997, spawn_chance=0.5)
+        self.insect2 = Insect.objects.create(name='Creepsy', level=996, spawn_chance=0.3)
         self.game_profile = GameProfile.objects.get(user=self.user) 
 
     def test_create_game_profile(self):
