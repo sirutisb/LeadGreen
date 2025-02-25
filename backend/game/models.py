@@ -5,24 +5,24 @@ from users.models import UserProfile
 from random import choice
 
 
-# Shop Items and transactions
-# class ShopItem(models.Model):
-#     name = models.CharField(max_length=32)
-#     effect = models.CharField(max_length=32, default="")
-#     description = models.TextField(default="")
-#     cost = models.IntegerField(default=0)
+#Shop Items and transactions
+class ShopItem(models.Model):
+    name = models.CharField(max_length=32)
+    effect = models.CharField(max_length=32, default="")
+    description = models.TextField(default="")
+    cost = models.IntegerField(default=0)
 
-#     def __str__(self):
-#         return f"{self.name} - {self.cost} points"
+    def __str__(self):
+        return f"{self.name} - {self.cost} points"
 
 
-# class UserItem(models.Model):
-#     user = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
-#     item = models.ForeignKey(ShopItem, on_delete=models.CASCADE)
-#     quantity = models.IntegerField(default=0)
+class UserItem(models.Model):
+    user = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
+    item = models.ForeignKey(ShopItem, on_delete=models.CASCADE)
+    quantity = models.IntegerField(default=0)
 
-#     def __str__(self):
-#         return f"{self.user.username} - x{self.quantity} {self.item.name}"
+    def __str__(self):
+        return f"{self.user.username} - x{self.quantity} {self.item.name}"
     
 
 class Plant(models.Model):
