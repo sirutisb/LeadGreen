@@ -34,6 +34,7 @@ class PostAdmin(admin.ModelAdmin):
 
     def reject_posts(self, request, queryset):
         queryset.update(approved=False)
+
     reject_posts.short_description = "Reject selected posts ❌"
 
 admin.site.register(Post, PostAdmin)

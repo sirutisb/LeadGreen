@@ -18,7 +18,7 @@ class PostListCreate(generics.ListCreateAPIView):
     pagination_class = PostPagination
 
     def get_queryset(self):
-        queryset = Post.objects.all()
+        queryset = Post.objects.all().filter(approved=True)
         return queryset
     
     def perform_create(self, serializer):

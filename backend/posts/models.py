@@ -9,8 +9,8 @@ class Post(models.Model):
     image = models.ImageField(upload_to='posts/', blank=False, null=False)
     caption = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    private = models.BooleanField(default=False)
     qr_code = models.CharField(max_length=32)
+    private = models.BooleanField(default=False)
     approved = models.BooleanField(null=True, default=None)
     points_received = models.IntegerField(default=0)
 
@@ -19,3 +19,16 @@ class Post(models.Model):
 
     class Meta:
         ordering = ['-created_at']
+
+
+def save(self, *args, **kwargs):
+    # Check if the QR code exists
+    if not self.qr_code:
+        raise ValueError("QR Code cannot be empty")
+        
+    if QRCode.objects.filter(code=self.qr_code).exists():
+        print(f"Post {self.caption} saved successfully, it exists.")
+        super().save(*args, **kwargs)
+        return
+    print("doesnt exist")
+    raise ValueError("QR Code must match an existing QRCode object")
