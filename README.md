@@ -160,7 +160,6 @@ python manage.py test
 Log into the admin panel using the superuser credentials created earlier. Then a list of posts will appear (example below) and a drop down menu will allow the Game Keepers to reject or approve these posts.
 ![image](https://github.com/user-attachments/assets/19672920-95f9-465c-8bff-d44aa7dce114)
 
-
 ---
 
 ## API Endpoints (For Testing)
@@ -196,7 +195,6 @@ Ensure CORS settings as needed in `backend/backend/settings.py`.
 ├── backend/                 # Django backend
 │   ├── authentication/      # User authentication module
 │   ├── backend/             # Backend configurations
-│   ├── base/                # Base app for shared utilities
 │   ├── game/                # Game-related logic
 │   ├── leaderboard/         # Leaderboard management
 │   ├── media/               # Media storage
@@ -207,7 +205,6 @@ Ensure CORS settings as needed in `backend/backend/settings.py`.
 │   ├── manage.py            # Django management script
 │   ├── requirements.txt     # Python dependencies
 │   ├── .gitignore           # Git ignore file
-│   ├── env/                 # Virtual environment (not tracked)
 │   └── .venv/               # Python virtual environment
 │
 ├── frontend/                # Frontend built with Vite + React + Tailwind
@@ -230,5 +227,3 @@ This project is licensed under the MIT License. See the LICENSE file for details
 
 ## Contact
 **Name:** Team Lakers
-**Email:** [lakers2757@gmail.com]"
-
