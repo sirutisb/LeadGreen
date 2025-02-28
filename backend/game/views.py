@@ -3,7 +3,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.parsers import MultiPartParser, FormParser
-from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated, AllowAny
 
 from django.shortcuts import get_object_or_404
 
@@ -151,65 +151,56 @@ class GameProfileView(APIView):
         serializer = GameProfileSerializer(profile)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-class DebugSerializerView(APIView):
-    permission_classes = [IsAuthenticated]
+
+class GetPrizes(APIView):
+    permission_classes = [AllowAny]
     def get(self, request, *args, **kwargs):
-        user = request.user
-        profile = user.game_profile
-        serializer = InsectSerializer(profile.current_insect)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-
+        prizes = [
+            {"prize": "10 points", "points": 10, "chance": 50},
+            {"prize": "50 points", "points": 50, "chance": 30},
+            {"prize": "100 points", "points": 100, "chance": 15},
+            {"prize": "Jackpot! 5000 points", "points": 5000, "chance": 5},
+        ]
+        return Response({"success": True, "prizes": prizes}, status=status.HTTP_200_OK)
 
 class SpinView(APIView):
     """
     APIview for spin
-    Checks if authenticaated, returns post request based on outcome of spin
+    Request to perform a spin action
     """
     permission_classes = [IsAuthenticated]
     def post(self, request, *args, **kwargs):
         
         user = request.user
-        userprof = GameProfile.objects.get(user=user)
-        points_won = int(request.data.get("points"))
+        game_profile = user.game_profile
+        points_won = request.data.get('points')
         
-        if userprof.spins_remaining <= 0: # if not more spins remaining - cant spin
+        if game_profile.spins_remaining <= 0: # if not more spins remaining - cant spin
             return Response({ 
                 "success": False,
                 "message": "You have no spins left!",
-                "spins": userprof.spins_remaining,
-                "points_balance": userprof.points_balance,
+                "spins": game_profile.spins_remaining,
+                "points_balance": game_profile.points_balance,
             }, status=status.HTTP_200_OK)
         
         elif points_won == 0: # if no points won - return info
-                userprof.spins_remaining -= 1
-                userprof.save()
+                game_profile.spins_remaining -= 1
+                game_profile.save()
                 return Response({
                     "success": True,
                     "message": "Better luck next time! No points won.",
-                    "spins": userprof.spins_remaining,
-                    "points_balance": userprof.points_balance,
+                    "spins": game_profile.spins_remaining,
+                    "points_balance": game_profile.points_balance,
                 }, status=status.HTTP_200_OK)
         else: # if spin valid + points are won - return amount of points won
-            userprof.lifetime_points += points_won
-            userprof.points_balance += points_won
-            userprof.spins_remaining -= 1
-            userprof.save()
+            game_profile.lifetime_points += points_won
+            game_profile.points_balance += points_won
+            game_profile.spins_remaining -= 1
+            game_profile.save()
             return Response({
                 "success": True,
                 "message": f"Congratulations! You won {points_won} points!",
-                "spins": userprof.spins_remaining,
-                "points_balance": userprof.points_balance,
+                "spins": game_profile.spins_remaining,
+                "points_balance": game_profile.points_balance,
             }, status=status.HTTP_200_OK)
             
-
-# Original GameProfileView
-# class GameProfileView(APIView):
-#     permission_classes = [IsAuthenticated]
-#     def get(self, request, *args, **kwargs):
-#         user = request.user
-#         profile = user.game_profile
-#         #profile = GameProfile.objects.get(user=user)
-#         serializer = GameProfileSerializer(profile)
-#         return Response(serializer.data, status=status.HTTP_200_OK)
-    
