@@ -37,7 +37,7 @@ const OverLeaf = () => {
     useEffect(() => {
       if (!initialLoad && user?.tree_level > prevLevel) {
         showLevelUpEffects(user.plant_name);
-        fetchUserData();
+        // fetchUserData();
       }
     }, [user?.tree_level, initialLoad, prevLevel]);
   
