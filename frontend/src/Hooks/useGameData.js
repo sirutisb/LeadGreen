@@ -20,7 +20,7 @@ export default function useGameData() {
         tree_level: data.tree.level,
         plant_name: data.tree.name,
         plant_image: data.tree.image,
-        spins: data.spins_remaining,
+        spins: data.spins,
         has_insect: !!data.insect,
         insect: data.insect || null,
       };

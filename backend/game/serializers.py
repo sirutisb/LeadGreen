@@ -42,4 +42,4 @@ class GameProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = GameProfile
-        fields = ['points_balance', 'tree', 'insect', 'spins_remaining']
+        fields = ['points_balance', 'tree', 'insect', 'spins']

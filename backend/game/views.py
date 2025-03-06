@@ -179,11 +179,11 @@ class SpinView(APIView):
 
         prizes = get_prize_list()
 
-        if profile.spins_remaining <= 0:
+        if profile.spins <= 0:
             return Response({
                 "success": False,
                 "message": "You have no spins left!",
-                "spins": profile.spins_remaining,
+                "spins": profile.spins,
                 "points_balance": profile.points_balance,
                 "prize_amount": 0,
             }, status=status.HTTP_200_OK)
@@ -192,12 +192,12 @@ class SpinView(APIView):
         prize_reward = prizes[prize_index]["value"]
         # Use prize_option instead of prize_value
         if prize_reward == 0:  # Changed from " No Reward" string to 0
-            profile.spins_remaining -= 1
+            profile.spins -= 1
             profile.save()
             return Response({
                 "success": True,
                 "message": "Better luck next time! No points won.",
-                "spins": profile.spins_remaining,
+                "spins": profile.spins,
                 "points_balance": profile.points_balance,
                 "prize_index": prize_index,
                 "prize_amount": prize_reward,
@@ -205,12 +205,12 @@ class SpinView(APIView):
         else:
             profile.points_balance += prize_reward  # Use prize_option instead of prize_value
             profile.lifetime_points += prize_reward
-            profile.spins_remaining -= 1
+            profile.spins -= 1
             profile.save()
             return Response({
                 "success": True,
                 "message": f"Congratulations! You won {prize_reward}!",
-                "spins": profile.spins_remaining,
+                "spins": profile.spins,
                 "points_balance": profile.points_balance,
                 "prize_index": prize_index,
                 "prize_amount": prize_reward,
