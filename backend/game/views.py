@@ -88,7 +88,7 @@ class WaterTreeAction(TreeGrowAction):
     insect_spawn_chance = 0.20
 
 class SoilTreeAction(TreeGrowAction):
-    """Child class of Tree growth action with different paramters"""
+    """Child class of Tree growth action with different parameters"""
     action_cost = 20
     growth_amount = 0.3
     insect_spawn_chance = 0.0001
