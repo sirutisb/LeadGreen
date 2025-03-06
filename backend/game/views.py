@@ -85,13 +85,13 @@ class WaterTreeAction(TreeGrowAction):
     """Child class of tree growth action for water action (different parameters)"""
     action_cost = 10
     growth_amount = 0.1
-    insect_spawn_chance = 0.15
+    insect_spawn_chance = 0.20
 
 class SoilTreeAction(TreeGrowAction):
     """Child class of Tree growth action with different paramters"""
     action_cost = 20
     growth_amount = 0.3
-    insect_spawn_chance = 0.01
+    insect_spawn_chance = 0.10
 
 
 # TODO: Make cleaner by inheriting

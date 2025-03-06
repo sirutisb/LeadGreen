@@ -24,8 +24,8 @@ function App() {
             <Route
                 path="/game"
                 element={
-                // <PrivateRoute element={OverLeafPage}/>
-                <OverLeafPage /> 
+                <PrivateRoute element={OverLeafPage}/>
+                // <OverLeafPage /> 
                 }
             />
 

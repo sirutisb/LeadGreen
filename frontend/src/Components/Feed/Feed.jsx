@@ -46,7 +46,6 @@ const Feed = () => {
     if (posts.length === 0) { // Only fetch if no posts exist
       fetchNextPage();
     }
-    console.log('first')
   }, []);
 
   const observeLastElement = useInfiniteScroll(fetchNextPage, hasNextPage, isFetchingNextPage, setIsFetchingNextPage, 800);

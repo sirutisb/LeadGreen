@@ -2,6 +2,7 @@ import React from "react";
 import { Box, Typography, Button, Stack } from "@mui/material";
 import { CloudUpload, ArrowForward, ArrowBack, Delete } from "@mui/icons-material";
 import ImageUploading from "react-images-uploading";
+import {toastError} from "../utils/toastCustom"
 
 const ImageUploadStep = ({ images, setImages, nextStep, prevStep }) => {
   const onImageChange = (imageList) => {
@@ -20,12 +21,20 @@ const ImageUploadStep = ({ images, setImages, nextStep, prevStep }) => {
         Step 2: Upload Image
       </Typography>
 
-      <ImageUploading value={images} onChange={onImageChange} maxNumber={1} dataURLKey="data_url" acceptType={["jpg", "png", "jpeg"]}>
+      <ImageUploading 
+        value={images} 
+        onChange={onImageChange} 
+        maxNumber={1} 
+        dataURLKey="data_url" 
+        acceptType={["jpg", "png", "jpeg"]}
+      >
         {({ imageList, onImageUpload, onImageRemove }) => (
           <div className="p-3">
-
             <Box
-              onClick={onImageUpload}
+              onClick={imageList.length === 0 ? onImageUpload : () => {
+                // Show message that user needs to delete existing image first
+                toastError("Please delete the existing image before uploading a new one");
+              }}
               sx={{
                 mt: 2,
                 width: { xs: "100%", sm: "320px" },
@@ -52,49 +61,48 @@ const ImageUploadStep = ({ images, setImages, nextStep, prevStep }) => {
                   </Typography>
                 </Box>
               ) : (
-                <img
-                  src={imageList[0].data_url}
-                  alt="Preview"
-                  style={{
-                    width: "100%",
-                    height: "100%",
-                    objectFit: "cover",
-                    borderRadius: "12px",
-                  }}
-                />
+                <>
+                  <img
+                    src={imageList[0].data_url}
+                    alt="Preview"
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                      borderRadius: "12px",
+                    }}
+                  />
+                </>
               )}
 
-
               {imageList.length > 0 && (
-  <Button
-    onClick={(e) => {
-      e.stopPropagation();
-      onImageRemove(0);
-    }}
-    sx={{
-      position: "absolute",
-      top: "-12px",
-      right: "-12px",
-      width: "36px",
-      height: "36px",
-      minWidth: "unset",
-      borderRadius: "50%",
-      bgcolor: "red",
-      color: "white",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      zIndex: 10,
-      border: "3px solid white",
-      boxShadow: "0px 4px 6px rgba(0,0,0,0.2)",
-      "&:hover": { bgcolor: "darkred", transform: "scale(1.1)" },
-    }}
-  >
-    <Delete fontSize="small" />
-  </Button>
-)}
-
-
+                <Button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onImageRemove(0);
+                  }}
+                  sx={{
+                    position: "absolute",
+                    top: "-12px",
+                    right: "-12px",
+                    width: "36px",
+                    height: "36px",
+                    minWidth: "unset",
+                    borderRadius: "50%",
+                    bgcolor: "red",
+                    color: "white",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    zIndex: 10,
+                    border: "3px solid white",
+                    boxShadow: "0px 4px 6px rgba(0,0,0,0.2)",
+                    "&:hover": { bgcolor: "darkred", transform: "scale(1.1)" },
+                  }}
+                >
+                  <Delete fontSize="small" />
+                </Button>
+              )}
             </Box>
           </div>
         )}
