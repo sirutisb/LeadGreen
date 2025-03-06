@@ -2,29 +2,52 @@ import React, { useState } from "react";
 import { Box, Typography, Button, Stack } from "@mui/material";
 import QrReader from "react-qr-scanner";
 import { ArrowForward, Cancel } from "@mui/icons-material";
-import { toast } from "react-toastify";
 import { toastError, toastInfo, toastSuccess } from "../utils/toastCustom";
+import axiosInstance from "../../Context/axiosInstance"; // Import Axios instance
 
 const QRScannerStep = ({ qrValue, setQrValue, nextStep }) => {
   const [isScanning, setIsScanning] = useState(qrValue === "");
+  const [loading, setLoading] = useState(false);
+
+  const validateQRCode = async (scannedCode) => {
+    try {
+      setLoading(true);
+      console.log({ qr_code: scannedCode })
+      const response = await axiosInstance.get("qrcodes/",{params: { qr_code: scannedCode }});
+
+      if (response.data.exists) {
+        setQrValue(scannedCode);
+        setIsScanning(false);
+        toastSuccess(`✅ QR Code Verified: ${scannedCode}`);
+      } else {
+        toastError("❌ Invalid QR Code! Please scan again.");
+        setIsScanning(true);
+      }
+    } catch (error) {
+      console.error("QR Code Validation Error:", error);
+      toastError("❌ QR Validation Failed! Try again.");
+      setIsScanning(true);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleScan = (data) => {
     if (data) {
-      setQrValue(data.text || data);
-      setIsScanning(false);
-      toastSuccess(`QR Code Scanned! ${data.text || data}`)
+      const scannedCode = data.text || data;
+      validateQRCode(scannedCode);
     }
   };
 
   const handleError = (err) => {
     console.error("QR Scan Error:", err);
-    toastError("QR Scan Failed!")
+    toastError("QR Scan Failed!");
   };
 
   const handleReset = () => {
     setQrValue("");
     setIsScanning(true);
-    toastInfo("QR Code Reset!")
+    toastInfo("QR Code Reset!");
   };
 
   return (
@@ -51,36 +74,35 @@ const QRScannerStep = ({ qrValue, setQrValue, nextStep }) => {
 
       {isScanning ? (
         <Box
-        sx={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          minHeight: '100', // This centers vertically in the viewport
-          width: '100%',
-        }}
-      >
-        <Box
           sx={{
-            width: { xs: "250px", sm: "300px", md: "320px" },
-            height: { xs: "250px", sm: "300px", md: "320px" },
-            mx: "auto",
-            position: "relative",
-            borderRadius: "12px",
-            overflow: "hidden",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            width: "100%",
           }}
         >
-          <QrReader
-            delay={100}
-            style={{ 
-              width: "100%", 
-              height: "100%",
-              objectFit: "cover",
+          <Box
+            sx={{
+              width: { xs: "250px", sm: "300px", md: "320px" },
+              height: { xs: "250px", sm: "300px", md: "320px" },
+              mx: "auto",
+              position: "relative",
+              borderRadius: "12px",
+              overflow: "hidden",
             }}
-            onError={handleError}
-            onScan={handleScan}
-          />
+          >
+            <QrReader
+              delay={100}
+              style={{
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+              }}
+              onError={handleError}
+              onScan={handleScan}
+            />
+          </Box>
         </Box>
-      </Box>
       ) : (
         <Typography
           variant="body2"
@@ -89,7 +111,7 @@ const QRScannerStep = ({ qrValue, setQrValue, nextStep }) => {
           color="black"
           sx={{ fontSize: { xs: "0.9rem", sm: "1rem" } }}
         >
-          ✅ Received from QR code: {qrValue}
+          ✅ Verified QR Code: {qrValue}
         </Typography>
       )}
 
@@ -105,8 +127,7 @@ const QRScannerStep = ({ qrValue, setQrValue, nextStep }) => {
             }}
             onClick={handleReset}
           >
-
-            <Cancel sx={{ mr: 1 }} /> 
+            <Cancel sx={{ mr: 1 }} />
             Cancel
           </Button>
 
@@ -119,11 +140,10 @@ const QRScannerStep = ({ qrValue, setQrValue, nextStep }) => {
               transition: "all 0.3s ease-in-out",
             }}
             onClick={nextStep}
+            disabled={loading}
           >
-            Next
-
+            {loading ? "Validating..." : "Next"}
             <ArrowForward sx={{ ml: 1 }} />
-
           </Button>
         </Stack>
       )}
