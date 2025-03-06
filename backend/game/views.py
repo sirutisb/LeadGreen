@@ -152,19 +152,21 @@ class GameProfileView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
+def get_prize_list():
+    prizes = [
+        {"value":0, "option":  "🎁 No Reward" , "weight": 15, "style": { "backgroundColor": "red", "color": "white" } },
+        {"value":50, "option":  "🔥 50 Points", "weight": 35, "style": { "backgroundColor": "black", "color": "white" } },
+        {"value":100, "option":  "🌟 100 Points" ,"weight": 30, "style": { "backgroundColor": "red", "color": "white" } },
+        {"value":200,"option":  "💎 200 Points" , "weight": 15, "style": { "backgroundColor": "black", "color": "white" } },
+        {"value":500,"option":  "☘️ 500 Points" , "weight": 4, "style": {"backgroundColor": "red", "color": "white" } },
+        {"value":1000,"option": "🏆 1000 Points" , "weight": 1, "style": { "backgroundColor": "black", "color": "white" } },
+    ]
+    return prizes
+
 class GetPrizes(APIView):
     permission_classes = [AllowAny]
     def get(self, request, *args, **kwargs):
-        
-        prizes = [
-            {"value":0, "option":  "🎁 No Reward" , "weight": 15, "style": { "backgroundColor": "red", "color": "white" } },
-            {"value":50, "option":  "🔥 50 Points", "weight": 35, "style": { "backgroundColor": "black", "color": "white" } },
-            {"value":100, "option":  "🌟 100 Points" ,"weight": 30, "style": { "backgroundColor": "red", "color": "white" } },
-            {"value":200,"option":  "💎 200 Points" , "weight": 15, "style": { "backgroundColor": "black", "color": "white" } },
-            {"value":500,"option":  "☘️ 500 Points" , "weight": 4, "style": {"backgroundColor": "red", "color": "white" } },
-            {"value":1000,"option": "🏆 1000 Points" , "weight": 1, "style": { "backgroundColor": "black", "color": "white" } },
-        ]
-
+        prizes = get_prize_list()
         return Response({"success": True, "prizes": prizes}, status=status.HTTP_200_OK)
     
 
@@ -175,9 +177,8 @@ class SpinView(APIView):
         user = request.user
         profile = user.game_profile
 
-        prizes = GetPrizes.get(request).data["prizes"]
+        prizes = get_prize_list()
 
-        
         if profile.spins_remaining <= 0:
             return Response({
                 "success": False,
@@ -187,7 +188,7 @@ class SpinView(APIView):
             }, status=status.HTTP_200_OK)
         
         prize_index = random.choices(range(len(prizes)), weights=[prize["weight"] for prize in prizes], k=1)[0]
-        prize_reward = prizes["value"]
+        prize_reward = prizes[prize_index]["value"]
         # Use prize_option instead of prize_value
         if prize_reward == 0:  # Changed from " No Reward" string to 0
             profile.spins_remaining -= 1
