@@ -157,12 +157,12 @@ class GetPrizes(APIView):
     def get(self, request, *args, **kwargs):
         
         prizes = [
-            { "index":0,"value":0, "option":  "🎁 No Reward" , "weight": 15, "style": { "backgroundColor": "red", "color": "white" } },
-            { "index":1,"value":50, "option":  "🔥 50 Points", "weight": 35, "style": { "backgroundColor": "black", "color": "white" } },
-            { "index":2,"value":100, "option":  "🌟 100 Points" ,"weight": 30, "style": { "backgroundColor": "red", "color": "white" } },
-            { "index":3, "value":200,"option":  "💎 200 Points" , "weight": 15, "style": { "backgroundColor": "black", "color": "white" } },
-            { "index":4, "value":500,"option":  "☘️ 500 Points" , "weight": 4, "style": {"backgroundColor": "red", "color": "white" } },
-            { "index":5, "value":1000,"option": "🏆 1000 Points" , "weight": 1, "style": { "backgroundColor": "black", "color": "white" } },
+            {"value":0, "option":  "🎁 No Reward" , "weight": 15, "style": { "backgroundColor": "red", "color": "white" } },
+            {"value":50, "option":  "🔥 50 Points", "weight": 35, "style": { "backgroundColor": "black", "color": "white" } },
+            {"value":100, "option":  "🌟 100 Points" ,"weight": 30, "style": { "backgroundColor": "red", "color": "white" } },
+            {"value":200,"option":  "💎 200 Points" , "weight": 15, "style": { "backgroundColor": "black", "color": "white" } },
+            {"value":500,"option":  "☘️ 500 Points" , "weight": 4, "style": {"backgroundColor": "red", "color": "white" } },
+            {"value":1000,"option": "🏆 1000 Points" , "weight": 1, "style": { "backgroundColor": "black", "color": "white" } },
         ]
 
         return Response({"success": True, "prizes": prizes}, status=status.HTTP_200_OK)
@@ -175,8 +175,6 @@ class SpinView(APIView):
         user = request.user
         profile = user.game_profile
 
-
-        
         prizes = GetPrizes.get(request).data["prizes"]
 
         
@@ -185,13 +183,11 @@ class SpinView(APIView):
                 "success": False,
                 "message": "You have no spins left!",
                 "spins": profile.spins_remaining,
-                "points_balance": profile.points_balance,
-                "prize_index": 0
+                "points_balance": profile.points_balance
             }, status=status.HTTP_200_OK)
         
-        prize_option = random.choices([ prizes], [prize["weight"] for prize in prizes])[0]
-        prize_reward = prize_option["value"]
-        prize_index = prize_option["index"]
+        prize_index = random.choices(range(len(prizes)), weights=[prize["weight"] for prize in prizes], k=1)[0]
+        prize_reward = prizes["value"]
         # Use prize_option instead of prize_value
         if prize_reward == 0:  # Changed from " No Reward" string to 0
             profile.spins_remaining -= 1
@@ -201,19 +197,19 @@ class SpinView(APIView):
                 "message": "Better luck next time! No points won.",
                 "spins": profile.spins_remaining,
                 "points_balance": profile.points_balance,
-                "prize_index": prizes["index"]
+                "prize_index": prize_index,
             }, status=status.HTTP_200_OK)
         else:
-            profile.points_balance += prize_option  # Use prize_option instead of prize_value
-            profile.lifetime_points += prize_option
+            profile.points_balance += prize_reward  # Use prize_option instead of prize_value
+            profile.lifetime_points += prize_reward
             profile.spins_remaining -= 1
             profile.save()
             return Response({
                 "success": True,
-                "message": f"Congratulations! You won {prize_option}!",
+                "message": f"Congratulations! You won {prize_reward}!",
                 "spins": profile.spins_remaining,
                 "points_balance": profile.points_balance,
-                "prize_index": prizes["index"],
+                "prize_index": prize_index,
             }, status=status.HTTP_200_OK)
 
 
