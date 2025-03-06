@@ -151,56 +151,128 @@ class GameProfileView(APIView):
         serializer = GameProfileSerializer(profile)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+prizes = [
+            { "option": 0, "weight": 15, "style": { "backgroundColor": "red", "color": "white" } },
+            { "option": 50 , "weight": 35, "style": { "backgroundColor": "black", "color": "white" } },
+            { "option":  100 ,"weight": 30, "style": { "backgroundColor": "red", "color": "white" } },
+            { "option":  200 , "weight": 15, "style": { "backgroundColor": "black", "color": "white" } },
+            { "option":  500 , "weight": 4, "style": {"backgroundColor": "red", "color": "white" } },
+            { "option":  1000 , "weight": 1, "style": { "backgroundColor": "black", "color": "white" } },
+        ]
 
+
+class SpinView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        user = request.user
+        profile = user.game_profile
+        
+        # Use random.choices with weights and extract the first item
+        prize = random.choices(
+            prizes,
+            weights=[p["weight"] for p in prizes],
+            k=1
+        )[0]  # Get the first (and only) item from the list
+        
+        prize_option = prize["option"]  # Access dictionary key with brackets
+        
+        if profile.spins_remaining <= 0:
+            return Response({
+                "success": False,
+                "message": "You have no spins left!",
+                "spins": profile.spins_remaining,
+                "points_balance": profile.points_balance
+            }, status=status.HTTP_200_OK)
+    
+        # Use prize_option instead of prize_value
+        if prize_option == 0:  # Changed from " No Reward" string to 0
+            profile.spins_remaining -= 1
+            profile.save()
+            return Response({
+                "success": True,
+                "message": "Better luck next time! No points won.",
+                "spins": profile.spins_remaining,
+                "points_balance": profile.points_balance
+            }, status=status.HTTP_200_OK)
+        else:
+            profile.points_balance += prize_option  # Use prize_option instead of prize_value
+            profile.lifetime_points += prize_option
+            profile.spins_remaining -= 1
+            profile.save()
+            return Response({
+                "success": True,
+                "message": f"Congratulations! You won {prize_option}!",
+                "spins": profile.spins_remaining,
+                "points_balance": profile.points_balance
+            }, status=status.HTTP_200_OK)
+
+
+    
+    
+    
+    
+    
 class GetPrizes(APIView):
     permission_classes = [AllowAny]
     def get(self, request, *args, **kwargs):
-        prizes = [
-            {"prize": "10 points", "points": 10, "chance": 50},
-            {"prize": "50 points", "points": 50, "chance": 30},
-            {"prize": "100 points", "points": 100, "chance": 15},
-            {"prize": "Jackpot! 5000 points", "points": 5000, "chance": 5},
-        ]
-        return Response({"success": True, "prizes": prizes}, status=status.HTTP_200_OK)
 
-class SpinView(APIView):
-    """
-    APIview for spin
-    Request to perform a spin action
-    """
-    permission_classes = [IsAuthenticated]
-    def post(self, request, *args, **kwargs):
+        return Response({"success": True, "prizes": prizes}, status=status.HTTP_200_OK)
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    # permission_classes = [IsAuthenticated]
+    # def post(self, request, *args, **kwargs):
         
-        user = request.user
-        game_profile = user.game_profile
-        points_won = request.data.get('points')
+    #     user = request.user
+    #     game_profile = user.game_profile
+    #     points_won = request.data.get('points')
         
-        if game_profile.spins_remaining <= 0: # if not more spins remaining - cant spin
-            return Response({ 
-                "success": False,
-                "message": "You have no spins left!",
-                "spins": game_profile.spins_remaining,
-                "points_balance": game_profile.points_balance,
-            }, status=status.HTTP_200_OK)
+    #     if game_profile.spins_remaining <= 0: # if not more spins remaining - cant spin
+    #         return Response({ 
+    #             "success": False,
+    #             "message": "You have no spins left!",
+    #             "spins": game_profile.spins_remaining,
+    #             "points_balance": game_profile.points_balance,
+    #         }, status=status.HTTP_200_OK)
         
-        elif points_won == 0: # if no points won - return info
-                game_profile.spins_remaining -= 1
-                game_profile.save()
-                return Response({
-                    "success": True,
-                    "message": "Better luck next time! No points won.",
-                    "spins": game_profile.spins_remaining,
-                    "points_balance": game_profile.points_balance,
-                }, status=status.HTTP_200_OK)
-        else: # if spin valid + points are won - return amount of points won
-            game_profile.lifetime_points += points_won
-            game_profile.points_balance += points_won
-            game_profile.spins_remaining -= 1
-            game_profile.save()
-            return Response({
-                "success": True,
-                "message": f"Congratulations! You won {points_won} points!",
-                "spins": game_profile.spins_remaining,
-                "points_balance": game_profile.points_balance,
-            }, status=status.HTTP_200_OK)
+    #     elif points_won == 0: # if no points won - return info
+    #             game_profile.spins_remaining -= 1
+    #             game_profile.save()
+    #             return Response({
+    #                 "success": True,
+    #                 "message": "Better luck next time! No points won.",
+    #                 "spins": game_profile.spins_remaining,
+    #                 "points_balance": game_profile.points_balance,
+    #             }, status=status.HTTP_200_OK)
+    #     else: # if spin valid + points are won - return amount of points won
+    #         game_profile.lifetime_points += points_won
+    #         game_profile.points_balance += points_won
+    #         game_profile.spins_remaining -= 1
+    #         game_profile.save()
+    #         return Response({
+    #             "success": True,
+    #             "message": f"Congratulations! You won {points_won} points!",
+    #             "spins": game_profile.spins_remaining,
+    #             "points_balance": game_profile.points_balance,
+    #         }, status=status.HTTP_200_OK)
             
