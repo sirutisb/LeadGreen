@@ -157,12 +157,12 @@ class GetPrizes(APIView):
     def get(self, request, *args, **kwargs):
         
         prizes = [
-            { "prize":0, "option":  "🎁 No Reward" , "weight": 15, "style": { "backgroundColor": "red", "color": "white" } },
-            { "prize":50, "option":  "🔥 50 Points", "weight": 35, "style": { "backgroundColor": "black", "color": "white" } },
-            { "prize":100, "option":  "🌟 100 Points" ,"weight": 30, "style": { "backgroundColor": "red", "color": "white" } },
-            {  "prize":200,"option":  "💎 200 Points" , "weight": 15, "style": { "backgroundColor": "black", "color": "white" } },
-            {  "prize":500,"option":  "☘️ 500 Points" , "weight": 4, "style": {"backgroundColor": "red", "color": "white" } },
-            {  "prize":1000,"option": "🏆 1000 Points" , "weight": 1, "style": { "backgroundColor": "black", "color": "white" } },
+            { "index":0,"value":0, "option":  "🎁 No Reward" , "weight": 15, "style": { "backgroundColor": "red", "color": "white" } },
+            { "index":1,"value":50, "option":  "🔥 50 Points", "weight": 35, "style": { "backgroundColor": "black", "color": "white" } },
+            { "index":2,"value":100, "option":  "🌟 100 Points" ,"weight": 30, "style": { "backgroundColor": "red", "color": "white" } },
+            { "index":3, "value":200,"option":  "💎 200 Points" , "weight": 15, "style": { "backgroundColor": "black", "color": "white" } },
+            { "index":4, "value":500,"option":  "☘️ 500 Points" , "weight": 4, "style": {"backgroundColor": "red", "color": "white" } },
+            { "index":5, "value":1000,"option": "🏆 1000 Points" , "weight": 1, "style": { "backgroundColor": "black", "color": "white" } },
         ]
 
         return Response({"success": True, "prizes": prizes}, status=status.HTTP_200_OK)
@@ -174,35 +174,34 @@ class SpinView(APIView):
     def post(self, request, *args, **kwargs):
         user = request.user
         profile = user.game_profile
+
+
         
-        get_prizes = GetPrizes()
-        prizes = get_prizes.get(request).data["prizes"]
-        # Use random.choices with weights and extract the first item
-        prize = random.choices(
-            prizes,
-            weights=[p["weight"] for p in prizes],
-            k=1
-        )[0]  # Get the first (and only) item from the list
-        
-        prize_option = prize["prize"]  # Access dictionary key with brackets
+        prizes = GetPrizes.get(request).data["prizes"]
+
         
         if profile.spins_remaining <= 0:
             return Response({
                 "success": False,
                 "message": "You have no spins left!",
                 "spins": profile.spins_remaining,
-                "points_balance": profile.points_balance
+                "points_balance": profile.points_balance,
+                "prize_index": 0
             }, status=status.HTTP_200_OK)
-    
+        
+        prize_option = random.choices([ prizes], [prize["weight"] for prize in prizes])[0]
+        prize_reward = prize_option["value"]
+        prize_index = prize_option["index"]
         # Use prize_option instead of prize_value
-        if prize_option == 0:  # Changed from " No Reward" string to 0
+        if prize_reward == 0:  # Changed from " No Reward" string to 0
             profile.spins_remaining -= 1
             profile.save()
             return Response({
                 "success": True,
                 "message": "Better luck next time! No points won.",
                 "spins": profile.spins_remaining,
-                "points_balance": profile.points_balance
+                "points_balance": profile.points_balance,
+                "prize_index": prizes["index"]
             }, status=status.HTTP_200_OK)
         else:
             profile.points_balance += prize_option  # Use prize_option instead of prize_value
@@ -213,7 +212,8 @@ class SpinView(APIView):
                 "success": True,
                 "message": f"Congratulations! You won {prize_option}!",
                 "spins": profile.spins_remaining,
-                "points_balance": profile.points_balance
+                "points_balance": profile.points_balance,
+                "prize_index": prizes["index"],
             }, status=status.HTTP_200_OK)
 
 
