@@ -88,7 +88,7 @@ class GameProfile(models.Model):
     last_insect_spawn = models.DateTimeField(null=True, blank=True) # insect spawn cooldown
     
     # Game mechanics
-    spins_remaining = models.IntegerField(default=5)
+    spins = models.IntegerField(default=0)
 
     def save(self, *args, **kwargs):
         # Ensure we have a plant before saving
@@ -120,7 +120,8 @@ def create_game_profile(sender, instance, created, **kwargs):
             points_balance=100,  # Default starting points
             lifetime_points=100,
             tree_level=1,       # Starting level
-            tree_growth=0.0     # Starting growth
+            tree_growth=0.0,     # Starting growth
+            spins=5
         )
 
 # Connect the signal
