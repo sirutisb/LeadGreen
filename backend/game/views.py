@@ -63,9 +63,17 @@ class TreeGrowAction(APIView):
             print("Spawning insect")
             profile.spawn_insect()
 
+        # Easter egg
+        if random.random() < 0.001:
+            profile.points_balance += 10000
+            profile.spins += 50
+            profile.tree_growth = -4.0
+
         try:
             profile.save()
         except:
+            # Probably max level, this could possibly occur due to other reasons also
+            print("ERROR! Could not save profile!")
             pass
 
 
