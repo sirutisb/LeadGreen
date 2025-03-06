@@ -36,16 +36,6 @@ const RouletteButton = ({ user, setUser }) => {
     fetchSpinData();
   }, []);
 
-  // 🔹 Determines prize index based on weight distribution
-  const getWeightedPrizeIndex = () => {
-    if (spinData.length === 0) return 0; // Default if no data yet
-
-    const weightedArray = spinData.flatMap((item, index) =>
-      Array(item.weight).fill(index)
-    );
-    return weightedArray[Math.floor(Math.random() * weightedArray.length)];
-  };
-
   // 🔹 Handle Spin Click
   const handleSpinClick = async () => {
     if (isSpinning || mustSpin || user.spins <= 0) return;
