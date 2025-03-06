@@ -184,7 +184,8 @@ class SpinView(APIView):
                 "success": False,
                 "message": "You have no spins left!",
                 "spins": profile.spins_remaining,
-                "points_balance": profile.points_balance
+                "points_balance": profile.points_balance,
+                "prize_amount": 0,
             }, status=status.HTTP_200_OK)
         
         prize_index = random.choices(range(len(prizes)), weights=[prize["weight"] for prize in prizes], k=1)[0]
@@ -199,6 +200,7 @@ class SpinView(APIView):
                 "spins": profile.spins_remaining,
                 "points_balance": profile.points_balance,
                 "prize_index": prize_index,
+                "prize_amount": prize_reward,
             }, status=status.HTTP_200_OK)
         else:
             profile.points_balance += prize_reward  # Use prize_option instead of prize_value
@@ -211,6 +213,7 @@ class SpinView(APIView):
                 "spins": profile.spins_remaining,
                 "points_balance": profile.points_balance,
                 "prize_index": prize_index,
+                "prize_amount": prize_reward,
             }, status=status.HTTP_200_OK)
 
 
