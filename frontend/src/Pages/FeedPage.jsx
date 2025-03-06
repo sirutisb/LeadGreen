@@ -1,12 +1,15 @@
-import React from "react";
+import React, { useContext } from "react";
 import Feed from "../Components/Feed/Feed";
 import MakePost from "../Components/MakePost/MakePost";
 import { Box } from "@mui/material";
 import NavBar from "../Components/NavBar/NavBar";
 import Page from "./Page";
 import Footer from "../Components/Footer";
+import AuthContext from "../Context/AuthContext";
 
 function FeedPage() {
+    const {user} = useContext(AuthContext)
+    console.log(user)
   return (
     <Page className="relative bg-white">
       <NavBar />
@@ -24,7 +27,7 @@ function FeedPage() {
           >
 
           {/* Create Post Button */}
-          <MakePost />
+          {user && <MakePost />}
 
           {/* Feed Section */}
           <Box
