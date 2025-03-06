@@ -151,15 +151,22 @@ class GameProfileView(APIView):
         serializer = GameProfileSerializer(profile)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-prizes = [
-            { "option": 0, "weight": 15, "style": { "backgroundColor": "red", "color": "white" } },
-            { "option": 50 , "weight": 35, "style": { "backgroundColor": "black", "color": "white" } },
-            { "option":  100 ,"weight": 30, "style": { "backgroundColor": "red", "color": "white" } },
-            { "option":  200 , "weight": 15, "style": { "backgroundColor": "black", "color": "white" } },
-            { "option":  500 , "weight": 4, "style": {"backgroundColor": "red", "color": "white" } },
-            { "option":  1000 , "weight": 1, "style": { "backgroundColor": "black", "color": "white" } },
+
+class GetPrizes(APIView):
+    permission_classes = [AllowAny]
+    def get(self, request, *args, **kwargs):
+        
+        prizes = [
+            { "prize":0, "option":  "🎁 No Reward" , "weight": 15, "style": { "backgroundColor": "red", "color": "white" } },
+            { "prize":50, "option":  "🔥 50 Points", "weight": 35, "style": { "backgroundColor": "black", "color": "white" } },
+            { "prize":100, "option":  "🌟 100 Points" ,"weight": 30, "style": { "backgroundColor": "red", "color": "white" } },
+            {  "prize":200,"option":  "💎 200 Points" , "weight": 15, "style": { "backgroundColor": "black", "color": "white" } },
+            {  "prize":500,"option":  "☘️ 500 Points" , "weight": 4, "style": {"backgroundColor": "red", "color": "white" } },
+            {  "prize":1000,"option": "🏆 1000 Points" , "weight": 1, "style": { "backgroundColor": "black", "color": "white" } },
         ]
 
+        return Response({"success": True, "prizes": prizes}, status=status.HTTP_200_OK)
+    
 
 class SpinView(APIView):
     permission_classes = [IsAuthenticated]
@@ -168,6 +175,8 @@ class SpinView(APIView):
         user = request.user
         profile = user.game_profile
         
+        get_prizes = GetPrizes()
+        prizes = get_prizes.get(request).data["prizes"]
         # Use random.choices with weights and extract the first item
         prize = random.choices(
             prizes,
@@ -175,7 +184,7 @@ class SpinView(APIView):
             k=1
         )[0]  # Get the first (and only) item from the list
         
-        prize_option = prize["option"]  # Access dictionary key with brackets
+        prize_option = prize["prize"]  # Access dictionary key with brackets
         
         if profile.spins_remaining <= 0:
             return Response({
@@ -213,11 +222,11 @@ class SpinView(APIView):
     
     
     
-class GetPrizes(APIView):
-    permission_classes = [AllowAny]
-    def get(self, request, *args, **kwargs):
+# class GetPrizes(APIView):
+#     permission_classes = [AllowAny]
+#     def get(self, request, *args, **kwargs):
 
-        return Response({"success": True, "prizes": prizes}, status=status.HTTP_200_OK)
+#         return Response({"success": True, "prizes": prizes}, status=status.HTTP_200_OK)
     
     
     
@@ -229,7 +238,12 @@ class GetPrizes(APIView):
     
     
     
-    
+#      { option: "🎁 No Reward", weight: 15, style: { backgroundColor: "red", color: "white" } },
+#   { option: "🔥 50 Points", weight: 35, style: { backgroundColor: "black", color: "white" } },
+#   { option: "🌟 100 Points", weight: 30, style: { backgroundColor: "red", color: "white" } },
+#   { option: "💎 200 Points", weight: 15, style: { backgroundColor: "black", color: "white" } },
+#   { option: "☘️ 500 Points", weight: 4, style: { backgroundColor: "red", color: "white" } },
+#   { option: "🏆 1000 Points", weight: 1, style: { backgroundColor: "black", color: "white" } },
     
     
     
