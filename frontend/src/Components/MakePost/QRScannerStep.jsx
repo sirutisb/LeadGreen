@@ -1,47 +1,56 @@
 import React, { useState } from "react";
 import { Box, Typography, Button, Stack } from "@mui/material";
-import QrReader from "react-qr-scanner";
+//import QrReader from "react-qr-scanner";
+import { Scanner } from '@yudiel/react-qr-scanner';
 import { ArrowForward, Cancel } from "@mui/icons-material";
 import { toastError, toastInfo, toastSuccess } from "../utils/toastCustom";
 import axiosInstance from "../../Context/axiosInstance"; // Import Axios instance
 
 const QRScannerStep = ({ qrValue, setQrValue, nextStep }) => {
   const [isScanning, setIsScanning] = useState(qrValue === "");
+  const [isPaused, setIsPaused] = useState(false);
   const [loading, setLoading] = useState(false);
-
+  
   const validateQRCode = async (scannedCode) => {
     try {
-      setLoading(true);
-      console.log({ qr_code: scannedCode })
-      const response = await axiosInstance.get("qrcodes/",{params: { qr_code: scannedCode }});
-
-      if (response.data.exists) {
-        setQrValue(scannedCode);
-        setIsScanning(false);
-        toastSuccess(`✅ QR Code Verified: ${scannedCode}`);
-      } else {
-        toastError("❌ Invalid QR Code! Please scan again.");
-        setIsScanning(true);
-      }
+      const response = await axiosInstance.get("qrcodes/", {params: { qr_code: scannedCode }});
+      return response.data.exists;
     } catch (error) {
-      console.error("QR Code Validation Error:", error);
-      toastError("❌ QR Validation Failed! Try again.");
-      setIsScanning(true);
-    } finally {
+      console.error('Error validating QR code:', error);
+      return false;
+    }
+  };
+
+  const handleScan = async (detectedCodes) => {
+    if (detectedCodes && detectedCodes.length > 0) {
+      const code = detectedCodes[0].rawValue; // Get the QR code value
+
+      setLoading(true);
+      setIsPaused(true);
+      toastInfo('🔃 Validating QR code...');
+      const isValid = await validateQRCode(code);
+      setQrValue(code); // temporarily set the QR code value (need to validate it)
+
+      // sleep to simulate a delay
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      
+      if (isValid) {
+        toastSuccess(`✅ QR Code Verified: ${code}`);
+        setIsScanning(false);
+      } else {
+        toastError(`❌ QR Code Invalid: "${code}". Please scan again.`);
+        setQrValue("");
+      }
+
       setLoading(false);
+      setIsPaused(false);
     }
   };
 
-  const handleScan = (data) => {
-    if (data) {
-      const scannedCode = data.text || data;
-      validateQRCode(scannedCode);
-    }
-  };
-
-  const handleError = (err) => {
-    console.error("QR Scan Error:", err);
-    toastError("QR Scan Failed!");
+  // Callback for handling errors (e.g., camera access issues)
+  const handleError = (error) => {
+    console.error('Scanner error:', error);
+    toastError('Error accessing camera. Please check permissions.');
   };
 
   const handleReset = () => {
@@ -91,7 +100,7 @@ const QRScannerStep = ({ qrValue, setQrValue, nextStep }) => {
               overflow: "hidden",
             }}
           >
-            <QrReader
+            {/* <QrReader
               delay={100}
               style={{
                 width: "100%",
@@ -100,7 +109,19 @@ const QRScannerStep = ({ qrValue, setQrValue, nextStep }) => {
               }}
               onError={handleError}
               onScan={handleScan}
-            />
+            /> */}
+
+          {/* new scanner code */}
+          <Scanner
+          onScan={handleScan}
+          onError={handleError}
+          scanDelay={500}
+          paused={isPaused}
+          // styles={{
+          //   container: { width: '300px', margin: '0 auto' }, // Optional: Customize the scanner size
+          // }}
+          />
+
           </Box>
         </Box>
       ) : (
