@@ -10,6 +10,7 @@ const PlantDisplay = ({ plantRef, wiggle, scale, plantImage, plantName, insect, 
       transition={{ duration: 0.5, ease: "easeInOut" }}
       className="relative sm:mt-8 md:mt-10 lg:mt-12"
       onClick={onClick}
+      style={{ userSelect: "none" }} // Inline CSS to disable selection
     >
       <motion.img 
         src={import.meta.env.VITE_BACKEND + plantImage}

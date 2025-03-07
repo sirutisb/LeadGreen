@@ -11,6 +11,8 @@ const InsectDisplay = ({ insect }) => {
       className="absolute -top-6 left-1/2 transform -translate-x-1/2 w-20 h-20 sm:w-12 sm:h-12 md:w-14 md:h-14"
       animate={{ y: [0, -5, 0] }}
       transition={{ duration: 1, repeat: Infinity, repeatType: "reverse", ease: "easeInOut" }}
+      draggable={false}
+      style={{ userSelect: "none" }} // Inline CSS to disable selection
     />
   );
 };
