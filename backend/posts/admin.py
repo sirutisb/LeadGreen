@@ -20,13 +20,13 @@ class PostAdmin(admin.ModelAdmin):
                 post.points_received = reward
                 post.save()
 
-                # Now, update the user's game profile to add the reward points
+                # Update the user's game profile to add the reward points
                 try:
                     # Assumes a one-to-one relationship with related_name='game_profile'
                     game_profile = post.user.game_profile
                     game_profile.points_balance += reward
                     game_profile.lifetime_points += reward
-                    game_profile.spins_remaining += 1
+                    game_profile.spins += 1
                     game_profile.save()
                 except Exception as e:
                     self.message_user(request, f"Error updating points for user {post.user.username}: {e}", level='error')
