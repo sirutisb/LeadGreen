@@ -28,6 +28,7 @@ class InsectSerializer(serializers.ModelSerializer):
         model = Insect
         fields = ['name', 'level', 'spawn_chance', 'image']
 
+    # Override to explicitly return None if no insect is present
     def to_representation(self, instance):
         if instance is None:
             return None
@@ -42,4 +43,4 @@ class GameProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = GameProfile
-        fields = ['points_balance', 'tree', 'insect', 'spins_remaining']
+        fields = ['points_balance', 'tree', 'insect', 'spins']

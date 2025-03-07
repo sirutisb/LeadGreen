@@ -13,7 +13,7 @@ class ShopItem(models.Model):
     cost = models.IntegerField(default=0)
 
     def __str__(self):
-        return f"{self.name} - {self.cost} points"
+        return f"{self.name} | Cost: {self.cost} | Effect: {self.effect}"
 
 
 class UserItem(models.Model):
@@ -22,7 +22,7 @@ class UserItem(models.Model):
     quantity = models.IntegerField(default=0)
 
     def __str__(self):
-        return f"{self.user.username} - x{self.quantity} {self.item.name}"
+        return f"{self.user.username} -> x{self.quantity} {self.item.name}"
     
 
 class Plant(models.Model):
@@ -32,9 +32,15 @@ class Plant(models.Model):
     """
     name = models.CharField(max_length=32)  # exampe - "Leafy", "Sprouto"
     level = models.IntegerField(unique=True)  # each level - one plant
+    # image = models.ImageField(
+    #     upload_to="plants/",
+    #     blank=True,
+    #     null=True
+    # )
+    # Dont allow for null or blank images
     image = models.ImageField(
         upload_to="plants/",
-        blank=True,
+        blank=False,
         null=True
     )
 
@@ -42,7 +48,7 @@ class Plant(models.Model):
         ordering = ['level']  # Order plants by level
 
     def __str__(self):
-        return f"{self.name} (Level {self.level})"
+        return f"{self.name} | Level: {self.level}"
 
 class Insect(models.Model):
     """
@@ -53,12 +59,12 @@ class Insect(models.Model):
     spawn_chance = models.FloatField(default=0.2)  # prob of spawning
     image = models.ImageField(
         upload_to="insects/",
-        blank=True,
+        blank=False,
         null=True
     )
 
     def __str__(self):
-        return self.name
+        return f"{self.name} | Level: {self.level} | Spawn Chance: {self.spawn_chance}"
 
 
 class GameProfile(models.Model):
@@ -80,18 +86,31 @@ class GameProfile(models.Model):
     # Plant progress
     tree_level = models.IntegerField(default=1)  # Start at level 1
     tree_growth = models.FloatField(default=0.0)  # Progress towards next level (0.0 to 1.0)
-    #current_plant = models.ForeignKey(Plant, on_delete=models.PROTECT)  # Changed to PROTECT and removed null=True
-    current_plant = models.ForeignKey(Plant, on_delete=models.SET_NULL, null=True, blank=True)
+    current_plant = models.ForeignKey(Plant, on_delete=models.PROTECT, null=True, blank=True)
     
     # Insect mechanics
     current_insect = models.ForeignKey(Insect, on_delete=models.SET_NULL, null=True, blank=True)
     last_insect_spawn = models.DateTimeField(null=True, blank=True) # insect spawn cooldown
     
     # Game mechanics
-    spins_remaining = models.IntegerField(default=5)
+    spins = models.IntegerField(default=0)
+
+    def add_points(self, amount):
+        """Add points to the profile"""
+        self.points_balance += amount
+        self.lifetime_points += amount
+        self.save()
+
+    def grow_tree(self, amount):
+        """Grow the tree by the given amount"""
+        self.tree_growth += amount
+        while self.tree_growth >= 1.0:
+            self.tree_growth -= 1.0
+            self.tree_level += 1
+            self.save()
 
     def save(self, *args, **kwargs):
-        # Ensure we have a plant before saving
+        # Ensure the plant matches the current tree level
         if not self.current_plant_id or self.current_plant.level != self.tree_level:
             self.current_plant = Plant.objects.get(level=self.tree_level)
         super().save(*args, **kwargs)
@@ -106,7 +125,7 @@ class GameProfile(models.Model):
             self.save()
 
     def __str__(self):
-        return f"{self.user.username}'s Game Profile | Level {self.tree_level}"
+        return f"{self.user.username} | Level {self.tree_level} | Points {self.points_balance} | Spins {self.spins}"
 
 @receiver(post_save, sender=UserProfile)
 def create_game_profile(sender, instance, created, **kwargs):
@@ -120,7 +139,8 @@ def create_game_profile(sender, instance, created, **kwargs):
             points_balance=100,  # Default starting points
             lifetime_points=100,
             tree_level=1,       # Starting level
-            tree_growth=0.0     # Starting growth
+            tree_growth=0.0,     # Starting growth
+            spins=5
         )
 
 # Connect the signal

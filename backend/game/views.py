@@ -16,25 +16,23 @@ from django.db import models
 import random
 
 def build_response(profile, success, message, status_code):
-    """
-    Serapate method to build the response to frontend after game logic complete
-    """
-    plant_serializer = PlantProgressSerializer(profile)
-    insect_data = InsectSerializer(profile.current_insect).data if profile.current_insect is not None else None
-    return Response({
+    # Serialize the updated game profile
+    serializer = GameProfileSerializer(profile)
+    response_data = serializer.data
+    # Add custom messages
+    response_data.update({
         "success": success,
         "message": message,
-        "points_balance": profile.points_balance,
-        "tree": plant_serializer.data,
-        "insect": insect_data
-    }, status=status_code)
+    })
+    return Response(response_data, status=status_code)
 
 class TreeGrowAction(APIView):
     """
     APIView
-    Holds logic with Tree growth 
-    Returns post request based on input from frontend (used soil, water, etc)
+    Generic class for tree growth actions
+    Returns response based on input from API requests (used soil, water, etc)
     """
+    
     permission_classes = [IsAuthenticated]
     action_cost = 0
     growth_amount = 0
@@ -47,15 +45,13 @@ class TreeGrowAction(APIView):
         if profile.current_insect is not None:
             return build_response(profile, False, "There is an insect on the tree! Remove it first.", status.HTTP_200_OK)
 
-        # adjust level and points
         if profile.points_balance < self.action_cost:
             return build_response(profile, False, f"Not enough points, you have only {profile.points_balance}, you need {self.action_cost}", status.HTTP_200_OK)
 
-        profile.tree_growth += self.growth_amount
-        while profile.tree_growth >= 1.0:
-            profile.tree_growth -= 1.0
-            profile.tree_level += 1
+        # adjust level and points
         profile.points_balance -= self.action_cost
+        profile.grow_tree(self.growth_amount)
+        profile.save()
 
         # chance for snail to spawn
         # TODO: make it so theres a cooldown and you cant get the snail again for x amount of actions
@@ -66,35 +62,25 @@ class TreeGrowAction(APIView):
         try:
             profile.save()
         except:
+            # Probably max level, this could possibly occur due to other reasons also
+            print("ERROR! Could not save profile!")
             pass
 
-
-        # # Serialize the updated game profile
-        # serializer = GameProfileSerializer(profile)
-        # response_data = serializer.data
-        # # Optionally add custom messages
-        # response_data.update({
-        #     "success": True,
-        #     "message": "Action applied successfully.",
-        # })
-        # return Response(response_data, status=status.HTTP_200_OK)
         return build_response(profile, True, "Action applied successfully.", status.HTTP_200_OK)
 
-
 class WaterTreeAction(TreeGrowAction):
-    """Child class of tree growth action for water action (different parameters)"""
+    """Implementation of Tree Watering Action with different parameters"""
     action_cost = 10
     growth_amount = 0.1
     insect_spawn_chance = 0.20
 
 class SoilTreeAction(TreeGrowAction):
-    """Child class of Tree growth action with different parameters"""
+    """Implementation of Tree Soil Action with different parameters"""
     action_cost = 20
     growth_amount = 0.3
     insect_spawn_chance = 0.0001
 
-
-# TODO: Make cleaner by inheriting
+# TODO: Make cleaner
 class GloveTreeAction(APIView):
     """
     Glove action too different from soil + water to be child class of Tree Growth
@@ -117,32 +103,15 @@ class GloveTreeAction(APIView):
             return build_response(profile, False, f"Not enough points, you have only {profile.points_balance}, you need {self.action_cost}", status.HTTP_200_OK)
 
         profile.current_insect = None
-        profile.tree_growth += self.growth_amount
-        while profile.tree_growth >= 1.0:
-            profile.tree_growth -= 1.0
-            profile.tree_level += 1
         profile.points_balance -= self.action_cost
-
+        profile.grow_tree(self.growth_amount)
         profile.save()
-
-
-        # # Serialize the updated game profile
-        # serializer = GameProfileSerializer(profile)
-        # response_data = serializer.data
-        # # Optionally add custom messages
-        # response_data.update({
-        #     "success": True,
-        #     "message": "Action applied successfully.",
-        # })
-        # return Response(response_data, status=status.HTTP_200_OK)
 
         return build_response(profile, True, "Action applied successfully.", status.HTTP_200_OK)
 
-
-
 class GameProfileView(APIView):
     """
-    Get request made by frontend for the user infomation in db
+    Get request from an authenticated user to get their game profile state data
     """
     permission_classes = [IsAuthenticated]
     def get(self, request, *args, **kwargs):
@@ -151,7 +120,7 @@ class GameProfileView(APIView):
         serializer = GameProfileSerializer(profile)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-
+# TODO: move to database
 def get_prize_list():
     prizes = [
         {"value":0, "option":  "🎁 No Reward" , "weight": 15, "style": { "backgroundColor": "red", "color": "white" } },
@@ -170,6 +139,7 @@ class GetPrizes(APIView):
         return Response({"success": True, "prizes": prizes}, status=status.HTTP_200_OK)
     
 
+# TODO: Reuse functions to avoid response code duplication
 class SpinView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -179,114 +149,40 @@ class SpinView(APIView):
 
         prizes = get_prize_list()
 
-        if profile.spins_remaining <= 0:
+        if profile.spins <= 0:
             return Response({
                 "success": False,
                 "message": "You have no spins left!",
-                "spins": profile.spins_remaining,
+                "spins": profile.spins,
                 "points_balance": profile.points_balance,
                 "prize_amount": 0,
             }, status=status.HTTP_200_OK)
         
+        # Select random prize based on weights
         prize_index = random.choices(range(len(prizes)), weights=[prize["weight"] for prize in prizes], k=1)[0]
         prize_reward = prizes[prize_index]["value"]
-        # Use prize_option instead of prize_value
-        if prize_reward == 0:  # Changed from " No Reward" string to 0
-            profile.spins_remaining -= 1
+
+        # No points won
+        if prize_reward == 0:
+            profile.spins -= 1
             profile.save()
             return Response({
                 "success": True,
                 "message": "Better luck next time! No points won.",
-                "spins": profile.spins_remaining,
+                "spins": profile.spins,
                 "points_balance": profile.points_balance,
                 "prize_index": prize_index,
                 "prize_amount": prize_reward,
             }, status=status.HTTP_200_OK)
-        else:
-            profile.points_balance += prize_reward  # Use prize_option instead of prize_value
-            profile.lifetime_points += prize_reward
-            profile.spins_remaining -= 1
+        else: # Won points
+            profile.add_points(prize_reward)
+            profile.spins -= 1
             profile.save()
             return Response({
                 "success": True,
                 "message": f"Congratulations! You won {prize_reward}!",
-                "spins": profile.spins_remaining,
+                "spins": profile.spins,
                 "points_balance": profile.points_balance,
                 "prize_index": prize_index,
                 "prize_amount": prize_reward,
             }, status=status.HTTP_200_OK)
-
-
-    
-    
-    
-    
-    
-# class GetPrizes(APIView):
-#     permission_classes = [AllowAny]
-#     def get(self, request, *args, **kwargs):
-
-#         return Response({"success": True, "prizes": prizes}, status=status.HTTP_200_OK)
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-#      { option: "🎁 No Reward", weight: 15, style: { backgroundColor: "red", color: "white" } },
-#   { option: "🔥 50 Points", weight: 35, style: { backgroundColor: "black", color: "white" } },
-#   { option: "🌟 100 Points", weight: 30, style: { backgroundColor: "red", color: "white" } },
-#   { option: "💎 200 Points", weight: 15, style: { backgroundColor: "black", color: "white" } },
-#   { option: "☘️ 500 Points", weight: 4, style: { backgroundColor: "red", color: "white" } },
-#   { option: "🏆 1000 Points", weight: 1, style: { backgroundColor: "black", color: "white" } },
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    # permission_classes = [IsAuthenticated]
-    # def post(self, request, *args, **kwargs):
-        
-    #     user = request.user
-    #     game_profile = user.game_profile
-    #     points_won = request.data.get('points')
-        
-    #     if game_profile.spins_remaining <= 0: # if not more spins remaining - cant spin
-    #         return Response({ 
-    #             "success": False,
-    #             "message": "You have no spins left!",
-    #             "spins": game_profile.spins_remaining,
-    #             "points_balance": game_profile.points_balance,
-    #         }, status=status.HTTP_200_OK)
-        
-    #     elif points_won == 0: # if no points won - return info
-    #             game_profile.spins_remaining -= 1
-    #             game_profile.save()
-    #             return Response({
-    #                 "success": True,
-    #                 "message": "Better luck next time! No points won.",
-    #                 "spins": game_profile.spins_remaining,
-    #                 "points_balance": game_profile.points_balance,
-    #             }, status=status.HTTP_200_OK)
-    #     else: # if spin valid + points are won - return amount of points won
-    #         game_profile.lifetime_points += points_won
-    #         game_profile.points_balance += points_won
-    #         game_profile.spins_remaining -= 1
-    #         game_profile.save()
-    #         return Response({
-    #             "success": True,
-    #             "message": f"Congratulations! You won {points_won} points!",
-    #             "spins": game_profile.spins_remaining,
-    #             "points_balance": game_profile.points_balance,
-    #         }, status=status.HTTP_200_OK)
-            
