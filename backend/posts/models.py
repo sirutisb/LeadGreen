@@ -6,10 +6,12 @@ from qrcodes.models import QRCode
 
 class Post(models.Model):
     user = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
+    qr_code = models.ForeignKey(QRCode, on_delete=models.PROTECT)
+    #qr_code = models.ForeignKey(QRCode, on_delete=models.PROTECT, to_field='code')
+    #qr_code = models.CharField(max_length=32) # why was this a normal field in the first place
     image = models.ImageField(upload_to='posts/', blank=False, null=False)
     caption = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    qr_code = models.CharField(max_length=32)
     private = models.BooleanField(default=False)
     approved = models.BooleanField(null=True, default=None)
     points_received = models.IntegerField(default=0)
