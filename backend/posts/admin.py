@@ -28,8 +28,7 @@ class PostAdmin(admin.ModelAdmin):
                 game_profile = post.user.game_profile
 
                 # TODO give game_profile a private method to give points (makes sure there are no discrepency between points_balance and lifetime_points)
-                game_profile.points_balance += reward
-                game_profile.lifetime_points += reward
+                game_profile.add_points(reward)
                 game_profile.spins += 1
                 game_profile.save()
             except Exception as e:

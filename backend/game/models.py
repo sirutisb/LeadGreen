@@ -86,8 +86,7 @@ class GameProfile(models.Model):
     # Plant progress
     tree_level = models.IntegerField(default=1)  # Start at level 1
     tree_growth = models.FloatField(default=0.0)  # Progress towards next level (0.0 to 1.0)
-    #current_plant = models.ForeignKey(Plant, on_delete=models.PROTECT)  # Changed to PROTECT and removed null=True
-    current_plant = models.ForeignKey(Plant, on_delete=models.SET_NULL, null=True, blank=True)
+    current_plant = models.ForeignKey(Plant, on_delete=models.PROTECT, null=True, blank=True)
     
     # Insect mechanics
     current_insect = models.ForeignKey(Insect, on_delete=models.SET_NULL, null=True, blank=True)
@@ -96,8 +95,22 @@ class GameProfile(models.Model):
     # Game mechanics
     spins = models.IntegerField(default=0)
 
+    def add_points(self, amount):
+        """Add points to the profile"""
+        self.points_balance += amount
+        self.lifetime_points += amount
+        self.save()
+
+    def grow_tree(self, amount):
+        """Grow the tree by the given amount"""
+        self.tree_growth += amount
+        while self.tree_growth >= 1.0:
+            self.tree_growth -= 1.0
+            self.tree_level += 1
+            self.save()
+
     def save(self, *args, **kwargs):
-        # Ensure we have a plant before saving
+        # Ensure the plant matches the current tree level
         if not self.current_plant_id or self.current_plant.level != self.tree_level:
             self.current_plant = Plant.objects.get(level=self.tree_level)
         super().save(*args, **kwargs)
