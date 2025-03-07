@@ -13,7 +13,7 @@ class ShopItem(models.Model):
     cost = models.IntegerField(default=0)
 
     def __str__(self):
-        return f"{self.name} - {self.cost} points"
+        return f"{self.name} | Cost: {self.cost} | Effect: {self.effect}"
 
 
 class UserItem(models.Model):
@@ -22,7 +22,7 @@ class UserItem(models.Model):
     quantity = models.IntegerField(default=0)
 
     def __str__(self):
-        return f"{self.user.username} - x{self.quantity} {self.item.name}"
+        return f"{self.user.username} -> x{self.quantity} {self.item.name}"
     
 
 class Plant(models.Model):
@@ -32,9 +32,15 @@ class Plant(models.Model):
     """
     name = models.CharField(max_length=32)  # exampe - "Leafy", "Sprouto"
     level = models.IntegerField(unique=True)  # each level - one plant
+    # image = models.ImageField(
+    #     upload_to="plants/",
+    #     blank=True,
+    #     null=True
+    # )
+    # Dont allow for null or blank images
     image = models.ImageField(
         upload_to="plants/",
-        blank=True,
+        blank=False,
         null=True
     )
 
@@ -42,7 +48,7 @@ class Plant(models.Model):
         ordering = ['level']  # Order plants by level
 
     def __str__(self):
-        return f"{self.name} (Level {self.level})"
+        return f"{self.name} | Level: {self.level}"
 
 class Insect(models.Model):
     """
@@ -53,12 +59,12 @@ class Insect(models.Model):
     spawn_chance = models.FloatField(default=0.2)  # prob of spawning
     image = models.ImageField(
         upload_to="insects/",
-        blank=True,
+        blank=False,
         null=True
     )
 
     def __str__(self):
-        return self.name
+        return f"{self.name} | Level: {self.level} | Spawn Chance: {self.spawn_chance}"
 
 
 class GameProfile(models.Model):
@@ -106,7 +112,7 @@ class GameProfile(models.Model):
             self.save()
 
     def __str__(self):
-        return f"{self.user.username}'s Game Profile | Level {self.tree_level}"
+        return f"{self.user.username} | Level {self.tree_level} | Points {self.points_balance} | Spins {self.spins}"
 
 @receiver(post_save, sender=UserProfile)
 def create_game_profile(sender, instance, created, **kwargs):

@@ -17,7 +17,7 @@ class Post(models.Model):
     points_received = models.IntegerField(default=0)
 
     def __str__(self):
-        return f"{self.user.username} - {self.caption} | Points: {self.points_received}"
+        return f"{self.user.username} | {self.caption} - Points: {self.points_received}"
 
     class Meta:
         ordering = ['-created_at']
