@@ -9,6 +9,8 @@ export default function useGameData() {
   const [prevLevel, setPrevLevel] = useState(0);
   const [initialLoad, setInitialLoad] = useState(true);
   const [scale, setScale] = useState(1);
+  const [leveledUp, setLeveledUp] = useState(false);
+  const [oldPlantName, setOldPlantName] = useState("");
 
   const fetchUserData = async () => {
     try {
@@ -24,6 +26,15 @@ export default function useGameData() {
         insect: data.insect || null,
       };
       
+      // Store previous level info before updating
+      setPrevLevel(user?.tree_level || data.tree.level);
+      
+      // Check for level up, but don't trigger effects here
+      if (!initialLoad && user && data.tree.level > user.tree_level) {
+        setLeveledUp(true);
+        setOldPlantName(user.plant_name);
+      }
+      
       setUser(updatedUser);
       setScale(1 + data.tree.growth);
       
@@ -33,7 +44,6 @@ export default function useGameData() {
         setCurrentInsect(null);
       }
 
-      setPrevLevel(data.tree.level);
       setInitialLoad(false);
     } catch (error) {
       console.error("Error fetching user data:", error);
@@ -60,10 +70,17 @@ export default function useGameData() {
       const data = await performAction(action);
       
       if (data.success) {
+        // Check for level up before updating the state
+        if (user && data.tree.level > user.tree_level) {
+          setLeveledUp(true);
+          setOldPlantName(user.plant_name);
+        }
+        
         setUser(prev => ({
           ...prev,
           points_balance: data.points_balance,
           tree_level: data.tree.level,
+          plant_name: data.tree.name,
           plant_image: data.tree.image, 
           insect: data.insect || null
         }));
@@ -101,6 +118,9 @@ export default function useGameData() {
     executeAction,
     scale,
     prevLevel,
-    initialLoad
+    initialLoad,
+    leveledUp,
+    setLeveledUp,
+    oldPlantName
   };
 }

@@ -20,7 +20,10 @@ const OverLeaf = () => {
       executeAction,
       scale,
       prevLevel,
-      initialLoad
+      initialLoad,
+      leveledUp,
+      setLeveledUp,
+      oldPlantName
     } = useGameData();
   
     const {
@@ -35,18 +38,19 @@ const OverLeaf = () => {
   
     // Handle level up effect
     useEffect(() => {
-      if (!initialLoad && user?.tree_level > prevLevel) {
-        showLevelUpEffects(user.plant_name);
-        // fetchUserData();
+      if (leveledUp && oldPlantName) {
+        // Now we use the previously stored plant name
+        showLevelUpEffects(oldPlantName);
+        setLeveledUp(false); // Reset the flag
       }
-    }, [user?.tree_level, initialLoad, prevLevel]);
+    }, [leveledUp, oldPlantName, showLevelUpEffects, setLeveledUp]);
   
     // Handle initial insect notification
     useEffect(() => {
       if (currentInsect) {
         showInsectAlert(currentInsect.name);
       }
-    }, [currentInsect]);
+    }, [currentInsect, showInsectAlert]);
   
     // Handle plant action
     const handleAction = async () => {

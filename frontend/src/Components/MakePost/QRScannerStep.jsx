@@ -39,7 +39,7 @@ const QRScannerStep = ({ qrValue, setQrValue, nextStep }) => {
       const isValid = await validateQRCode(code);
       
       // Simulate delay
-      await new Promise(resolve => setTimeout(resolve, 3000));
+      await new Promise(resolve => setTimeout(resolve, 1600));
       
       if (isValid) {
         setQrValue(code);
