@@ -16,18 +16,29 @@ from django.db import models
 import random
 
 def build_response(profile, success, message, status_code):
-    """
-    Serapate method to build the response to frontend after game logic complete
-    """
-    plant_serializer = PlantProgressSerializer(profile)
-    insect_data = InsectSerializer(profile.current_insect).data if profile.current_insect is not None else None
-    return Response({
+    # Serialize the updated game profile
+    serializer = GameProfileSerializer(profile)
+    response_data = serializer.data
+    # Add custom messages
+    response_data.update({
         "success": success,
         "message": message,
-        "points_balance": profile.points_balance,
-        "tree": plant_serializer.data,
-        "insect": insect_data
-    }, status=status_code)
+    })
+    return Response(response_data, status=status_code)
+
+# def build_response_old(profile, success, message, status_code):
+#     """
+#     Serapate method to build the response to frontend after game logic complete
+#     """
+#     plant_serializer = PlantProgressSerializer(profile)
+#     insect_data = InsectSerializer(profile.current_insect).data if profile.current_insect is not None else None
+#     return Response({
+#         "success": success,
+#         "message": message,
+#         "points_balance": profile.points_balance,
+#         "tree": plant_serializer.data,
+#         "insect": insect_data
+#     }, status=status_code)
 
 class TreeGrowAction(APIView):
     """
@@ -63,12 +74,6 @@ class TreeGrowAction(APIView):
             print("Spawning insect")
             profile.spawn_insect()
 
-        # Easter egg
-        if random.random() < 0.001:
-            profile.points_balance += 10000
-            profile.spins += 50
-            profile.tree_growth = -4.0
-
         try:
             profile.save()
         except:
@@ -76,18 +81,7 @@ class TreeGrowAction(APIView):
             print("ERROR! Could not save profile!")
             pass
 
-
-        # # Serialize the updated game profile
-        # serializer = GameProfileSerializer(profile)
-        # response_data = serializer.data
-        # # Optionally add custom messages
-        # response_data.update({
-        #     "success": True,
-        #     "message": "Action applied successfully.",
-        # })
-        # return Response(response_data, status=status.HTTP_200_OK)
         return build_response(profile, True, "Action applied successfully.", status.HTTP_200_OK)
-
 
 class WaterTreeAction(TreeGrowAction):
     """Child class of tree growth action for water action (different parameters)"""
@@ -100,7 +94,6 @@ class SoilTreeAction(TreeGrowAction):
     action_cost = 20
     growth_amount = 0.3
     insect_spawn_chance = 0.0001
-
 
 # TODO: Make cleaner by inheriting
 class GloveTreeAction(APIView):
@@ -130,23 +123,9 @@ class GloveTreeAction(APIView):
             profile.tree_growth -= 1.0
             profile.tree_level += 1
         profile.points_balance -= self.action_cost
-
         profile.save()
 
-
-        # # Serialize the updated game profile
-        # serializer = GameProfileSerializer(profile)
-        # response_data = serializer.data
-        # # Optionally add custom messages
-        # response_data.update({
-        #     "success": True,
-        #     "message": "Action applied successfully.",
-        # })
-        # return Response(response_data, status=status.HTTP_200_OK)
-
         return build_response(profile, True, "Action applied successfully.", status.HTTP_200_OK)
-
-
 
 class GameProfileView(APIView):
     """
@@ -159,7 +138,7 @@ class GameProfileView(APIView):
         serializer = GameProfileSerializer(profile)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-
+# TODO: move to database
 def get_prize_list():
     prizes = [
         {"value":0, "option":  "🎁 No Reward" , "weight": 15, "style": { "backgroundColor": "red", "color": "white" } },
@@ -178,6 +157,7 @@ class GetPrizes(APIView):
         return Response({"success": True, "prizes": prizes}, status=status.HTTP_200_OK)
     
 
+# TODO: Reuse functions to avoid response code duplication
 class SpinView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -196,10 +176,12 @@ class SpinView(APIView):
                 "prize_amount": 0,
             }, status=status.HTTP_200_OK)
         
+        # Select random prize based on weights
         prize_index = random.choices(range(len(prizes)), weights=[prize["weight"] for prize in prizes], k=1)[0]
         prize_reward = prizes[prize_index]["value"]
-        # Use prize_option instead of prize_value
-        if prize_reward == 0:  # Changed from " No Reward" string to 0
+
+        # No points won
+        if prize_reward == 0:
             profile.spins -= 1
             profile.save()
             return Response({
@@ -210,8 +192,8 @@ class SpinView(APIView):
                 "prize_index": prize_index,
                 "prize_amount": prize_reward,
             }, status=status.HTTP_200_OK)
-        else:
-            profile.points_balance += prize_reward  # Use prize_option instead of prize_value
+        else: # Won points
+            profile.points_balance += prize_reward
             profile.lifetime_points += prize_reward
             profile.spins -= 1
             profile.save()
