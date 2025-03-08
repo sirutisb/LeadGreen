@@ -145,3 +145,9 @@ def create_game_profile(sender, instance, created, **kwargs):
 
 # Connect the signal
 post_save.connect(create_game_profile, sender=UserProfile)
+
+class Prize(models.Model):
+    value = models.IntegerField()
+    option = models.CharField(max_length=32)
+    weight = models.FloatField()
+    style = models.JSONField(default=dict)  # For storing color styles as JSON
