@@ -7,7 +7,7 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticate
 
 from django.shortcuts import get_object_or_404
 
-from .models import GameProfile
+from .models import GameProfile, Prize
 from .serializers import GameProfileSerializer, PlantProgressSerializer, InsectSerializer
 
 from rest_framework import generics
@@ -120,17 +120,9 @@ class GameProfileView(APIView):
         serializer = GameProfileSerializer(profile)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-# TODO: move to database
+
 def get_prize_list():
-    prizes = [
-        {"value":0, "option":  "🎁 No Reward" , "weight": 15, "style": { "backgroundColor": "red", "color": "white" } },
-        {"value":50, "option":  "🔥 50 Points", "weight": 35, "style": { "backgroundColor": "black", "color": "white" } },
-        {"value":100, "option":  "🌟 100 Points" ,"weight": 30, "style": { "backgroundColor": "red", "color": "white" } },
-        {"value":200,"option":  "💎 200 Points" , "weight": 15, "style": { "backgroundColor": "black", "color": "white" } },
-        {"value":500,"option":  "☘️ 500 Points" , "weight": 4, "style": {"backgroundColor": "red", "color": "white" } },
-        {"value":1000,"option": "🏆 1000 Points" , "weight": 1, "style": { "backgroundColor": "black", "color": "white" } },
-    ]
-    return prizes
+    return list(Prize.objects.all().values())
 
 class GetPrizes(APIView):
     permission_classes = [AllowAny]
