@@ -71,7 +71,7 @@ const LeaderboardPage = () => {
   
   // Filter leaderboard based on the search term
   const filteredLeaderboard = leaderboardData.filter((user) =>
-    user.username.toLowerCase().includes(searchTerm.toLowerCase())
+    user.user.username.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   // Get top 3 contributors for the podium
@@ -129,7 +129,7 @@ const LeaderboardPage = () => {
             {/* Username with subtle glow for top 3 */}
             <div>
               <span className={`font-semibold text-gray-800 ${isTopThree ? "glow-text-green" : ""}`}>
-                {user.username}
+                {user.user.username}
               </span>
               <div className="text-xs text-gray-500 flex items-center">
                 <Leaf className="w-3 h-3 text-green-500 mr-1" />
@@ -217,7 +217,7 @@ const LeaderboardPage = () => {
           )}
         </div>
         <div className={`col-span-4 font-semibold text-black text-center ${isTopThree ? "glow-text-green" : ""}`}>
-          {user.username}
+          {user.user.username}
         </div>
         <div className="col-span-2 text-center font-bold text-green-600">{user.points_balance}</div>
         <div className="col-span-1 text-center">

@@ -1,23 +1,32 @@
-// TopContributorsPodium.jsx
 import { Trophy } from "lucide-react";
 
 const TopContributorsPodium = ({ topContributors }) => {
+  // Check if there are enough contributors to display
   if (!topContributors || topContributors.length < 3) {
-    return <div className="py-8 text-center text-gray-500 animate-fade-in">Not enough contributors to display.</div>;
+    return (
+      <div className="py-8 text-center text-gray-500 animate-fade-in">
+        Not enough contributors to display.
+      </div>
+    );
   }
 
-  // Sort topContributors by lifetime_points in descending order to ensure correct ranking
-  const sortedContributors = [...topContributors].sort((a, b) => b.lifetime_points - a.lifetime_points);
+  // Sort contributors by lifetime_points in descending order
+  const sortedContributors = [...topContributors].sort(
+    (a, b) => b.lifetime_points - a.lifetime_points
+  );
   const [first, second, third] = sortedContributors;
 
-  // Calculate maximum points for scaling the podium heights
-  const maxPoints = Math.max(first.lifetime_points, second.lifetime_points, third.lifetime_points);
-  const maxHeight = 12; // Maximum height in rem for the tallest podium (first place)
+  // Calculate podium heights based on points
+  const maxPoints = Math.max(
+    first.lifetime_points,
+    second.lifetime_points,
+    third.lifetime_points
+  );
+  const maxHeight = 12; // Max height in rem for first place
   const getPodiumHeight = (points) => {
-    // Scale height proportionally to points, with a minimum height of 4rem
     const heightPercentage = (points / maxPoints) * 100;
     const scaledHeight = (heightPercentage / 100) * maxHeight;
-    return `${Math.max(scaledHeight, 4)}rem`; // Ensure a minimum height of 4rem
+    return `${Math.max(scaledHeight, 4)}rem`; // Minimum height of 4rem
   };
 
   return (
@@ -33,13 +42,13 @@ const TopContributorsPodium = ({ topContributors }) => {
         <div className="flex flex-col items-center">
           <div className="podium-avatar">
             <img
-              src={second.avatar || "https://via.placeholder.com/150"}
-              alt={second.username}
+              src={second.user?.profile_picture || "https://via.placeholder.com/150"}
+              alt={second.user?.username || "Second Place"}
               className="w-full h-full object-cover"
             />
           </div>
           <div className="podium-info text-center mb-2">
-            <p className="font-semibold">{second.username}</p>
+            <p className="font-semibold">{second.user?.username || "Unknown"}</p>
             <p className="text-sm text-gray-500">{second.lifetime_points} pts</p>
           </div>
           <div
@@ -54,13 +63,13 @@ const TopContributorsPodium = ({ topContributors }) => {
         <div className="flex flex-col items-center">
           <div className="podium-avatar">
             <img
-              src={first.avatar || "https://via.placeholder.com/150"}
-              alt={first.username}
+              src={first.user?.profile_picture || "https://via.placeholder.com/150"}
+              alt={first.user?.username || "First Place"}
               className="w-full h-full object-cover"
             />
           </div>
           <div className="podium-info text-center mb-2">
-            <p className="font-semibold">{first.username}</p>
+            <p className="font-semibold">{first.user?.username || "Unknown"}</p>
             <p className="text-sm text-gray-500">{first.lifetime_points} pts</p>
           </div>
           <div
@@ -76,13 +85,13 @@ const TopContributorsPodium = ({ topContributors }) => {
         <div className="flex flex-col items-center">
           <div className="podium-avatar">
             <img
-              src={third.avatar || "https://via.placeholder.com/150"}
-              alt={third.username}
+              src={third.user?.profile_picture || "https://via.placeholder.com/150"}
+              alt={third.user?.username || "Third Place"}
               className="w-full h-full object-cover"
             />
           </div>
           <div className="podium-info text-center mb-2">
-            <p className="font-semibold">{third.username}</p>
+            <p className="font-semibold">{third.user?.username || "Unknown"}</p>
             <p className="text-sm text-gray-500">{third.lifetime_points} pts</p>
           </div>
           <div
