@@ -31,8 +31,16 @@ class ToggleLikePost(APIView):
     def post(self, request, post_id):
         post = get_object_or_404(Post, id = post_id)
         like, created = Like.objects.get_or_create(user = request.user, post = post)
-        if not created:
+        if created:
+            return Response({"message": "Liked post"}, status=201)
+        else:
+            return Response({"message": "Already liked"}, status=200)
+    
+    def delete(self, request, post_id):
+        post = get_object_or_404(Post, id=post_id)
+        like = Like.objects.filter(user=request.user, post=post)
+        if like.exists():
             like.delete()
-            return Response({"message": "Unliked post"}, status=status.HTTP_200_OK)
-
-        return Response({"message": "Liked post"}, status=status.HTTP_201_CREATED)
+            return Response({"message": "Unliked post"}, status=200)
+        else:
+            return Response({"message": "You haven't liked this post"}, status=400)
