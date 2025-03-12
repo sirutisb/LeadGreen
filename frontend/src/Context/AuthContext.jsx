@@ -16,7 +16,7 @@ export const AuthProvider = ({ children }) => {
   let [authTokens, setAuthTokens] = useState(storedTokens ? JSON.parse(storedTokens) : null);
   let [user, setUser] = useState(storedUser ? JSON.parse(storedUser) : null);
   let [loading, setLoading] = useState(false);
-
+  let [loginError, setLoginError] = useState(null);
  // Register new user
   const registerUser = async (e) => {
     try {
@@ -39,6 +39,7 @@ export const AuthProvider = ({ children }) => {
 
   // Log in existing user
   const loginUser = async (e) => {
+    setLoginError(null);
     try {
       const { data } = await axiosInstance.post(`/auth/login/`, {
         username: e.username,
@@ -52,7 +53,18 @@ export const AuthProvider = ({ children }) => {
       navigate("/");
     } catch (error) {
       console.error("Login Error:", error);
-      alert("ERROR");
+      if (error.response) {
+        // The server responded with a status code outside the 2xx range
+        if (error.response.data.errors.detail) {
+          setLoginError(error.response.data.errors.detail);
+        }
+      } else if (error.request) {
+        // The request was made but no response was received
+        setLoginError("Unable to connect to the server. Please check your internet connection.");
+      } else {
+        // Something happened in setting up the request
+        setLoginError("Something went wrong. Please try again.");
+      }
     }
   };
 
@@ -93,6 +105,7 @@ export const AuthProvider = ({ children }) => {
     user,
     authTokens,
     registerUser,
+    loginError,
   };
 
   return <AuthContext.Provider value={contextData}>{!loading && children}</AuthContext.Provider>;
