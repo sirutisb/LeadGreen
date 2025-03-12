@@ -4,30 +4,9 @@ from django.dispatch import receiver
 from users.models import UserProfile
 from random import choice
 
-
-#Shop Items and transactions
-class ShopItem(models.Model):
-    name = models.CharField(max_length=32)
-    effect = models.CharField(max_length=32, default="")
-    description = models.TextField(default="")
-    cost = models.IntegerField(default=0)
-
-    def __str__(self):
-        return f"{self.name} | Cost: {self.cost} | Effect: {self.effect}"
-
-
-class UserItem(models.Model):
-    user = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
-    item = models.ForeignKey(ShopItem, on_delete=models.CASCADE)
-    quantity = models.IntegerField(default=0)
-
-    def __str__(self):
-        return f"{self.user.username} -> x{self.quantity} {self.item.name}"
-    
-
 class Plant(models.Model):
     """
-    Model for plant, includes name, level, image 
+    Model for plant, includes name, level, image
     Allows for ordering through level
     """
     name = models.CharField(max_length=32)  # exampe - "Leafy", "Sprouto"
@@ -117,7 +96,6 @@ class GameProfile(models.Model):
 
     def spawn_insect(self):
         """Randomly spawn an insect appropriate for the current level"""
-        from random import choice
         # Get all insects up to current level
         available_insects = Insect.objects.filter(level__lte=self.tree_level)
         if available_insects.exists():
