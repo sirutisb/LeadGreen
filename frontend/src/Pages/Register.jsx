@@ -15,9 +15,12 @@ const schema = yup.object().shape({
   username: yup.string().required("Username is required"), // Ensure username is not empty
   email: yup.string().email("Invalid email format").required("Email is required"), // Validate email format
   password: yup
-      .string()
-      .min(6, "Password must be at least 6 characters long") // Enforce password length constraint
-      .required("Password is required"),
+    .string()
+    .min(6, "Password must be at least 6 characters long") // Enforce password length constraint
+    .required("Password is required"),
+  confirmPassword: yup.string()
+    .required("Please confrim your password")
+    .oneOf([yup.ref('password'), null], "Passwords must match")
 });
 
 export default function RegisterPage() {
@@ -136,6 +139,24 @@ export default function RegisterPage() {
                   />
                   {errors.password && (
                       <p className="text-red-600 text-sm mt-1">{errors.password.message}</p>
+                  )}
+                </div>
+
+                <div>
+                  <Label htmlFor="confirm-password" className="sr-only">
+                    Confirm Password
+                  </Label>
+                  <Input
+                      id="confirm-password"
+                      name="confirm-password"
+                      type="password"
+                      autoComplete="new-password"
+                      className="w-full text-black placeholder-gray-500 border border-green-300 bg-green-50 rounded-lg px-4 py-3"
+                      placeholder="Confirm Password"
+                      {...register("confirm-password")}
+                  />
+                  {errors.confirmPassword && (
+                      <p className="text-red-600 text-sm mt-1">{errors.confirmPassword?.message}</p>
                   )}
                 </div>
               </div>
