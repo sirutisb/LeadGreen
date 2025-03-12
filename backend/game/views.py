@@ -9,6 +9,8 @@ from django.shortcuts import get_object_or_404
 
 from .models import GameProfile, Prize
 from .serializers import GameProfileSerializer, PlantProgressSerializer, InsectSerializer
+from shop.models import Inventory
+from shop.serializers import InventorySerializer
 
 from rest_framework import generics
 from django.db import models
@@ -19,77 +21,94 @@ def build_response(profile, success, message, status_code):
     # Serialize the updated game profile
     serializer = GameProfileSerializer(profile)
     response_data = serializer.data
-    # Add custom messages
+    
+    # Add inventory information
+    inventory = Inventory.objects.filter(user=profile.user.user_profile)
+    inventory_serializer = InventorySerializer(inventory, many=True)
+    
+    # Add custom messages and inventory
     response_data.update({
         "success": success,
         "message": message,
+        "inventory": inventory_serializer.data
     })
     return Response(response_data, status=status_code)
 
-class TreeGrowAction(APIView):
+class ItemBasedAction(APIView):
     """
-    APIView
-    Generic class for tree growth actions
-    Returns response based on input from API requests (used soil, water, etc)
+    Base class for actions that consume items from inventory
     """
-    
     permission_classes = [IsAuthenticated]
-    action_cost = 0
-    growth_amount = 0
-    insect_spawn_chance = 0
+    required_item_type = None
 
+    def get_inventory_item(self, user):
+        try:
+            inventory = Inventory.objects.get(
+                user=user.user_profile,
+                item__item_type=self.required_item_type
+            )
+            if inventory.quantity <= 0:
+                return None, f"You don't have any {self.required_item_type.lower()} items!"
+            return inventory, None
+        except Inventory.DoesNotExist:
+            return None, f"You don't have any {self.required_item_type.lower()} items!"
+
+    def consume_item(self, inventory):
+        inventory.quantity -= 1
+        if inventory.quantity == 0:
+            inventory.delete()
+        else:
+            inventory.save()
+
+class TreeGrowAction(ItemBasedAction):
+    """
+    Generic class for tree growth actions using items from inventory
+    """
     def post(self, request, *args, **kwargs):
         user = request.user
-        profile = user.game_profile # instance of gameprofile model
+        profile = user.game_profile
 
         if profile.current_insect is not None:
             return build_response(profile, False, "There is an insect on the tree! Remove it first.", status.HTTP_200_OK)
 
-        if profile.points_balance < self.action_cost:
-            return build_response(profile, False, f"Not enough points, you have only {profile.points_balance}, you need {self.action_cost}", status.HTTP_200_OK)
+        # Get and validate inventory item
+        inventory, error_message = self.get_inventory_item(user)
+        if error_message:
+            return build_response(profile, False, error_message, status.HTTP_200_OK)
 
-        # adjust level and points
-        profile.points_balance -= self.action_cost
-        profile.grow_tree(self.growth_amount)
-        profile.save()
+        # Get item effects
+        item = inventory.item
+        
+        # Consume the item
+        self.consume_item(inventory)
 
-        # chance for snail to spawn
-        # TODO: make it so theres a cooldown and you cant get the snail again for x amount of actions
-        if random.random() < self.insect_spawn_chance:
+        # Apply growth effect
+        profile.grow_tree(item.growth_amount)
+
+        # Check for insect spawn
+        if random.random() < item.insect_spawn_chance:
             print("Spawning insect")
             profile.spawn_insect()
 
         try:
             profile.save()
         except:
-            # Probably max level, this could possibly occur due to other reasons also
             print("ERROR! Could not save profile!")
             pass
 
-        return build_response(profile, True, "Action applied successfully.", status.HTTP_200_OK)
+        return build_response(profile, True, f"Used {item.name} successfully!", status.HTTP_200_OK)
 
 class WaterTreeAction(TreeGrowAction):
-    """Implementation of Tree Watering Action with different parameters"""
-    action_cost = 10
-    growth_amount = 0.1
-    insect_spawn_chance = 0.20
+    """Implementation of Tree Watering Action using water items"""
+    required_item_type = 'WATER'
 
 class SoilTreeAction(TreeGrowAction):
-    """Implementation of Tree Soil Action with different parameters"""
-    action_cost = 20
-    growth_amount = 0.3
-    insect_spawn_chance = 0.0001
+    """Implementation of Tree Soil Action using soil items"""
+    required_item_type = 'SOIL'
 
-# TODO: Make cleaner
-class GloveTreeAction(APIView):
-    """
-    Glove action too different from soil + water to be child class of Tree Growth
-    Returns post request removing the insect and changing state in db - if there is insect
-    if no insect exists - returns this fact
-    """
-    action_cost = 50
-    growth_amount = 0.0
-    permission_classes = [IsAuthenticated]
+class GloveTreeAction(ItemBasedAction):
+    """Implementation of Glove Action using glove items"""
+    required_item_type = 'GLOVE'
 
     def post(self, request, *args, **kwargs):
         user = request.user
@@ -98,16 +117,25 @@ class GloveTreeAction(APIView):
         if profile.current_insect is None:
             return build_response(profile, False, "Remove what? There is no insect on the tree.", status.HTTP_200_OK)
 
-        # adjust level and points
-        if profile.points_balance < self.action_cost:
-            return build_response(profile, False, f"Not enough points, you have only {profile.points_balance}, you need {self.action_cost}", status.HTTP_200_OK)
+        # Get and validate inventory item
+        inventory, error_message = self.get_inventory_item(user)
+        if error_message:
+            return build_response(profile, False, error_message, status.HTTP_200_OK)
 
+        # Get item
+        item = inventory.item
+
+        # Consume the item
+        self.consume_item(inventory)
+
+        # Remove insect and apply any growth effect
         profile.current_insect = None
-        profile.points_balance -= self.action_cost
-        profile.grow_tree(self.growth_amount)
+        if item.growth_amount > 0:
+            profile.grow_tree(item.growth_amount)
+        
         profile.save()
 
-        return build_response(profile, True, "Action applied successfully.", status.HTTP_200_OK)
+        return build_response(profile, True, f"Used {item.name} successfully!", status.HTTP_200_OK)
 
 class GameProfileView(APIView):
     """
