@@ -6,6 +6,7 @@ import StatsDisplay from "./StatsDisplay";
 import ConfettiEffect from "./ConfettiEffect";
 import useGameData from "../../Hooks/useGameData";
 import usePlantEffects from "../../Hooks/usePlantEffects";
+import DailyRewards from "./DailyRewards/DailyRewards";
 
 const OverLeaf = () => {
     const [selectedIcon, setSelectedIcon] = useState(null);
@@ -77,6 +78,7 @@ const OverLeaf = () => {
         <div className="flex flex-col items-center justify-center min-h-screen w-full px-4 sm:px-6 lg:px-8 relative">
           <OverLeafBar setSelectedIcon={setSelectedIcon} />
           <RouletteButton user={user} setUser={setUser} />
+          <DailyRewards />
           
           <PlantDisplay
             plantRef={plantRef}
