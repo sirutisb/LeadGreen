@@ -17,8 +17,11 @@ export const AuthProvider = ({ children }) => {
   let [user, setUser] = useState(storedUser ? JSON.parse(storedUser) : null);
   let [loading, setLoading] = useState(false);
   let [loginError, setLoginError] = useState(null);
+  let [registerError, setRegisterError] = useState(null);
+
  // Register new user
   const registerUser = async (e) => {
+    setRegisterError(null);
     try {
       const { data } = await axiosInstance.post(`/auth/register/`, {
         username: e.username,
@@ -33,7 +36,23 @@ export const AuthProvider = ({ children }) => {
       navigate("/");
     } catch (error) {
       console.error("Registration Error:", error);
-      alert("ERROR");
+      
+      if(error.response && error.response.data && error.response.data.errors){
+        const errorData = error.response.data.errors;
+
+        if (typeof errorData === 'object') {
+          // Check for username or email field errors
+          if (errorData.username) {
+            setRegisterError(errorData.username[0]);
+          } else if (errorData.email) {
+            setRegisterError(errorData.email[0]);
+          } else {
+            setRegisterError("Registration failed. Please check your information.");
+          }
+        } else {
+          setRegisterError("An error occurred during registration. Please try again later.");
+        }
+      }
     }
   };
 
@@ -106,6 +125,7 @@ export const AuthProvider = ({ children }) => {
     authTokens,
     registerUser,
     loginError,
+    registerError,
   };
 
   return <AuthContext.Provider value={contextData}>{!loading && children}</AuthContext.Provider>;
