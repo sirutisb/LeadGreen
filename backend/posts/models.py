@@ -17,7 +17,7 @@ class Post(models.Model):
     approved = models.BooleanField(null=True, default=None)
     points_received = models.IntegerField(default=0)
     
-    likes = models.IntegerField(default=0)
+    likes_count = models.IntegerField(default=0)
 
     def __str__(self):
         return f"{self.user.username} | {self.caption} - Points: {self.points_received}"
