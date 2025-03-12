@@ -34,3 +34,9 @@ class PostSerializer(serializers.ModelSerializer):
         """Create the post after validation."""
         post = Post.objects.create(**validated_data)
         return post
+
+class PostLikeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Post
+        fields = ['id', 'likes']
+        read_only_fields = ['id', 'likes']
