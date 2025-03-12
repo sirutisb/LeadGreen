@@ -6,9 +6,13 @@ import StatsDisplay from "./StatsDisplay";
 import ConfettiEffect from "./ConfettiEffect";
 import useGameData from "../../Hooks/useGameData";
 import usePlantEffects from "../../Hooks/usePlantEffects";
+import GardenShop from "./PopShop";
+// Use <PopShop /> for the popup and <PopShop.ShopButton /> for the button
+
 
 const OverLeaf = () => {
     const [selectedIcon, setSelectedIcon] = useState(null);
+    const [shopOpen, setShopOpen] = useState(false);
     const plantRef = useRef(null);
     
     const {
@@ -39,9 +43,8 @@ const OverLeaf = () => {
     // Handle level up effect
     useEffect(() => {
       if (leveledUp && oldPlantName) {
-        // Now we use the previously stored plant name
         showLevelUpEffects(oldPlantName);
-        setLeveledUp(false); // Reset the flag
+        setLeveledUp(false);
       }
     }, [leveledUp, oldPlantName, showLevelUpEffects, setLeveledUp]);
   
@@ -89,6 +92,17 @@ const OverLeaf = () => {
           />
   
           <StatsDisplay user={user} />
+          
+          {/* Simple shop button */}
+          <GardenShop.ShopButton  onClick={() => setShopOpen(true)} />
+          
+          {/* Simplified shop popup */}
+          <GardenShop 
+            isOpen={shopOpen} 
+            onClose={() => setShopOpen(false)} 
+            user={user}
+            setUser={setUser}
+          />
         </div>
       </div>
     );
