@@ -11,3 +11,13 @@ admin.site.register(Insect)
 @admin.register(Prize)
 class PrizeAdmin(admin.ModelAdmin):
     list_display = ["option", "value", "weight"]
+
+
+
+
+from .models import Item, Inventory, Transaction, ItemEffect
+
+admin.site.register(Item)
+admin.site.register(Inventory)
+admin.site.register(Transaction)
+admin.site.register(ItemEffect)
