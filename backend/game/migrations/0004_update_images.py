@@ -109,7 +109,7 @@ def reverse_update(apps, schema_editor):
 
 class Migration(migrations.Migration):
     dependencies = [
-        ('game', '0004_auto_20250224_0016'),  # Adjust to your last migration
+        ('game', '0003_populate_insects'),  # Adjust to your last migration
     ]
     operations = [
         migrations.RunPython(update_images, reverse_update),

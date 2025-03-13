@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Button from "../Components/Button";
 import Input from "../Components/Input";
@@ -15,15 +15,18 @@ const schema = yup.object().shape({
   username: yup.string().required("Username is required"), // Ensure username is not empty
   email: yup.string().email("Invalid email format").required("Email is required"), // Validate email format
   password: yup
-      .string()
-      .min(6, "Password must be at least 6 characters long") // Enforce password length constraint
-      .required("Password is required"),
+    .string()
+    .min(6, "Password must be at least 6 characters long") // Enforce password length constraint
+    .required("Password is required"),
+  confirmPassword: yup.string()
+    .required("Please confirm your password")
+    .oneOf([yup.ref('password'), null], "Passwords must match")
 });
 
 export default function RegisterPage() {
   // Get the registerUser function from the AuthContext
-  const { registerUser } = useContext(AuthContext);
-  
+  const { registerUser, registerError, setRegisterError } = useContext(AuthContext);
+
 
   const {
     register,
@@ -34,6 +37,12 @@ export default function RegisterPage() {
     resolver: yupResolver(schema), // Integrate Yup schema with react-hook-form
     mode: "onChange", // Validate inputs as the user types
   });
+
+  useEffect(() => {
+    return () => {
+      if (setRegisterError) setRegisterError(null);
+    };
+  }, [setRegisterError]);
 
   // Handle form submission
   const onSubmit = (data) => {
@@ -66,6 +75,13 @@ export default function RegisterPage() {
                 </Link>
               </p>
             </div>
+
+          {/* Display login error message if it exists */}
+          {registerError && (
+            <div className="mt-4 p-3 bg-red-50 border border-red-300 text-red-700 rounded-lg">
+              {registerError}
+            </div>
+          )}
 
             {/* Form for user registration */}
             <form onSubmit={handleSubmit(onSubmit)} className="mt-6 space-y-6">
@@ -123,6 +139,24 @@ export default function RegisterPage() {
                   />
                   {errors.password && (
                       <p className="text-red-600 text-sm mt-1">{errors.password.message}</p>
+                  )}
+                </div>
+
+                <div>
+                  <Label htmlFor="confirmPassword" className="sr-only">
+                    Confirm Password
+                  </Label>
+                  <Input
+                      id="confirmPassword"
+                      name="confirmPassword"
+                      type="password"
+                      autoComplete="new-password"
+                      className="w-full text-black placeholder-gray-500 border border-green-300 bg-green-50 rounded-lg px-4 py-3"
+                      placeholder="Confirm Password"
+                      {...register("confirmPassword")}
+                  />
+                  {errors.confirmPassword && (
+                      <p className="text-red-600 text-sm mt-1">{errors.confirmPassword?.message}</p>
                   )}
                 </div>
               </div>
