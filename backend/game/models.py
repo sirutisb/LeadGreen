@@ -125,6 +125,34 @@ class GameProfile(models.Model):
         self.growth_speed_expires_at = timezone.now() + timezone.timedelta(seconds=duration)
         self.save()
 
+    # New fields for complex effects
+    combo_multiplier = models.FloatField(default=1.0)
+    combo_expires_at = models.DateTimeField(null=True, blank=True)
+    shield_expires_at = models.DateTimeField(null=True, blank=True)
+    point_multiplier = models.FloatField(default=1.0)
+    point_multiplier_expires_at = models.DateTimeField(null=True, blank=True)
+    growth_speed_multiplier = models.FloatField(default=1.0)
+    growth_speed_expires_at = models.DateTimeField(null=True, blank=True)
+
+    def activate_combo_boost(self, multiplier, duration):
+        self.combo_multiplier = multiplier
+        self.combo_expires_at = timezone.now() + timezone.timedelta(seconds=duration)
+        self.save()
+
+    def activate_shield(self, duration):
+        self.shield_expires_at = timezone.now() + timezone.timedelta(seconds=duration)
+        self.save()
+
+    def activate_point_multiplier(self, multiplier, duration):
+        self.point_multiplier = multiplier
+        self.point_multiplier_expires_at = timezone.now() + timezone.timedelta(seconds=duration)
+        self.save()
+
+    def activate_time_boost(self, multiplier, duration):
+        self.growth_speed_multiplier = multiplier
+        self.growth_speed_expires_at = timezone.now() + timezone.timedelta(seconds=duration)
+        self.save()
+
     def add_points(self, amount):
         """Modified to account for point multiplier"""
         if self.point_multiplier_expires_at and self.point_multiplier_expires_at > timezone.now():
@@ -189,7 +217,6 @@ class Prize(models.Model):
     option = models.CharField(max_length=32)
     weight = models.FloatField()
     style = models.JSONField(default=dict)  # For storing color styles as JSON
-
 
 #Shop Items and transactions
 class ItemEffect(models.Model):
