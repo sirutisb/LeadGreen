@@ -1,107 +1,238 @@
-import React, { useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import soilIcon from "../../assets/soil.svg";
-import waterIcon from "../../assets/water.svg";
-import gloveIcon from "../../assets/glove.svg";
+import { Box, Tooltip, Typography } from "@mui/material";
 
-const icons = [
-  {
-    id: "soil",
-    src: soilIcon,
-    label: "Soil",
-    tooltip: "Helps plant growth x3. Cost: 20 points",
-  },
-  {
-    id: "water",
-    src: waterIcon,
-    label: "Water",
-    tooltip: "Grow plant, increase size. Cost: 10 points",
-  },
-  {
-    id: "glove",
-    src: gloveIcon,
-    label: "Glove",
-    tooltip: "Removes insects. Cost: 50 points",
-  },
-];
+const OverLeafBar = ({ setSelectedIcon, inventory, selectedIcon }) => {
+  const scrollContainer = useRef(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
 
-const OverLeafBar = ({ setSelectedIcon }) => {
-  const [activeIcon, setActiveIcon] = useState(null);
-  const [hoveredIcon, setHoveredIcon] = useState(null);
+  const updateScrollState = () => {
+    const container = scrollContainer.current;
+    if (!container) return;
 
-  const handleIconClick = (icon) => {
-    if (activeIcon === icon) {
-      setActiveIcon(null);
-      setSelectedIcon(null);
-    } else {
-      setActiveIcon(icon);
-      setSelectedIcon(icon);
-    }
+    const { scrollLeft, scrollWidth, clientWidth } = container;
+    setCanScrollLeft(scrollLeft > 0);
+    setCanScrollRight(scrollLeft + clientWidth < scrollWidth);
   };
 
-  return (
-    <motion.div
-      className="fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-[#DEFDE9] shadow-2xl rounded-full flex items-center"
-      initial={{ opacity: 0, y: 50 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6, ease: "easeOut" }}
-      style={{
-        display: "inline-flex", 
-        maxWidth: "90vw", 
-        height: "clamp(80px, 12vw, 100px)", 
-        whiteSpace: "nowrap", 
-        padding: window.innerWidth < 640? "50px 20px":"50px 30px",
-        gap: "40px",
-      }}
-    >
-      {icons.map((icon) => (
-        <div
-          key={icon.id}
-          className="relative flex flex-col items-center"
-          onMouseEnter={() => setHoveredIcon(icon.id)}
-          onMouseLeave={() => setHoveredIcon(null)}
-        >
+  const scroll = (direction) => {
+    const container = scrollContainer.current;
+    if (!container) return;
 
+    const item = container.querySelector('.inventory-item');
+    if (!item) return;
+
+    const itemWidth = item.offsetWidth;
+    const gap = 40;
+    const scrollAmount = (itemWidth + gap) * direction;
+
+    container.scrollBy({
+      left: scrollAmount,
+      behavior: 'smooth'
+    });
+  };
+
+  useEffect(() => {
+    const container = scrollContainer.current;
+    if (!container) return;
+
+    // Add event listener for scroll
+    container.addEventListener('scroll', updateScrollState);
+    
+    // Initial check for scroll state
+    updateScrollState();
+    
+    // Check after content loads
+    window.setTimeout(updateScrollState, 100);
+
+    // Set up observer for content changes
+    const observer = new MutationObserver(updateScrollState);
+    observer.observe(container, { childList: true, subtree: true });
+
+    return () => {
+      observer.disconnect();
+      container.removeEventListener('scroll', updateScrollState);
+    };
+  }, [inventory]);
+
+  // Additional effect to update scroll state on resize
+  useEffect(() => {
+    const handleResize = () => updateScrollState();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  return (
+    <AnimatePresence>
+      {inventory.length > 0 && (
+        <motion.div
+          className="fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-white/90 border border-gray-300 shadow-2xl rounded-full flex items-center"
+          initial={{ opacity: 0, y: 50 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 50 }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
+          style={{
+            width: "min(600px, 90vw)",
+            height: "120px",
+            padding: "20px 30px"
+          }}
+        >
+          {/* Left Scroll Button */}
           <AnimatePresence>
-            {hoveredIcon === icon.id && (
-              <motion.div
-                className="absolute mb-8 bottom-20 bg-black text-white text-xs font-medium px-3 py-2 rounded-lg shadow-lg whitespace-nowrap"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 10 }}
-                transition={{ duration: 0.2 }}
+            {canScrollLeft && (
+              <motion.button
+                onClick={() => scroll(-1)}
+                className="absolute left-2 z-10 p-2 rounded-full bg-white border border-gray-200 shadow-lg hover:shadow-xl hover:bg-gray-50 transition-all"
+                style={{ 
+                  top: "50%", 
+                  transform: "translateY(-50%)",
+                  height: "40px",
+                  width: "40px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center"
+                }}
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -10 }}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
               >
-                {icon.tooltip}
-              </motion.div>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-6 w-6 text-gray-700"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                </svg>
+              </motion.button>
             )}
           </AnimatePresence>
 
+          {/* Right Scroll Button */}
+          <AnimatePresence>
+            {canScrollRight && (
+              <motion.button
+                onClick={() => scroll(1)}
+                className="absolute right-2 z-10 p-2 rounded-full bg-white border border-gray-200 shadow-lg hover:shadow-xl hover:bg-gray-50 transition-all"
+                style={{ 
+                  top: "50%", 
+                  transform: "translateY(-50%)",
+                  height: "40px",
+                  width: "40px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center"
+                }}
+                initial={{ opacity: 0, x: 10 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 10 }}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-6 w-6 text-gray-700"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </motion.button>
+            )}
+          </AnimatePresence>
 
-          <motion.button
-            className="flex flex-col items-center"
-            whileTap={{ scale: 0.85 }}
-            onClick={() => handleIconClick(icon.id)}
+          <div
+            ref={scrollContainer}
+            className="flex overflow-x-auto flex-nowrap gap-[40px] h-full items-center"
+            onScroll={updateScrollState}
+            style={{ 
+              width: "100%",
+              scrollBehavior: 'smooth',
+              padding: "0 20px",
+              maskImage: "linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%)",
+              WebkitMaskImage: "linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%)",
+              msOverflowStyle: "none",  /* IE and Edge */
+              scrollbarWidth: "none"    /* Firefox */
+            }}
           >
-            <motion.img
-  src={icon.src}
-  alt={icon.label}
-  className="w-[12vw] h-[12vw] max-w-[60px] max-h-[60px] min-w-[40px] min-h-[40px] sm:w-14 sm:h-14 md:w-12 md:h-12 lg:w-10 lg:h-10 aspect-square" 
-  animate={{
-    scale: activeIcon === icon.id ? 1.2 : 1,
-    filter: activeIcon === icon.id
-      ? "drop-shadow(0px 0px 12px #1B6630)"
-      : "drop-shadow(0px 0px 0px transparent)",
-  }}
-  transition={{ type: "spring", stiffness: 300, damping: 15 }}
-/>
+            {inventory.map((item) => (
+              <motion.div
+                key={`${item.id}-${item.amount}`}
+                className="relative flex flex-col items-center inventory-item"
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.8 }}
+                transition={{ duration: 0.3 }}
+                style={{ 
+                  flexShrink: 0,
+                  scrollSnapAlign: "center"
+                }}
+              >
+                <Tooltip title={item.tooltip} arrow>
+                  <motion.button
+                    className="flex flex-col items-center"
+                    whileTap={item.amount > 0 ? { scale: 0.85 } : {}}
+                    onClick={() => {
+                      if (item.amount > 0) {
+                        setSelectedIcon((prev) => (prev === item.id ? null : item.id));
+                      }
+                    }}
+                    style={{
+                      opacity: item.amount > 0 ? 1 : 0.4,
+                      pointerEvents: item.amount > 0 ? "auto" : "none",
+                    }}
+                  >
+                    <motion.img
+                      src={`/assets/${item.id}.svg`}
+                      alt={item.label}
+                      className="w-12 h-12 aspect-square"
+                      animate={{
+                        scale: selectedIcon === item.id ? 1.2 : 1,
+                        filter: selectedIcon === item.id
+                          ? "drop-shadow(0px 0px 12px #1B6630)"
+                          : "drop-shadow(0px 0px 0px transparent)",
+                      }}
+                      transition={{ type: "spring", stiffness: 300, damping: 15 }}
+                    />
 
-            <span className="text-[#1B6630] text-sm font-semibold  sm:text-base">
-              {icon.label}
-            </span>
-          </motion.button>
-        </div>
-      ))}
-    </motion.div>
+                    <Box
+                      sx={{
+                        position: "absolute",
+                        top: "-5px",
+                        right: "-5px",
+                        backgroundColor: item.amount > 0 ? "#FF9800" : "#777",
+                        color: "white",
+                        fontSize: "0.8rem",
+                        fontWeight: "bold",
+                        padding: "3px 8px",
+                        borderRadius: "999px",
+                        boxShadow: "0px 2px 4px rgba(0,0,0,0.2)",
+                      }}
+                    >
+                      {item.amount}
+                    </Box>
+
+                    <Typography variant="body2" sx={{ 
+                      color: "#1B6630", 
+                      fontWeight: "bold", 
+                      fontSize: "0.9rem",
+                      whiteSpace: "nowrap"
+                    }}>
+                      {item.label}
+                    </Typography>
+                  </motion.button>
+                </Tooltip>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 };
 
