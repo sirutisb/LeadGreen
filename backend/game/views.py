@@ -9,8 +9,6 @@ from django.shortcuts import get_object_or_404
 
 from .models import GameProfile, Prize
 from .serializers import GameProfileSerializer, PlantProgressSerializer, InsectSerializer
-from shop.models import Inventory
-from shop.serializers import InventorySerializer
 
 from rest_framework import generics
 from django.db import models

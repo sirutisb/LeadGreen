@@ -56,7 +56,6 @@ INSTALLED_APPS = [
     'posts',
     'qrcodes',
     'users',
-    'shop',
 
 
     #'base.apps.BaseConfig',
