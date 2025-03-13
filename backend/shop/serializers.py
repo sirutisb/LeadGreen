@@ -4,7 +4,7 @@ from .models import Item, Inventory, Transaction
 class ItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = Item
-        fields = ['id', 'name', 'description', 'price', 'stock']
+        fields = ['id', 'name', 'description', 'price', 'stock', 'item_type', 'growth_amount', 'insect_spawn_chance']
 
 class InventorySerializer(serializers.ModelSerializer):
     item = ItemSerializer(read_only=True)

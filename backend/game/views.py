@@ -23,7 +23,7 @@ def build_response(profile, success, message, status_code):
     response_data = serializer.data
     
     # Add inventory information
-    inventory = Inventory.objects.filter(user=profile.user.user_profile)
+    inventory = Inventory.objects.filter(user=profile.user)
     inventory_serializer = InventorySerializer(inventory, many=True)
     
     # Add custom messages and inventory
@@ -44,7 +44,7 @@ class ItemBasedAction(APIView):
     def get_inventory_item(self, user):
         try:
             inventory = Inventory.objects.get(
-                user=user.user_profile,
+                user=user.game_profile.user,
                 item__item_type=self.required_item_type
             )
             if inventory.quantity <= 0:

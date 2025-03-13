@@ -10,13 +10,14 @@ class Item(models.Model):
         ('GLOVE', 'Glove'),
         ('FERTILIZER', 'Fertilizer'),
         ('SPECIAL', 'Special'),
+        ('UNDEFINED', 'Undefined'), # Default (error value, not initialised)
     ]
     
     name = models.CharField(max_length=32)
     description = models.TextField(default="")
     price = models.IntegerField(default=0)
     stock = models.PositiveIntegerField(default=0) # Available in shop
-    item_type = models.CharField(max_length=20, choices=ITEM_TYPE)
+    item_type = models.CharField(max_length=20, choices=ITEM_TYPE, default='UNDEFINED')
     
     # Item effects
     growth_amount = models.FloatField(default=0.0)
