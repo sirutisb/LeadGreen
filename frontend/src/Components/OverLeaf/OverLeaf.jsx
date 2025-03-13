@@ -47,10 +47,10 @@ const OverLeaf = () => {
   
     // Handle initial insect notification
     useEffect(() => {
-      if (currentInsect) {
+      if (currentInsect && initialLoad === false) {
         showInsectAlert(currentInsect.name);
       }
-    }, [currentInsect, showInsectAlert]);
+    }, [currentInsect?.name]);
   
     // Handle plant action
     const handleAction = async () => {

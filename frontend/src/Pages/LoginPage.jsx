@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Button from "../Components/Button";
 import Input from "../Components/Input";
@@ -17,8 +17,9 @@ const schema = yup.object().shape({
 });
 
 export default function LoginPage() {
+
    // Get the loginUser function from the AuthContext
-  const { loginUser } = useContext(AuthContext);
+   const { loginUser, loginError, setLoginError } = useContext(AuthContext);
 
   // Initialise form handling with useForm
   const {
@@ -30,8 +31,14 @@ export default function LoginPage() {
     mode: "onChange", // Validation runs on input change
   });
 
+  useEffect(() => {
+    return () => {
+      if (setLoginError) setLoginError(null);
+    };
+  }, [setLoginError]);
+
   const onSubmit = (data) => {
-    loginUser(data);// Calls loginUser with the form data
+      loginUser(data);// Calls loginUser with the form data
   };
 
   return (
@@ -58,6 +65,13 @@ export default function LoginPage() {
               </Link>
             </p>
           </div>
+
+          {/* Display login error message if it exists */}
+          {loginError && (
+            <div className="mt-4 p-3 bg-red-50 border border-red-300 text-red-700 rounded-lg">
+              {loginError}
+            </div>
+          )}
 
           <form onSubmit={handleSubmit(onSubmit)} className="mt-6 space-y-6">
             <div className="space-y-5">
@@ -122,3 +136,4 @@ export default function LoginPage() {
     </Page>
   );
 }
+

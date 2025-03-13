@@ -17,6 +17,12 @@ from django.db import models
 
 import random
 
+from rest_framework import viewsets
+from rest_framework.decorators import action
+
+from .models import Inventory
+from .serializers import InventorySerializer
+
 def build_response(profile, success, message, status_code):
     # Serialize the updated game profile
     serializer = GameProfileSerializer(profile)
@@ -60,6 +66,119 @@ class ItemBasedAction(APIView):
         else:
             inventory.save()
 
+    def apply_effects(self, profile, item):
+        """Apply all effects of an item"""
+        messages = []
+        
+        for effect in item.effects.all():
+            params = effect.parameters
+            
+            if effect.effect_type == 'GROW':
+                if 'growth_amount' in params:
+                    profile.grow_tree(params['growth_amount'])
+                    messages.append(f"Tree grown by {params['growth_amount']}")
+                    
+            elif effect.effect_type == 'REMOVE_INSECT':
+                if profile.current_insect:
+                    profile.current_insect = None
+                    messages.append("Insect removed")
+                    
+            elif effect.effect_type == 'ADD_POINTS':
+                if 'points' in params:
+                    profile.add_points(params['points'])
+                    messages.append(f"Added {params['points']} points")
+                    
+            elif effect.effect_type == 'SPAWN_INSECT':
+                if 'chance' in params and random.random() < params['chance']:
+                    profile.spawn_insect()
+                    messages.append("An insect has appeared!")
+
+            # New complex effects
+            elif effect.effect_type == 'COMBO_BOOST':
+                # Combo system that multiplies points based on consecutive successful actions
+                combo_multiplier = params.get('multiplier', 1.5)
+                duration = params.get('duration_seconds', 300)  # 5 minutes default
+                profile.activate_combo_boost(combo_multiplier, duration)
+                messages.append(f"Combo boost activated! x{combo_multiplier} for {duration/60} minutes")
+
+            elif effect.effect_type == 'TEMPORARY_SHIELD':
+                # Prevents insect spawning for a duration
+                duration = params.get('duration_seconds', 600)  # 10 minutes default
+                profile.activate_shield(duration)
+                messages.append(f"Shield active for {duration/60} minutes")
+
+            elif effect.effect_type == 'MULTIPLIER':
+                # Multiplies points earned for a duration
+                multiplier = params.get('multiplier', 2)
+                duration = params.get('duration_seconds', 300)
+                profile.activate_point_multiplier(multiplier, duration)
+                messages.append(f"Point multiplier x{multiplier} active for {duration/60} minutes")
+
+            elif effect.effect_type == 'RANDOM_REWARD':
+                # Gives random rewards based on configured probabilities
+                rewards = params.get('rewards', [
+                    {'type': 'points', 'amount': 100, 'weight': 70},
+                    {'type': 'growth', 'amount': 0.5, 'weight': 20},
+                    {'type': 'spins', 'amount': 1, 'weight': 10}
+                ])
+                reward = self.apply_random_reward(profile, rewards)
+                messages.append(f"Random reward: {reward}")
+
+            elif effect.effect_type == 'TIME_BOOST':
+                # Speeds up growth rate for a duration
+                speed_multiplier = params.get('speed_multiplier', 2)
+                duration = params.get('duration_seconds', 300)
+                profile.activate_time_boost(speed_multiplier, duration)
+                messages.append(f"Growth speed increased by x{speed_multiplier} for {duration/60} minutes")
+                
+        return messages
+
+    def apply_random_reward(self, profile, rewards):
+        """Helper method to handle random rewards"""
+        weights = [r['weight'] for r in rewards]
+        chosen = random.choices(rewards, weights=weights, k=1)[0]
+        
+        if chosen['type'] == 'points':
+            profile.add_points(chosen['amount'])
+            return f"Won {chosen['amount']} points!"
+        elif chosen['type'] == 'growth':
+            profile.grow_tree(chosen['amount'])
+            return f"Tree grown by {chosen['amount']}"
+        elif chosen['type'] == 'spins':
+            profile.spins += chosen['amount']
+            profile.save()
+            return f"Won {chosen['amount']} spins!"
+
+    def post(self, request, *args, **kwargs):
+        user = request.user
+        profile = user.game_profile
+
+        # Get and validate inventory item
+        inventory, error_message = self.get_inventory_item(user)
+        if error_message:
+            return build_response(profile, False, error_message, status.HTTP_200_OK)
+
+        # Get item
+        item = inventory.item
+        
+        # Check prerequisites (like existing insect)
+        if profile.current_insect is not None and not item.effects.filter(effect_type='REMOVE_INSECT').exists():
+            return build_response(profile, False, "There is an insect on the tree! Use an appropriate item first.", status.HTTP_200_OK)
+
+        # Consume the item
+        self.consume_item(inventory)
+
+        # Apply all effects
+        effect_messages = self.apply_effects(profile, item)
+        
+        try:
+            profile.save()
+        except Exception as e:
+            print(f"ERROR! Could not save profile: {e}")
+            return build_response(profile, False, "An error occurred while applying the item effects.", status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        return build_response(profile, True, f"Used {item.name}: {', '.join(effect_messages)}", status.HTTP_200_OK)
+
 class TreeGrowAction(ItemBasedAction):
     """
     Generic class for tree growth actions using items from inventory
@@ -76,7 +195,7 @@ class TreeGrowAction(ItemBasedAction):
         if error_message:
             return build_response(profile, False, error_message, status.HTTP_200_OK)
 
-        # Get item effects
+        # Get item
         item = inventory.item
         
         # Consume the item
@@ -130,7 +249,7 @@ class GloveTreeAction(ItemBasedAction):
 
         # Remove insect and apply any growth effect
         profile.current_insect = None
-        if item.growth_amount > 0:
+        if hasattr(item, 'growth_amount') and item.growth_amount > 0:
             profile.grow_tree(item.growth_amount)
         
         profile.save()
@@ -206,3 +325,86 @@ class SpinView(APIView):
                 "prize_index": prize_index,
                 "prize_amount": prize_reward,
             }, status=status.HTTP_200_OK)
+
+class InventoryViewSet(viewsets.ModelViewSet):
+    serializer_class = InventorySerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Inventory.objects.filter(user=self.request.user)
+
+    @action(detail=True, methods=['post'])
+    def use(self, request, pk=None):
+        inventory = self.get_object()
+        quantity = int(request.data.get('quantity', 1))
+        
+        if quantity <= 0:
+            return Response({'error': 'Quantity must be positive'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        if inventory.quantity < quantity:
+            return Response({'error': 'Not enough items in inventory'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Perform item-specific action here (customize based on your needs)
+        # Example: if item.name == "Health Potion": increase health
+        
+        inventory.quantity -= quantity
+        if inventory.quantity == 0:
+            inventory.delete()
+        else:
+            inventory.save()
+
+        return Response({
+            'message': f'Used {quantity} {inventory.item.name}(s)',
+            'remaining': InventorySerializer(inventory).data if inventory.pk else None
+        }, status=status.HTTP_200_OK)
+    
+
+    
+#ss
+from .models import Item, Transaction
+from .serializers import ItemSerializer, TransactionSerializer
+
+class ItemViewSet(viewsets.ModelViewSet):
+    queryset = Item.objects.all()
+    serializer_class = ItemSerializer
+    permission_classes = [IsAuthenticated]
+
+    @action(detail=True, methods=['post'])
+    def purchase(self, request, pk=None):
+        item = self.get_object()
+        quantity = int(request.data.get('quantity', 1))
+        
+        if quantity <= 0:
+            return Response({'error': 'Quantity must be positive'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        if item.stock < quantity:
+            return Response({'error': 'Not enough stock'}, status=status.HTTP_400_BAD_REQUEST)
+
+        total_price = item.price * quantity
+        
+        # Update stock
+        item.stock -= quantity
+        item.save()
+
+        # Update or create inventory
+        inventory, created = Inventory.objects.get_or_create(
+            user=request.user,
+            item=item,
+            defaults={'quantity': quantity}
+        )
+        if not created:
+            inventory.quantity += quantity
+            inventory.save()
+
+        # Record transaction
+        transaction = Transaction.objects.create(
+            user=request.user,
+            item=item,
+            quantity=quantity,
+            total_price=total_price
+        )
+
+        return Response({
+            'transaction': TransactionSerializer(transaction).data,
+            'inventory': InventorySerializer(inventory).data
+        }, status=status.HTTP_201_CREATED)
