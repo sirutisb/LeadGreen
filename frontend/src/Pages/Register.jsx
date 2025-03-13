@@ -19,7 +19,7 @@ const schema = yup.object().shape({
     .min(6, "Password must be at least 6 characters long") // Enforce password length constraint
     .required("Password is required"),
   confirmPassword: yup.string()
-    .required("Please confrim your password")
+    .required("Please confirm your password")
     .oneOf([yup.ref('password'), null], "Passwords must match")
 });
 
@@ -143,17 +143,17 @@ export default function RegisterPage() {
                 </div>
 
                 <div>
-                  <Label htmlFor="confirm-password" className="sr-only">
+                  <Label htmlFor="confirmPassword" className="sr-only">
                     Confirm Password
                   </Label>
                   <Input
-                      id="confirm-password"
-                      name="confirm-password"
+                      id="confirmPassword"
+                      name="confirmPassword"
                       type="password"
                       autoComplete="new-password"
                       className="w-full text-black placeholder-gray-500 border border-green-300 bg-green-50 rounded-lg px-4 py-3"
                       placeholder="Confirm Password"
-                      {...register("confirm-password")}
+                      {...register("confirmPassword")}
                   />
                   {errors.confirmPassword && (
                       <p className="text-red-600 text-sm mt-1">{errors.confirmPassword?.message}</p>
