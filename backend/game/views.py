@@ -32,17 +32,12 @@ def build_response(profile, success, message, status_code):
     })
     return Response(response_data, status=status_code)
 
-class TreeGrowAction(APIView):
+class ItemBasedAction(APIView):
     """
-    APIView
-    Generic class for tree growth actions
-    Returns response based on input from API requests (used soil, water, etc)
+    Base class for actions that consume items from inventory
     """
-    
     permission_classes = [IsAuthenticated]
-    action_cost = 0
-    growth_amount = 0
-    insect_spawn_chance = 0
+    required_item_type = None
 
     def get_inventory_item(self, user):
         try:
@@ -187,17 +182,22 @@ class TreeGrowAction(ItemBasedAction):
         if profile.current_insect is not None:
             return build_response(profile, False, "There is an insect on the tree! Remove it first.", status.HTTP_200_OK)
 
-        if profile.points_balance < self.action_cost:
-            return build_response(profile, False, f"Not enough points, you have only {profile.points_balance}, you need {self.action_cost}", status.HTTP_200_OK)
+        # Get and validate inventory item
+        inventory, error_message = self.get_inventory_item(user)
+        if error_message:
+            return build_response(profile, False, error_message, status.HTTP_200_OK)
 
-        # adjust level and points
-        profile.points_balance -= self.action_cost
-        profile.grow_tree(self.growth_amount)
-        profile.save()
+        # Get item
+        item = inventory.item
+        
+        # Consume the item
+        self.consume_item(inventory)
 
-        # chance for snail to spawn
-        # TODO: make it so theres a cooldown and you cant get the snail again for x amount of actions
-        if random.random() < self.insect_spawn_chance:
+        # Apply growth effect
+        profile.grow_tree(item.growth_amount)
+
+        # Check for insect spawn
+        if random.random() < item.insect_spawn_chance:
             print("Spawning insect")
             profile.spawn_insect()
 
@@ -208,30 +208,19 @@ class TreeGrowAction(ItemBasedAction):
             print("ERROR! Could not save profile!")
             pass
 
-        return build_response(profile, True, "Action applied successfully.", status.HTTP_200_OK)
+        return build_response(profile, True, f"Used {item.name} successfully!", status.HTTP_200_OK)
 
 class WaterTreeAction(TreeGrowAction):
-    """Implementation of Tree Watering Action with different parameters"""
-    action_cost = 10
-    growth_amount = 0.1
-    insect_spawn_chance = 0.20
+    """Implementation of Tree Watering Action using water items"""
+    required_item_type = 'WATER'
 
 class SoilTreeAction(TreeGrowAction):
-    """Implementation of Tree Soil Action with different parameters"""
-    action_cost = 20
-    growth_amount = 0.3
-    insect_spawn_chance = 0.0001
+    """Implementation of Tree Soil Action using soil items"""
+    required_item_type = 'SOIL'
 
-# TODO: Make cleaner
-class GloveTreeAction(APIView):
-    """
-    Glove action too different from soil + water to be child class of Tree Growth
-    Returns post request removing the insect and changing state in db - if there is insect
-    if no insect exists - returns this fact
-    """
-    action_cost = 50
-    growth_amount = 0.0
-    permission_classes = [IsAuthenticated]
+class GloveTreeAction(ItemBasedAction):
+    """Implementation of Glove Action using glove items"""
+    required_item_type = 'GLOVE'
 
     def post(self, request, *args, **kwargs):
         user = request.user
@@ -240,16 +229,25 @@ class GloveTreeAction(APIView):
         if profile.current_insect is None:
             return build_response(profile, False, "Remove what? There is no insect on the tree.", status.HTTP_200_OK)
 
-        # adjust level and points
-        if profile.points_balance < self.action_cost:
-            return build_response(profile, False, f"Not enough points, you have only {profile.points_balance}, you need {self.action_cost}", status.HTTP_200_OK)
+        # Get and validate inventory item
+        inventory, error_message = self.get_inventory_item(user)
+        if error_message:
+            return build_response(profile, False, error_message, status.HTTP_200_OK)
 
+        # Get item
+        item = inventory.item
+
+        # Consume the item
+        self.consume_item(inventory)
+
+        # Remove insect and apply any growth effect
         profile.current_insect = None
-        profile.points_balance -= self.action_cost
-        profile.grow_tree(self.growth_amount)
+        if hasattr(item, 'growth_amount') and item.growth_amount > 0:
+            profile.grow_tree(item.growth_amount)
+        
         profile.save()
 
-        return build_response(profile, True, "Action applied successfully.", status.HTTP_200_OK)
+        return build_response(profile, True, f"Used {item.name} successfully!", status.HTTP_200_OK)
 
 class GameProfileView(APIView):
     """
@@ -320,11 +318,6 @@ class SpinView(APIView):
                 "prize_index": prize_index,
                 "prize_amount": prize_reward,
             }, status=status.HTTP_200_OK)
-        
-
-
-
-
 
 class InventoryViewSet(viewsets.ModelViewSet):
     serializer_class = InventorySerializer
@@ -408,94 +401,3 @@ class ItemViewSet(viewsets.ModelViewSet):
             'transaction': TransactionSerializer(transaction).data,
             'inventory': InventorySerializer(inventory).data
         }, status=status.HTTP_201_CREATED)
-
-
-        
-
-
-
-
-
-class InventoryViewSet(viewsets.ModelViewSet):
-    serializer_class = InventorySerializer
-    permission_classes = [IsAuthenticated]
-
-    def get_queryset(self):
-        return Inventory.objects.filter(user=self.request.user)
-
-    @action(detail=True, methods=['post'])
-    def use(self, request, pk=None):
-        inventory = self.get_object()
-        quantity = int(request.data.get('quantity', 1))
-        
-        if quantity <= 0:
-            return Response({'error': 'Quantity must be positive'}, status=status.HTTP_400_BAD_REQUEST)
-        
-        if inventory.quantity < quantity:
-            return Response({'error': 'Not enough items in inventory'}, status=status.HTTP_400_BAD_REQUEST)
-
-        # Perform item-specific action here (customize based on your needs)
-        # Example: if item.name == "Health Potion": increase health
-        
-        inventory.quantity -= quantity
-        if inventory.quantity == 0:
-            inventory.delete()
-        else:
-            inventory.save()
-
-        return Response({
-            'message': f'Used {quantity} {inventory.item.name}(s)',
-            'remaining': InventorySerializer(inventory).data if inventory.pk else None
-        }, status=status.HTTP_200_OK)
-    
-
-    
-#ss
-from .models import Item, Transaction
-from .serializers import ItemSerializer, TransactionSerializer
-
-class ItemViewSet(viewsets.ModelViewSet):
-    queryset = Item.objects.all()
-    serializer_class = ItemSerializer
-    permission_classes = [IsAuthenticated]
-
-    @action(detail=True, methods=['post'])
-    def purchase(self, request, pk=None):
-        item = self.get_object()
-        quantity = int(request.data.get('quantity', 1))
-        
-        if quantity <= 0:
-            return Response({'error': 'Quantity must be positive'}, status=status.HTTP_400_BAD_REQUEST)
-        
-        if item.stock < quantity:
-            return Response({'error': 'Not enough stock'}, status=status.HTTP_400_BAD_REQUEST)
-
-        total_price = item.price * quantity
-        
-        # Update stock
-        item.stock -= quantity
-        item.save()
-
-        # Update or create inventory
-        inventory, created = Inventory.objects.get_or_create(
-            user=request.user,
-            item=item,
-            defaults={'quantity': quantity}
-        )
-        if not created:
-            inventory.quantity += quantity
-            inventory.save()
-
-        # Record transaction
-        transaction = Transaction.objects.create(
-            user=request.user,
-            item=item,
-            quantity=quantity,
-            total_price=total_price
-        )
-
-        return Response({
-            'transaction': TransactionSerializer(transaction).data,
-            'inventory': InventorySerializer(inventory).data
-        }, status=status.HTTP_201_CREATED)
-

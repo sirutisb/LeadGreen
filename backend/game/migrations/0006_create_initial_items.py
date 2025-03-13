@@ -56,9 +56,9 @@ def remove_initial_items(apps, schema_editor):
 
 class Migration(migrations.Migration):
     dependencies = [
-        ('game', '0014_gameprofile_combo_expires_at_and_more'),
+        ('game', '0005_populate_prizes'),
     ]
 
     operations = [
-        migrations.RunPython(create_initial_items, remove_initial_items),
+        #migrations.RunPython(create_initial_items, remove_initial_items),
     ]
