@@ -97,6 +97,34 @@ class GameProfile(models.Model):
         self.growth_speed_expires_at = timezone.now() + timezone.timedelta(seconds=duration)
         self.save()
 
+    # New fields for complex effects
+    combo_multiplier = models.FloatField(default=1.0)
+    combo_expires_at = models.DateTimeField(null=True, blank=True)
+    shield_expires_at = models.DateTimeField(null=True, blank=True)
+    point_multiplier = models.FloatField(default=1.0)
+    point_multiplier_expires_at = models.DateTimeField(null=True, blank=True)
+    growth_speed_multiplier = models.FloatField(default=1.0)
+    growth_speed_expires_at = models.DateTimeField(null=True, blank=True)
+
+    def activate_combo_boost(self, multiplier, duration):
+        self.combo_multiplier = multiplier
+        self.combo_expires_at = timezone.now() + timezone.timedelta(seconds=duration)
+        self.save()
+
+    def activate_shield(self, duration):
+        self.shield_expires_at = timezone.now() + timezone.timedelta(seconds=duration)
+        self.save()
+
+    def activate_point_multiplier(self, multiplier, duration):
+        self.point_multiplier = multiplier
+        self.point_multiplier_expires_at = timezone.now() + timezone.timedelta(seconds=duration)
+        self.save()
+
+    def activate_time_boost(self, multiplier, duration):
+        self.growth_speed_multiplier = multiplier
+        self.growth_speed_expires_at = timezone.now() + timezone.timedelta(seconds=duration)
+        self.save()
+
     def add_points(self, amount):
         """Modified to account for point multiplier"""
         if self.point_multiplier_expires_at and self.point_multiplier_expires_at > timezone.now():
@@ -192,9 +220,9 @@ class ItemEffect(models.Model):
 
 class Item(models.Model):
     ITEM_TYPE = [
-        ('TOOL', 'Tool'), # For tools, the effect is applied to the tree
-        ('CONSUMABLE', 'Consumable'), # For consumables, the item is used
-        ('SPECIAL', 'Special'), # For special items, the effect is applied to the user
+        ('TOOL', 'Tool'), # For tools, they are always available to use (infinite item count)
+        ('CONSUMABLE', 'Consumable'), # For consumables, the item is used (limited item count)
+        ('SPECIAL', 'Special'), # For special items, the effect is applied to the user (to be reworked later)
     ]
     
     name = models.CharField(max_length=32)
@@ -220,7 +248,7 @@ class Transaction(models.Model):
     
 class Inventory(models.Model):
     user = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
-    item = models.ForeignKey(Item, on_delete=models.CASCADE)  # Reference shop.Item
+    item = models.ForeignKey(Item, on_delete=models.CASCADE)
     quantity = models.IntegerField(default=0)
 
     class Meta:
@@ -229,6 +257,3 @@ class Inventory(models.Model):
 
     def __str__(self):
         return f"{self.user.username} -> x{self.quantity} {self.item.name}"
-
-
-
