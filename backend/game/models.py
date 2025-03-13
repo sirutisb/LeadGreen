@@ -4,6 +4,8 @@ from django.dispatch import receiver
 from users.models import UserProfile
 from random import choice
 
+from django.utils import timezone
+
 class Plant(models.Model):
     """
     Model for plant, includes name, level, image
