@@ -3,41 +3,15 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from users.models import UserProfile
 from random import choice
-
-
-#Shop Items and transactions
-class ShopItem(models.Model):
-    name = models.CharField(max_length=32)
-    effect = models.CharField(max_length=32, default="")
-    description = models.TextField(default="")
-    cost = models.IntegerField(default=0)
-
-    def __str__(self):
-        return f"{self.name} | Cost: {self.cost} | Effect: {self.effect}"
-
-
-class UserItem(models.Model):
-    user = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
-    item = models.ForeignKey(ShopItem, on_delete=models.CASCADE)
-    quantity = models.IntegerField(default=0)
-
-    def __str__(self):
-        return f"{self.user.username} -> x{self.quantity} {self.item.name}"
-    
+from django.utils import timezone
 
 class Plant(models.Model):
     """
-    Model for plant, includes name, level, image 
+    Model for plant, includes name, level, image
     Allows for ordering through level
     """
     name = models.CharField(max_length=32)  # exampe - "Leafy", "Sprouto"
     level = models.IntegerField(unique=True)  # each level - one plant
-    # image = models.ImageField(
-    #     upload_to="plants/",
-    #     blank=True,
-    #     null=True
-    # )
-    # Dont allow for null or blank images
     image = models.ImageField(
         upload_to="plants/",
         blank=False,
@@ -70,7 +44,7 @@ class Insect(models.Model):
 class GameProfile(models.Model):
     """
     Game profile model
-    Seperate from standard user model - contains other functionality and variable
+    Seperate from standard user model - contains other functionality and variables
     Uses one to one relationship to assign each game profile to a user profile
     Includes:
       link to user
@@ -82,6 +56,7 @@ class GameProfile(models.Model):
     user = models.OneToOneField(UserProfile, on_delete=models.CASCADE, related_name='game_profile')
     points_balance = models.IntegerField(default=0)
     lifetime_points = models.IntegerField(default=0)
+    spins = models.IntegerField(default=0)
     
     # Plant progress
     tree_level = models.IntegerField(default=1)  # Start at level 1
@@ -90,19 +65,52 @@ class GameProfile(models.Model):
     
     # Insect mechanics
     current_insect = models.ForeignKey(Insect, on_delete=models.SET_NULL, null=True, blank=True)
-    last_insect_spawn = models.DateTimeField(null=True, blank=True) # insect spawn cooldown
+
+    # New fields for complex effects
+    shield_expires_at = models.DateTimeField(null=True, blank=True)
+
+    combo_multiplier = models.FloatField(default=1.0)
+    combo_expires_at = models.DateTimeField(null=True, blank=True)
     
-    # Game mechanics
-    spins = models.IntegerField(default=0)
+    point_multiplier = models.FloatField(default=1.0)
+    point_multiplier_expires_at = models.DateTimeField(null=True, blank=True)
+
+    growth_speed_multiplier = models.FloatField(default=1.0)
+    growth_speed_expires_at = models.DateTimeField(null=True, blank=True)
+
+    def activate_shield(self, duration):
+        self.shield_expires_at = timezone.now() + timezone.timedelta(seconds=duration)
+        self.save()
+
+    def activate_combo_boost(self, multiplier, duration):
+        self.combo_multiplier = multiplier
+        self.combo_expires_at = timezone.now() + timezone.timedelta(seconds=duration)
+        self.save()
+
+    def activate_point_multiplier(self, multiplier, duration):
+        self.point_multiplier = multiplier
+        self.point_multiplier_expires_at = timezone.now() + timezone.timedelta(seconds=duration)
+        self.save()
+
+    def activate_time_boost(self, multiplier, duration):
+        self.growth_speed_multiplier = multiplier
+        self.growth_speed_expires_at = timezone.now() + timezone.timedelta(seconds=duration)
+        self.save()
 
     def add_points(self, amount):
-        """Add points to the profile"""
-        self.points_balance += amount
-        self.lifetime_points += amount
+        """Modified to account for point multiplier"""
+        if self.point_multiplier_expires_at and self.point_multiplier_expires_at > timezone.now():
+            amount *= self.point_multiplier
+        if self.combo_expires_at and self.combo_expires_at > timezone.now():
+            amount *= self.combo_multiplier
+        self.points_balance += int(amount)
+        self.lifetime_points += int(amount)
         self.save()
 
     def grow_tree(self, amount):
-        """Grow the tree by the given amount"""
+        """Modified to account for growth speed multiplier"""
+        if self.growth_speed_expires_at and self.growth_speed_expires_at > timezone.now():
+            amount *= self.growth_speed_multiplier
         self.tree_growth += amount
         while self.tree_growth >= 1.0:
             self.tree_growth -= 1.0
@@ -116,9 +124,11 @@ class GameProfile(models.Model):
         super().save(*args, **kwargs)
 
     def spawn_insect(self):
-        """Randomly spawn an insect appropriate for the current level"""
-        from random import choice
-        # Get all insects up to current level
+        """Modified to check for active shield"""
+        if self.shield_expires_at and self.shield_expires_at > timezone.now():
+            return  # Shield prevents insect spawn
+        
+        # Selects an insect that is at the same level or lower than the tree level
         available_insects = Insect.objects.filter(level__lte=self.tree_level)
         if available_insects.exists():
             self.current_insect = choice(available_insects)
@@ -151,3 +161,74 @@ class Prize(models.Model):
     option = models.CharField(max_length=32)
     weight = models.FloatField()
     style = models.JSONField(default=dict)  # For storing color styles as JSON
+
+
+#Shop Items and transactions
+class ItemEffect(models.Model):
+    """
+    Generic effects that items can have when used
+    """
+    EFFECT_TYPES = [
+        ('GROW', 'Grow Tree'),
+        ('REMOVE_INSECT', 'Remove Insect'),
+        ('ADD_POINTS', 'Add Points'),
+        ('SPAWN_INSECT', 'Spawn Insect'),
+        ('SPECIAL', 'Special Effect'),
+        ('COMBO_BOOST', 'Combo Boost'),
+        ('TEMPORARY_SHIELD', 'Temporary Shield'),
+        ('MULTIPLIER', 'Point Multiplier'),
+        ('RANDOM_REWARD', 'Random Reward'),
+        ('TIME_BOOST', 'Time Boost'),
+        # Add more effect types as needed
+    ]
+
+    name = models.CharField(max_length=64)
+    effect_type = models.CharField(max_length=32, choices=EFFECT_TYPES)
+    # Store effect parameters as JSON for flexibility
+    parameters = models.JSONField(default=dict, help_text="Effect-specific parameters (e.g. growth_amount, points, chances)")
+    
+    def __str__(self):
+        return f"{self.name} ({self.effect_type})"
+
+class Item(models.Model):
+    ITEM_TYPE = [
+        ('TOOL', 'Tool'), # For tools, the effect is applied to the tree
+        ('CONSUMABLE', 'Consumable'), # For consumables, the item is used
+        ('SPECIAL', 'Special'), # For special items, the effect is applied to the user
+    ]
+    
+    name = models.CharField(max_length=32)
+    description = models.TextField(default="")
+    price = models.IntegerField(default=0)
+    stock = models.PositiveIntegerField(default=0)
+    item_type = models.CharField(max_length=20, choices=ITEM_TYPE)
+    effects = models.ManyToManyField(ItemEffect, related_name='items')
+    cooldown_seconds = models.IntegerField(default=0)
+
+    def __str__(self):
+        return f"{self.name} | Price: {self.price}"
+    
+class Transaction(models.Model):
+    user = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
+    item = models.ForeignKey(Item, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField()
+    total_price = models.IntegerField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user.username} bought {self.quantity} {self.item.name}"
+    
+class Inventory(models.Model):
+    user = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
+    item = models.ForeignKey(Item, on_delete=models.CASCADE)  # Reference shop.Item
+    quantity = models.IntegerField(default=0)
+
+    class Meta:
+        unique_together = ['user', 'item']
+        verbose_name_plural = "Inventories"
+
+    def __str__(self):
+        return f"{self.user.username} -> x{self.quantity} {self.item.name}"
+
+
+

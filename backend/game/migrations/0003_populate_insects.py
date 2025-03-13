@@ -26,7 +26,7 @@ def reverse_populate(apps, schema_editor):
 
 class Migration(migrations.Migration):
     dependencies = [
-        ('game', '0003_auto_20250224_0014'),  # Adjust this to point to your last migration
+        ('game', '0002_populate_plants'),  # Adjust this to point to your last migration
     ]
 
     operations = [

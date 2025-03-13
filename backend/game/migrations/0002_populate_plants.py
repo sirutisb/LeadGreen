@@ -74,7 +74,7 @@ def reverse_populate(apps, schema_editor):
 
 class Migration(migrations.Migration):
     dependencies = [
-        ('game', '0002_initial'),  # This should point to your last migration
+        ('game', '0001_initial'),  # This should point to your last migration
     ]
 
     operations = [

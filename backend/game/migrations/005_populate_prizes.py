@@ -24,7 +24,7 @@ def populate_prizes(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('game', '0011_prize_alter_gameprofile_current_plant'),
+        ('game', '0004_update_images'),
     ]
 
     operations = [
