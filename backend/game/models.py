@@ -4,6 +4,10 @@ from django.dispatch import receiver
 from users.models import UserProfile
 from random import choice
 
+from django.utils.timezone import now
+from datetime import timedelta
+from django.conf import settings
+
 
 #Shop Items and transactions
 class ShopItem(models.Model):
@@ -95,6 +99,11 @@ class GameProfile(models.Model):
     # Game mechanics
     spins = models.IntegerField(default=0)
 
+    # Daily reward 
+    last_collected = models.DateTimeField(null=True, blank=True)
+    streak = models.IntegerField(default=0)
+    current_day = models.IntegerField(default = 1)
+
     def add_points(self, amount):
         """Add points to the profile"""
         self.points_balance += amount
@@ -123,6 +132,41 @@ class GameProfile(models.Model):
         if available_insects.exists():
             self.current_insect = choice(available_insects)
             self.save()
+
+    def can_collect_daily_reward(self):
+        """ check if user is allowed to collect next reward"""
+
+        if not self.last_collected:
+            return True
+        
+        time_diff = now() - self.last_collected
+        
+        return time_diff >= timedelta(hours = 24)
+        
+    def collect_daily_reward(self):
+        """ reward collection """
+
+        # unable to collect - 24 hours not past        
+        if not self.can_collect_daily_reward():
+            return False
+
+        if self.last_collected:
+            time_diff = now() - self.last_collected
+        else:
+            time_diff = None
+
+        if time_diff and time_diff >= timedelta(hours = 48):
+            # if longer than 48 hours - reset streak and current day
+            self.streak = 1
+            self.current_day = 1
+        else:
+            # if less than 48 - (greater than 24) - add to streak and enumerate day
+            self.streak += 1
+            self.current_day = (self.current_day % 7) + 1
+
+        self.last_collected = now()
+        self.save()
+        return True
 
     def __str__(self):
         return f"{self.user.username} | Level {self.tree_level} | Points {self.points_balance} | Spins {self.spins}"
