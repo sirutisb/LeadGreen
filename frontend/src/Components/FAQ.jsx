@@ -1,37 +1,77 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Minus, HelpCircle } from 'lucide-react';
 
 const faqs = [
   {
+    id: "getting-started",
     question: "How do I start using LeadGreen?",
     answer: "Create an account and start logging your eco-friendly actions. You'll earn points and grow your virtual plant as you go!",
     icon: "🌱"
   },
   {
+    id: "pricing",
     question: "Is LeadGreen free to use?",
     answer: "Yes, LeadGreen is free to sign up and use.",
     icon: "💰"
   },
   {
+    id: "verification",
     question: "How does LeadGreen verify eco-friendly actions?",
     answer: "We use a combination of QR code scanning at various university locations, photo verification, and community moderation to ensure the authenticity of logged actions.",
     icon: "✅"
   },
   {
+    id: "rewards",
     question: "What kind of rewards can I earn?",
     answer: "You can earn points to grow and customize your virtual plant, compete on leaderboards, and unlock special achievements. Some locations may also offer real-world rewards!",
     icon: "🏆"
   },
   {
-    question: "Can I track my environmental impact?",
-    answer: "Yes! LeadGreen provides detailed statistics about your carbon footprint reduction, water saved, and overall environmental impact through your eco-friendly actions.",
-    icon: "📊"
+    id: "lead-points",
+    question: "How can I get more lead points?",
+    answer: "You can earn more lead points by consistently logging eco-friendly actions, participating in special challenges, referring friends, and maintaining daily streaks of environmental activities.",
+    icon: "💰"
   }
 ];
 
 export default function FAQ() {
   const [expandedIndex, setExpandedIndex] = useState(null);
+  
+  // Handle opening FAQ from URL hash
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash.replace('#', '');
+      const faqIndex = faqs.findIndex(faq => faq.id === hash);
+      if (faqIndex !== -1) {
+        setExpandedIndex(faqIndex);
+        // Scroll to the element
+        setTimeout(() => {
+          document.getElementById(hash)?.scrollIntoView({ behavior: 'smooth' });
+        }, 100);
+      }
+    };
+    
+    // Check hash on initial load
+    handleHashChange();
+    
+    // Listen for hash changes
+    window.addEventListener('hashchange', handleHashChange);
+    
+    return () => {
+      window.removeEventListener('hashchange', handleHashChange);
+    };
+  }, []);
+
+  const handleQuestionClick = (index, id) => {
+    setExpandedIndex(expandedIndex === index ? null : index);
+    // Update URL hash without full page reload
+    if (expandedIndex !== index) {
+      window.history.pushState(null, '', `#${id}`);
+    } else {
+      window.history.pushState(null, '', window.location.pathname);
+    }
+  };
 
   return (
     <section className="w-full py-16 md:py-1 px-4">
@@ -58,6 +98,7 @@ export default function FAQ() {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: index * 0.1 }}
               viewport={{ once: true }}
+              id={faq.id}
             >
               <motion.div
                 className={`
@@ -69,7 +110,7 @@ export default function FAQ() {
                 transition={{ duration: 0.2 }}
               >
                 <button
-                  onClick={() => setExpandedIndex(expandedIndex === index ? null : index)}
+                  onClick={() => handleQuestionClick(index, faq.id)}
                   className="w-full text-left p-6 flex items-center justify-between gap-4"
                 >
                   <div className="flex items-center gap-4">
