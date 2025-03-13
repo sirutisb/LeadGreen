@@ -261,16 +261,6 @@ class Item(models.Model):
     def __str__(self):
         return f"{self.name} | Price: {self.price}"
     
-class Transaction(models.Model):
-    user = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
-    item = models.ForeignKey(Item, on_delete=models.CASCADE)
-    quantity = models.PositiveIntegerField()
-    total_price = models.IntegerField()
-    timestamp = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return f"{self.user.username} bought {self.quantity} {self.item.name}"
-    
 class Inventory(models.Model):
     user = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
     item = models.ForeignKey(Item, on_delete=models.CASCADE)
@@ -282,3 +272,13 @@ class Inventory(models.Model):
 
     def __str__(self):
         return f"{self.user.username} -> x{self.quantity} {self.item.name}"
+
+class Transaction(models.Model):
+    user = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
+    item = models.ForeignKey(Item, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField()
+    total_price = models.IntegerField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user.username} bought {self.quantity} {self.item.name}"

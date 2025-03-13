@@ -162,6 +162,7 @@ class ItemBasedAction(APIView):
         item = inventory.item
         
         # Check prerequisites (like existing insect)
+        # Insects block all actions that don't remove insects (these creatures are devious bruh)
         if profile.current_insect is not None and not item.effects.filter(effect_type='REMOVE_INSECT').exists():
             return build_response(profile, False, "There is an insect on the tree! Use an appropriate item first.", status.HTTP_200_OK)
 
