@@ -6,9 +6,11 @@ from rest_framework.permissions import IsAuthenticated
 from .models import UserProfile
 from game.serializers import PlantProgressSerializer, InsectSerializer
 from .serializers import  BasicUserProfileSerializer, UserWithGameSerializer, UserWithPostSerializer
+from game.models import GameProfile
+
 
 #from .serializers import BasicUserProfileSerializer
-from .serializers import UserWithGameSerializer
+
 from posts.serializers import PostSerializer
 from rest_framework.pagination import PageNumberPagination
 from posts.pagination import PostPagination
@@ -34,20 +36,29 @@ class UserPostsView(generics.ListAPIView):
     
 class UserPageDetails(APIView):
     def get(self, request, pk):
-        permission_classes = [IsAuthenticated]
         try:
             user = UserProfile.objects.get(id=pk)
+            queryset = GameProfile.objects.all().order_by('-lifetime_points')
+            
+            rank = None
+            for i, profile in enumerate(queryset, 1):
+                if profile.user == user:
+                    rank = i
+                    break
+           
+
             return Response({
                 'user' : UserPageDetails(user).data,
                 'tree' : PlantProgressSerializer(user.game_profile).data,
-                'posts' : PostSerializer(user.posts.all().order_by('-created_at'), many=True,).data
+                'posts' : PostSerializer(user.posts.all().order_by('-created_at'), many=True,).data,
+                'rank' : rank
             })
         except UserProfile.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
 
 
-        
+
         
 
             
