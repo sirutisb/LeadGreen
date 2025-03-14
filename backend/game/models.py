@@ -136,10 +136,15 @@ class GameProfile(models.Model):
     def can_collect_daily_reward(self):
         """ check if user is allowed to collect next reward"""
 
+        #first time collector
         if not self.last_collected:
             return True
         
         time_diff = now() - self.last_collected
+
+        if time_diff > timedelta(hours = 48):
+            self.streak = 1
+            self.current_day = 1
         
         return time_diff >= timedelta(hours = 24)
         
