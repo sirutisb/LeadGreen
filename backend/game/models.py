@@ -143,7 +143,7 @@ class GameProfile(models.Model):
         time_diff = now() - self.last_collected
 
         if time_diff > timedelta(hours = 48):
-            self.streak = 1
+            self.streak = 0
             self.current_day = 1
         
         return time_diff >= timedelta(hours = 24)
@@ -162,7 +162,7 @@ class GameProfile(models.Model):
 
         if time_diff and time_diff >= timedelta(hours = 48):
             # if longer than 48 hours - reset streak and current day
-            self.streak = 1
+            self.streak = 0
             self.current_day = 1
         else:
             # if less than 48 - (greater than 24) - add to streak and enumerate day

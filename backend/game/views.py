@@ -197,14 +197,12 @@ class DailyRewardView(APIView):
 
     # fetch info from database on daily reward info
 
-    # TODO - CHECK IF ITS BEEN 48 HORUS - IF SO RETURN DEFAULT DAY 1 DISPLAY
-
     def get(self, request):
         user = request.user
         profile = user.game_profile
 
         # get user information
-        can_collect = profile.can_collect_reward()
+        can_collect = profile.can_collect_daily_reward()
         current_day = profile.current_day
 
         reward_response = []
@@ -232,7 +230,7 @@ class DailyRewardView(APIView):
         profile = user.game_profile
 
         # if cant collect
-        if not profile.can_collect_reward():
+        if not profile.can_collect_daily_reward():
             return Response(
                 {"message": "Reward not available"},
                 status = status.HTTP_400_BAD_REQUEST
@@ -242,3 +240,12 @@ class DailyRewardView(APIView):
 
         return Response({"message": "Reward collected"}, status=status.HTTP_200_OK)
 
+class StreakView(APIView):
+    """ get response for user current streak"""
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        profile = user.game_profile
+
+        return Response({"streak": profile.streak}, status = status.HTTP_200_OK)
