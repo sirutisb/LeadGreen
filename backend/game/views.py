@@ -7,8 +7,8 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticate
 
 from django.shortcuts import get_object_or_404
 
-from .models import GameProfile, Prize
-from .serializers import GameProfileSerializer, PlantProgressSerializer, InsectSerializer
+from .models import GameProfile, Prize, Item, Inventory, Transaction
+from .serializers import GameProfileSerializer, PlantProgressSerializer, InsectSerializer, InventorySerializer, ItemSerializer, TransactionSerializer
 
 from rest_framework import generics
 from django.db import models
@@ -17,9 +17,6 @@ import random
 
 from rest_framework import viewsets
 from rest_framework.decorators import action
-
-from .models import Inventory
-from .serializers import InventorySerializer
 
 def build_response(profile, success, message, status_code):
     # Serialize the updated game profile
@@ -38,24 +35,23 @@ def build_response(profile, success, message, status_code):
     })
     return Response(response_data, status=status_code)
 
-class ItemBasedAction(APIView):
+class UseItemView(APIView):
     """
-    Base class for actions that consume items from inventory
+    Generic view for using any item from inventory
     """
     permission_classes = [IsAuthenticated]
-    required_item_type = None
 
-    def get_inventory_item(self, user):
+    def get_inventory_item(self, user, item_id):
         try:
             inventory = Inventory.objects.get(
                 user=user.game_profile.user,
-                item__item_type=self.required_item_type
+                item_id=item_id
             )
             if inventory.quantity <= 0:
-                return None, f"You don't have any {self.required_item_type.lower()} items!"
+                return None, f"You don't have any of this item!"
             return inventory, None
         except Inventory.DoesNotExist:
-            return None, f"You don't have any {self.required_item_type.lower()} items!"
+            return None, f"You don't have this item in your inventory!"
 
     def consume_item(self, inventory):
         inventory.quantity -= 1
@@ -68,6 +64,17 @@ class ItemBasedAction(APIView):
         """Apply all effects of an item"""
         messages = []
         
+        # First apply item-specific parameters if they exist
+        if item.parameters:
+            if 'growth_amount' in item.parameters:
+                profile.grow_tree(item.parameters['growth_amount'])
+                messages.append(f"Tree grown by {item.parameters['growth_amount']}")
+            
+            if 'spawn_chance' in item.parameters and random.random() < item.parameters['spawn_chance']:
+                profile.spawn_insect()
+                messages.append("An insect has appeared!")
+        
+        # Then apply any linked effects
         for effect in item.effects.all():
             params = effect.parameters
             
@@ -91,29 +98,24 @@ class ItemBasedAction(APIView):
                     profile.spawn_insect()
                     messages.append("An insect has appeared!")
 
-            # New complex effects
             elif effect.effect_type == 'COMBO_BOOST':
-                # Combo system that multiplies points based on consecutive successful actions
                 combo_multiplier = params.get('multiplier', 1.5)
-                duration = params.get('duration_seconds', 300)  # 5 minutes default
+                duration = params.get('duration_seconds', 300)
                 profile.activate_combo_boost(combo_multiplier, duration)
                 messages.append(f"Combo boost activated! x{combo_multiplier} for {duration/60} minutes")
 
             elif effect.effect_type == 'TEMPORARY_SHIELD':
-                # Prevents insect spawning for a duration
-                duration = params.get('duration_seconds', 600)  # 10 minutes default
+                duration = params.get('duration_seconds', 600)
                 profile.activate_shield(duration)
                 messages.append(f"Shield active for {duration/60} minutes")
 
             elif effect.effect_type == 'MULTIPLIER':
-                # Multiplies points earned for a duration
                 multiplier = params.get('multiplier', 2)
                 duration = params.get('duration_seconds', 300)
                 profile.activate_point_multiplier(multiplier, duration)
                 messages.append(f"Point multiplier x{multiplier} active for {duration/60} minutes")
 
             elif effect.effect_type == 'RANDOM_REWARD':
-                # Gives random rewards based on configured probabilities
                 rewards = params.get('rewards', [
                     {'type': 'points', 'amount': 100, 'weight': 70},
                     {'type': 'growth', 'amount': 0.5, 'weight': 20},
@@ -123,7 +125,6 @@ class ItemBasedAction(APIView):
                 messages.append(f"Random reward: {reward}")
 
             elif effect.effect_type == 'TIME_BOOST':
-                # Speeds up growth rate for a duration
                 speed_multiplier = params.get('speed_multiplier', 2)
                 duration = params.get('duration_seconds', 300)
                 profile.activate_time_boost(speed_multiplier, duration)
@@ -147,12 +148,12 @@ class ItemBasedAction(APIView):
             profile.save()
             return f"Won {chosen['amount']} spins!"
 
-    def post(self, request, *args, **kwargs):
+    def post(self, request, item_id):
         user = request.user
         profile = user.game_profile
 
         # Get and validate inventory item
-        inventory, error_message = self.get_inventory_item(user)
+        inventory, error_message = self.get_inventory_item(user, item_id)
         if error_message:
             return build_response(profile, False, error_message, status.HTTP_200_OK)
 
@@ -160,7 +161,7 @@ class ItemBasedAction(APIView):
         item = inventory.item
         
         # Check prerequisites (like existing insect)
-        # Insects block all actions that don't remove insects (these creatures are devious bruh)
+        # Insects block all actions that don't remove insects
         if profile.current_insect is not None and not item.effects.filter(effect_type='REMOVE_INSECT').exists():
             return build_response(profile, False, "There is an insect on the tree! Use an appropriate item first.", status.HTTP_200_OK)
 
@@ -177,83 +178,6 @@ class ItemBasedAction(APIView):
             return build_response(profile, False, "An error occurred while applying the item effects.", status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         return build_response(profile, True, f"Used {item.name}: {', '.join(effect_messages)}", status.HTTP_200_OK)
-
-class TreeGrowAction(ItemBasedAction):
-    """
-    Generic class for tree growth actions using items from inventory
-    """
-    def post(self, request, *args, **kwargs):
-        user = request.user
-        profile = user.game_profile
-
-        if profile.current_insect is not None:
-            return build_response(profile, False, "There is an insect on the tree! Remove it first.", status.HTTP_200_OK)
-
-        # Get and validate inventory item
-        inventory, error_message = self.get_inventory_item(user)
-        if error_message:
-            return build_response(profile, False, error_message, status.HTTP_200_OK)
-
-        # Get item
-        item = inventory.item
-        
-        # Consume the item
-        self.consume_item(inventory)
-
-        # Apply growth effect
-        profile.grow_tree(item.growth_amount)
-
-        # Check for insect spawn
-        if random.random() < item.insect_spawn_chance:
-            print("Spawning insect")
-            profile.spawn_insect()
-
-        try:
-            profile.save()
-        except:
-            print("ERROR! Could not save profile!")
-            pass
-
-        return build_response(profile, True, f"Used {item.name} successfully!", status.HTTP_200_OK)
-
-class WaterTreeAction(TreeGrowAction):
-    """Implementation of Tree Watering Action using water items"""
-    required_item_type = 'WATER'
-
-class SoilTreeAction(TreeGrowAction):
-    """Implementation of Tree Soil Action using soil items"""
-    required_item_type = 'SOIL'
-
-class GloveTreeAction(ItemBasedAction):
-    """Implementation of Glove Action using glove items"""
-    required_item_type = 'GLOVE'
-
-    def post(self, request, *args, **kwargs):
-        user = request.user
-        profile = user.game_profile
-
-        if profile.current_insect is None:
-            return build_response(profile, False, "Remove what? There is no insect on the tree.", status.HTTP_200_OK)
-
-        # Get and validate inventory item
-        inventory, error_message = self.get_inventory_item(user)
-        if error_message:
-            return build_response(profile, False, error_message, status.HTTP_200_OK)
-
-        # Get item
-        item = inventory.item
-
-        # Consume the item
-        self.consume_item(inventory)
-
-        # Remove insect and apply any growth effect
-        profile.current_insect = None
-        if hasattr(item, 'growth_amount') and item.growth_amount > 0:
-            profile.grow_tree(item.growth_amount)
-        
-        profile.save()
-
-        return build_response(profile, True, f"Used {item.name} successfully!", status.HTTP_200_OK)
 
 class GameProfileView(APIView):
     """
@@ -325,44 +249,6 @@ class SpinView(APIView):
                 "prize_amount": prize_reward,
             }, status=status.HTTP_200_OK)
 
-class InventoryViewSet(viewsets.ModelViewSet):
-    serializer_class = InventorySerializer
-    permission_classes = [IsAuthenticated]
-
-    def get_queryset(self):
-        return Inventory.objects.filter(user=self.request.user)
-
-    @action(detail=True, methods=['post'])
-    def use(self, request, pk=None):
-        inventory = self.get_object()
-        quantity = int(request.data.get('quantity', 1))
-        
-        if quantity <= 0:
-            return Response({'error': 'Quantity must be positive'}, status=status.HTTP_400_BAD_REQUEST)
-        
-        if inventory.quantity < quantity:
-            return Response({'error': 'Not enough items in inventory'}, status=status.HTTP_400_BAD_REQUEST)
-
-        # Perform item-specific action here (customize based on your needs)
-        # Example: if item.name == "Health Potion": increase health
-        
-        inventory.quantity -= quantity
-        if inventory.quantity == 0:
-            inventory.delete()
-        else:
-            inventory.save()
-
-        return Response({
-            'message': f'Used {quantity} {inventory.item.name}(s)',
-            'remaining': InventorySerializer(inventory).data if inventory.pk else None
-        }, status=status.HTTP_200_OK)
-    
-
-    
-#ss
-from .models import Item, Transaction
-from .serializers import ItemSerializer, TransactionSerializer
-
 class ItemViewSet(viewsets.ModelViewSet):
     queryset = Item.objects.all()
     serializer_class = ItemSerializer
@@ -407,3 +293,27 @@ class ItemViewSet(viewsets.ModelViewSet):
             'transaction': TransactionSerializer(transaction).data,
             'inventory': InventorySerializer(inventory).data
         }, status=status.HTTP_201_CREATED)
+
+class WaterTreeAction(APIView):
+    """Wrapper for water item usage to maintain frontend compatibility"""
+    permission_classes = [IsAuthenticated]
+    
+    def post(self, request, *args, **kwargs):
+        # Assuming water item has ID 1
+        return UseItemView().post(request, item_id=4)
+
+class SoilTreeAction(APIView):
+    """Wrapper for soil item usage to maintain frontend compatibility"""
+    permission_classes = [IsAuthenticated]
+    
+    def post(self, request, *args, **kwargs):
+        # Assuming soil item has ID 2
+        return UseItemView().post(request, item_id=2)
+
+class GloveTreeAction(APIView):
+    """Wrapper for glove item usage to maintain frontend compatibility"""
+    permission_classes = [IsAuthenticated]
+    
+    def post(self, request, *args, **kwargs):
+        # Assuming glove item has ID 3
+        return UseItemView().post(request, item_id=3)

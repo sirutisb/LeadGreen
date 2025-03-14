@@ -69,13 +69,10 @@ class GameProfile(models.Model):
 
     # New fields for complex effects
     shield_expires_at = models.DateTimeField(null=True, blank=True)
-
     combo_multiplier = models.FloatField(default=1.0)
     combo_expires_at = models.DateTimeField(null=True, blank=True)
-    
     point_multiplier = models.FloatField(default=1.0)
     point_multiplier_expires_at = models.DateTimeField(null=True, blank=True)
-
     growth_speed_multiplier = models.FloatField(default=1.0)
     growth_speed_expires_at = models.DateTimeField(null=True, blank=True)
 
@@ -98,61 +95,6 @@ class GameProfile(models.Model):
         self.growth_speed_expires_at = timezone.now() + timezone.timedelta(seconds=duration)
         self.save()
 
-    # New fields for complex effects
-    combo_multiplier = models.FloatField(default=1.0)
-    combo_expires_at = models.DateTimeField(null=True, blank=True)
-    shield_expires_at = models.DateTimeField(null=True, blank=True)
-    point_multiplier = models.FloatField(default=1.0)
-    point_multiplier_expires_at = models.DateTimeField(null=True, blank=True)
-    growth_speed_multiplier = models.FloatField(default=1.0)
-    growth_speed_expires_at = models.DateTimeField(null=True, blank=True)
-
-    def activate_combo_boost(self, multiplier, duration):
-        self.combo_multiplier = multiplier
-        self.combo_expires_at = timezone.now() + timezone.timedelta(seconds=duration)
-        self.save()
-
-    def activate_shield(self, duration):
-        self.shield_expires_at = timezone.now() + timezone.timedelta(seconds=duration)
-        self.save()
-
-    def activate_point_multiplier(self, multiplier, duration):
-        self.point_multiplier = multiplier
-        self.point_multiplier_expires_at = timezone.now() + timezone.timedelta(seconds=duration)
-        self.save()
-
-    def activate_time_boost(self, multiplier, duration):
-        self.growth_speed_multiplier = multiplier
-        self.growth_speed_expires_at = timezone.now() + timezone.timedelta(seconds=duration)
-        self.save()
-
-    # New fields for complex effects
-    combo_multiplier = models.FloatField(default=1.0)
-    combo_expires_at = models.DateTimeField(null=True, blank=True)
-    shield_expires_at = models.DateTimeField(null=True, blank=True)
-    point_multiplier = models.FloatField(default=1.0)
-    point_multiplier_expires_at = models.DateTimeField(null=True, blank=True)
-    growth_speed_multiplier = models.FloatField(default=1.0)
-    growth_speed_expires_at = models.DateTimeField(null=True, blank=True)
-
-    def activate_combo_boost(self, multiplier, duration):
-        self.combo_multiplier = multiplier
-        self.combo_expires_at = timezone.now() + timezone.timedelta(seconds=duration)
-        self.save()
-
-    def activate_shield(self, duration):
-        self.shield_expires_at = timezone.now() + timezone.timedelta(seconds=duration)
-        self.save()
-
-    def activate_point_multiplier(self, multiplier, duration):
-        self.point_multiplier = multiplier
-        self.point_multiplier_expires_at = timezone.now() + timezone.timedelta(seconds=duration)
-        self.save()
-
-    def activate_time_boost(self, multiplier, duration):
-        self.growth_speed_multiplier = multiplier
-        self.growth_speed_expires_at = timezone.now() + timezone.timedelta(seconds=duration)
-        self.save()
 
     def add_points(self, amount):
         """Modified to account for point multiplier"""
@@ -255,10 +197,17 @@ class Item(models.Model):
     name = models.CharField(max_length=32)
     description = models.TextField(default="")
     price = models.IntegerField(default=0)
-    stock = models.PositiveIntegerField(default=0)
+    image = models.ImageField(
+        upload_to="items/",
+        blank=False,
+        null=True
+    )
+
     item_type = models.CharField(max_length=20, choices=ITEM_TYPE)
-    effects = models.ManyToManyField(ItemEffect, related_name='items')
+    effects = models.ManyToManyField(ItemEffect, related_name='items', blank=True)  # Made optional
     cooldown_seconds = models.IntegerField(default=0)
+    # Add item-specific parameters
+    parameters = models.JSONField(default=dict, help_text="Item-specific parameters (e.g. growth_amount, spawn_chance)")
 
     def __str__(self):
         return f"{self.name} | Price: {self.price}"

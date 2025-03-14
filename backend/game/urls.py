@@ -3,7 +3,7 @@ from rest_framework.routers import DefaultRouter
 from . import views
 
 router = DefaultRouter()
-router.register(r'inventory', views.InventoryViewSet, basename='inventory')
+router.register(r'items', views.ItemViewSet, basename='item')
 
 urlpatterns = [
     path('', views.GameProfileView.as_view()), # Game Profile Get Request URL (at root)
@@ -12,5 +12,6 @@ urlpatterns = [
     path('tree/glove/', views.GloveTreeAction.as_view()),
     path('spin/', views.SpinView.as_view()),
     path('spin/prizes/', views.GetPrizes.as_view()),
+    path('use-item/<int:item_id>/', views.UseItemView.as_view(), name='use-item'),
     path('', include(router.urls)),
 ]
