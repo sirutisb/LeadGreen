@@ -2,7 +2,10 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
 from .models import UserProfile
+from game.serializers import PlantProgressSerializer, InsectSerializer
+from .serializers import  BasicUserProfileSerializer, UserWithGameSerializer, UserWithPostSerializer
 
 #from .serializers import BasicUserProfileSerializer
 from .serializers import UserWithGameSerializer
@@ -28,3 +31,23 @@ class UserPostsView(generics.ListAPIView):
     def get_queryset(self):
         user_id = self.kwargs['id']
         return Post.objects.filter(user_id=user_id).order_by('-created_at') # Should it only show their approved posts?
+    
+class UserPageDetails(APIView):
+    def get(self, request, pk):
+        permission_classes = [IsAuthenticated]
+        try:
+            user = UserProfile.objects.get(id=pk)
+            return Response({
+                'user' : UserPageDetails(user).data,
+                'tree' : PlantProgressSerializer(user.game_profile).data,
+                'posts' : PostSerializer(user.posts.all().order_by('-created_at'), many=True,).data
+            })
+        except UserProfile.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+
+
+        
+        
+
+            
