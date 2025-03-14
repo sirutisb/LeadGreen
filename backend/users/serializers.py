@@ -8,6 +8,16 @@ class BasicUserProfileSerializer(serializers.ModelSerializer):
         fields = ['id', 'username', 'profile_picture']
         read_only_fields = ['id']
 
+class UserWithGameSerializer(serializers.ModelSerializer):
+    # Game-related fields from GameProfile
+    points_balance = serializers.IntegerField(source='game_profile.points_balance')
+    tree_level = serializers.IntegerField(source='game_profile.tree_level')
+    current_plant = serializers.SerializerMethodField()
+
+    class Meta:
+        model = UserProfile
+        fields = ['id', 'username', 'profile_picture', 'points_balance', 'tree_level', 'current_plant']
+
 class UserPageSerializer(serializers.ModelSerializer):
     # Game-related fields from GameProfi
     class Meta:
