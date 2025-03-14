@@ -203,11 +203,13 @@ class DailyRewardView(APIView):
         user = request.user
         profile = user.game_profile
 
+        # get user information
         can_collect = profile.can_collect_reward()
         current_day = profile.current_day
 
         reward_response = []
 
+        # build reward response information
         for day in range(1, 8):
             reward_info = reward_day_cycle[day]
 
@@ -229,6 +231,7 @@ class DailyRewardView(APIView):
         user = request.user
         profile = user.game_profile
 
+        # if cant collect
         if not profile.can_collect_reward():
             return Response(
                 {"message": "Reward not available"},
