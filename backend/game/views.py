@@ -250,26 +250,52 @@ class SpinView(APIView):
             }, status=status.HTTP_200_OK)
 
 class ItemViewSet(viewsets.ModelViewSet):
-    queryset = Item.objects.all()
+    queryset = Item.objects.all().order_by('price')  # Order by price for consistent listing
     serializer_class = ItemSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]  # Allow anyone to view shop items
+
+    def list(self, request, *args, **kwargs):
+        """List all available items in the shop"""
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        return Response({
+            "success": True,
+            "items": serializer.data
+        }, status=status.HTTP_200_OK)
 
     @action(detail=True, methods=['post'])
     def purchase(self, request, pk=None):
+        """Purchase an item (requires authentication)"""
+        if not request.user.is_authenticated:
+            return Response({
+                "success": False,
+                "message": "Authentication required to purchase items"
+            }, status=status.HTTP_401_UNAUTHORIZED)
+
         item = self.get_object()
         quantity = int(request.data.get('quantity', 1))
         
         if quantity <= 0:
-            return Response({'error': 'Quantity must be positive'}, status=status.HTTP_400_BAD_REQUEST)
-        
-        if item.stock < quantity:
-            return Response({'error': 'Not enough stock'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({
+                "success": False,
+                "message": "Quantity must be positive"
+            }, status=status.HTTP_400_BAD_REQUEST)
 
         total_price = item.price * quantity
-        
-        # Update stock
-        item.stock -= quantity
-        item.save()
+        user_profile = request.user.game_profile
+
+        # Check if user has enough points
+        if user_profile.points_balance < total_price:
+            return Response({
+                "success": False,
+                "message": f"Not enough points! You need {total_price} points but have {user_profile.points_balance}",
+                "required_points": total_price,
+                "current_points": user_profile.points_balance
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        # Deduct points
+        user_profile.points_balance -= total_price
+        user_profile.save()
 
         # Update or create inventory
         inventory, created = Inventory.objects.get_or_create(
@@ -290,8 +316,11 @@ class ItemViewSet(viewsets.ModelViewSet):
         )
 
         return Response({
-            'transaction': TransactionSerializer(transaction).data,
-            'inventory': InventorySerializer(inventory).data
+            "success": True,
+            "message": f"Successfully purchased {quantity} {item.name}(s)",
+            "transaction": TransactionSerializer(transaction).data,
+            "inventory": InventorySerializer(inventory).data,
+            "remaining_points": user_profile.points_balance
         }, status=status.HTTP_201_CREATED)
 
 class WaterTreeAction(APIView):
