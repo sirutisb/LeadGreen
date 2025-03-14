@@ -13,6 +13,8 @@ from .serializers import GameProfileSerializer, PlantProgressSerializer, InsectS
 from rest_framework import generics
 from django.db import models
 
+from django.utils.timezone import now
+
 import random
 
 def build_response(profile, success, message, status_code):
@@ -178,3 +180,62 @@ class SpinView(APIView):
                 "prize_index": prize_index,
                 "prize_amount": prize_reward,
             }, status=status.HTTP_200_OK)
+        
+
+reward_day_cycle = {
+    1 : {"reward": "water", "amount" : 5},
+    2 : {"reward": "spin", "amount" : 2},
+    3 : {"reward": "soil", "amount" : 3},
+    4 : {"reward": "spin", "amount" : 4},
+    5 : {"reward": "glove", "amount" : 2},
+    6 : {"reward": "spin", "amount" : 6},
+    7 : {"reward": "pest", "amount" : 2},
+}
+
+class DailyRewardView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    # fetch info from database on daily reward info
+
+    # TODO - CHECK IF ITS BEEN 48 HORUS - IF SO RETURN DEFAULT DAY 1 DISPLAY
+
+    def get(self, request):
+        user = request.user
+        profile = user.game_profile
+
+        can_collect = profile.can_collect_reward()
+        current_day = profile.current_day
+
+        reward_response = []
+
+        for day in range(1, 8):
+            reward_info = reward_day_cycle[day]
+
+            is_collected = day < current_day
+            can_collect_today = can_collect and day == profile.current_day
+
+
+            reward_response.append({
+                "day": day,
+                "reward": reward_info["reward"],
+                "amount": reward_info["amount"],
+                "isCollected": is_collected,
+                "canCollect": can_collect_today
+            })
+
+        return Response(reward_response, status=status.HTTP_200_OK)
+    
+    def post(self, request):
+        user = request.user
+        profile = user.game_profile
+
+        if not profile.can_collect_reward():
+            return Response(
+                {"message": "Reward not available"},
+                status = status.HTTP_400_BAD_REQUEST
+            )
+        
+        profile.collect_daily_reward()
+
+        return Response({"message": "Reward collected"}, status=status.HTTP_200_OK)
+
