@@ -6,8 +6,12 @@ import StatsDisplay from "./StatsDisplay";
 import ConfettiEffect from "./ConfettiEffect";
 import useGameData from "../../Hooks/useGameData";
 import usePlantEffects from "../../Hooks/usePlantEffects";
+import GardenShop from "./PopShop";
+// Use <PopShop /> for the popup and <PopShop.ShopButton /> for the button
+
 const OverLeaf = () => {
   const [selectedIcon, setSelectedIcon] = useState(null);
+  const [shopOpen, setShopOpen] = useState(false);
   const plantRef = useRef(null);
 
   // 🔹 Inventory data stored in OverLeaf
@@ -86,7 +90,8 @@ const OverLeaf = () => {
     }
 
     const result = await executeAction(selectedIcon);
-    console.log(result)
+    console.log(result);
+    
     if (result.success) {
       playActionSound(selectedIcon);
 
@@ -111,7 +116,6 @@ const OverLeaf = () => {
       <ConfettiEffect show={showConfetti} />
 
       <div className="flex flex-col items-center justify-center min-h-screen w-full px-4 sm:px-6 lg:px-8 relative">
-       
         <OverLeafBar setSelectedIcon={setSelectedIcon} inventory={inventory} selectedIcon={selectedIcon} />
         <RouletteButton user={user} setUser={setUser} />
 
@@ -126,6 +130,17 @@ const OverLeaf = () => {
         />
 
         <StatsDisplay user={user} />
+        
+        {/* Shop integration from PopShop branch */}
+        <GardenShop.ShopButton onClick={() => setShopOpen(true)} />
+        
+        {/* Shop popup from PopShop branch */}
+        <GardenShop 
+          isOpen={shopOpen} 
+          onClose={() => setShopOpen(false)} 
+          user={user}
+          setUser={setUser}
+        />
       </div>
     </div>
   );

@@ -5,14 +5,14 @@ import { Star, Quote } from "lucide-react";
 const testimonials = [
   {
     text: "LeadGreen has completely changed how I approach sustainability. It's fun, engaging, and really makes me feel like I'm making a difference!",
-    author: "Thoma Dawg.",
-    role: "Environmental Enthusiast",
+    author: "Thomas.",
+    role: "Intern at LeadGreen",
     rating: 5
   },
   {
     text: "As a busy professional, I never thought I'd have time for eco-friendly habits. LeadGreen made it easy and rewarding to incorporate sustainability into my daily routine.",
     author: "Benzos.",
-    role: "Head of Hustlers Uni",
+    role: "Head of amazon logistics",
     rating: 5
   },
   {
@@ -23,14 +23,14 @@ const testimonials = [
   },
   {
     text: "The gamification elements make sustainability fun! I love watching my virtual plant grow as I complete eco-friendly tasks.",
-    author: "Jed Henry.",
+    author: "Tay Keith",
     role: "Digital Marketing Manager",
     rating: 5
   },
   {
     text: "This app has made me much more conscious of my environmental impact. The QR code scanning feature is genius!",
-    author: "James R.",
-    role: "Sput Mukati",
+    author: "Taha Mukati",
+    role: "Boss man",
     rating: 5
   }
 ];
