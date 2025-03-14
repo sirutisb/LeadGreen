@@ -308,7 +308,7 @@ class SoilTreeAction(APIView):
     
     def post(self, request, *args, **kwargs):
         # Assuming soil item has ID 2
-        return UseItemView().post(request, item_id=2)
+        return UseItemView().post(request, item_id=5)
 
 class GloveTreeAction(APIView):
     """Wrapper for glove item usage to maintain frontend compatibility"""
@@ -316,4 +316,19 @@ class GloveTreeAction(APIView):
     
     def post(self, request, *args, **kwargs):
         # Assuming glove item has ID 3
-        return UseItemView().post(request, item_id=3)
+        return UseItemView().post(request, item_id=6)
+
+class InventoryViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    ViewSet for viewing user's inventory
+    """
+    serializer_class = InventorySerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Inventory.objects.filter(user=self.request.user)
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)

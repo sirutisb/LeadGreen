@@ -48,14 +48,14 @@ class ItemSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Item
-        fields = ['id', 'name', 'description', 'price', 'item_type', 'effects', 'cooldown_seconds']
+        fields = ['id', 'name', 'description', 'image', 'price', 'item_type', 'effects', 'cooldown_seconds']
 
 class InventorySerializer(serializers.ModelSerializer):
     item = ItemSerializer(read_only=True)
     
     class Meta:
         model = Inventory
-        fields = ['id', 'item', 'quantity']
+        fields = ['item', 'quantity']
 
 class TransactionSerializer(serializers.ModelSerializer):
     item = ItemSerializer(read_only=True)

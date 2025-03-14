@@ -4,6 +4,7 @@ from . import views
 
 router = DefaultRouter()
 router.register(r'items', views.ItemViewSet, basename='item')
+router.register(r'inventory', views.InventoryViewSet, basename='inventory')
 
 urlpatterns = [
     path('', views.GameProfileView.as_view()), # Game Profile Get Request URL (at root)

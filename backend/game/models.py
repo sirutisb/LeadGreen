@@ -182,7 +182,7 @@ class ItemEffect(models.Model):
     name = models.CharField(max_length=64)
     effect_type = models.CharField(max_length=32, choices=EFFECT_TYPES)
     # Store effect parameters as JSON for flexibility
-    parameters = models.JSONField(default=dict, help_text="Effect-specific parameters (e.g. growth_amount, points, chances)")
+    parameters = models.JSONField(default=dict, blank=True, help_text="Effect-specific parameters (e.g. growth_amount, points, chances)")
     
     def __str__(self):
         return f"{self.name} ({self.effect_type})"
@@ -207,7 +207,7 @@ class Item(models.Model):
     effects = models.ManyToManyField(ItemEffect, related_name='items', blank=True)  # Made optional
     cooldown_seconds = models.IntegerField(default=0)
     # Add item-specific parameters
-    parameters = models.JSONField(default=dict, help_text="Item-specific parameters (e.g. growth_amount, spawn_chance)")
+    parameters = models.JSONField(default=dict, blank=True, help_text="Item-specific parameters (e.g. growth_amount, spawn_chance)")
 
     def __str__(self):
         return f"{self.name} | Price: {self.price}"
