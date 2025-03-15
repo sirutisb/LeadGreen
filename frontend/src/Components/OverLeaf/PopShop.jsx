@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import axios from 'axios';
+import axiosInstance from "../../Context/axiosInstance";
 import { ShoppingBag, Sparkles, Clock, X, Plus, Minus, ShoppingCart } from 'lucide-react';
 import greencoinIcon from '../../assets/peng.svg';
+import { toastError, toastSuccess } from "../utils/toastCustom";
 
 const GardenShop = ({ isOpen, onClose, user, setUser }) => {
   const [animateItems, setAnimateItems] = useState(false);
@@ -13,14 +14,12 @@ const GardenShop = ({ isOpen, onClose, user, setUser }) => {
   const [error, setError] = useState(null);
   const modalRef = useRef(null);
 
-  const API_BASE_URL = import.meta.env.VITE_BACKEND || "http://127.0.0.1:8000";
-
   // Fetch shop items from API
   useEffect(() => {
     const fetchShopItems = async () => {
       try {
         setLoading(true);
-        const response = await axios.get(`${API_BASE_URL}/api/game/items`);
+        const response = await axiosInstance.get('/game/items/');
         const data = response.data;
         
         if (data.success && Array.isArray(data.items)) {
@@ -51,41 +50,31 @@ const GardenShop = ({ isOpen, onClose, user, setUser }) => {
       }
     };
 
-    fetchShopItems();
-  }, []);
-    
+    if (isOpen) {
+      fetchShopItems();
+    }
+  }, [isOpen]);
 
   // Initialize inventory on component mount
   useEffect(() => {
-    // Simulating user's inventory - in a real app, this would come from a database or user state
     const fetchInventory = async () => {
       try {
-        // Replace with actual inventory endpoint if available
-        // For now, we'll simulate inventory
-        const initialInventory = {};
-        shopItems.forEach(item => {
-          initialInventory[item.id] = Math.floor(Math.random() * 3); // Random 0-2 items for demo
+        const response = await axiosInstance.get('/game/inventory/');
+        const inventoryData = {};
+        response.data.forEach(item => {
+          inventoryData[item.item.id] = item.quantity;
         });
-        setInventory(initialInventory);
-        
-        // If you have an actual endpoint:
-        /*
-        const response = await axios.get(`${API_BASE_URL}/api/game/inventory`, {
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-          }
-        });
-        setInventory(response.data.inventory);
-        */
+        setInventory(inventoryData);
       } catch (err) {
         console.error('Inventory fetch error:', err);
+        toastError('Failed to load inventory');
       }
     };
 
-    if (shopItems.length > 0) {
+    if (isOpen && shopItems.length > 0) {
       fetchInventory();
     }
-  }, [shopItems]);
+  }, [isOpen, shopItems]);
 
   useEffect(() => {
     if (isOpen) {
@@ -177,6 +166,7 @@ const GardenShop = ({ isOpen, onClose, user, setUser }) => {
   //     alert("Not enough coins!");
   //   }
   // };
+  
   const handlePurchase = async (item) => {
     const quantity = itemQuantities[item.id] || 1;
     const totalPrice = item.price * quantity;
@@ -191,30 +181,24 @@ const GardenShop = ({ isOpen, onClose, user, setUser }) => {
       }
       
       try {
-        const response = await axios.post(
-          `${API_BASE_URL}/api/game/items/${item.id}/purchase/`,
-          { quantity: quantity },
-          {
-            headers: {
-              'Authorization': `Bearer ${localStorage.getItem('token')}` // Add token if needed
-            }
-          }
-        );
+        const response = await axiosInstance.post(`/game/items/${item.id}/purchase/`, {
+          quantity: quantity
+        });
         
         const result = response.data;
         
         if (result.success) {
-          // Update user coins - check if result contains updated points
-          setUser({
-            ...user,
-            coins: result.points !== undefined ? result.points : user.coins - totalPrice
-          });
+          // Update user coins
+          setUser(prevUser => ({
+            ...prevUser,
+            coins: result.remaining_points
+          }));
           
           // Update inventory
-          setInventory({
-            ...inventory,
-            [item.id]: (inventory[item.id] || 0) + quantity
-          });
+          setInventory(prev => ({
+            ...prev,
+            [item.id]: (prev[item.id] || 0) + quantity
+          }));
           
           // Reset quantity to 1 after purchase
           setItemQuantities(prev => ({
@@ -222,16 +206,16 @@ const GardenShop = ({ isOpen, onClose, user, setUser }) => {
             [item.id]: 1
           }));
           
-          alert(`Successfully purchased ${quantity} ${item.name}!`);
+          toastSuccess(`Successfully purchased ${quantity} ${item.name}(s)!`);
         } else {
-          alert(result.message || "Purchase failed. Please try again.");
+          toastError(result.message || "Purchase failed. Please try again.");
         }
       } catch (err) {
-        alert(err.response?.data?.message || "Purchase failed. Please try again.");
+        toastError(err.response?.data?.message || "Purchase failed. Please try again.");
         console.error('Purchase error:', err);
       }
     } else {
-      alert("Not enough coins!");
+      toastError("Not enough coins!");
     }
   };
 
@@ -263,7 +247,6 @@ const GardenShop = ({ isOpen, onClose, user, setUser }) => {
   };
 
   if (!isOpen) return null;
-
 
   return (
     <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4 md:p-0 overflow-y-auto">
