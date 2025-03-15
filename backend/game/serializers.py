@@ -1,15 +1,5 @@
 from rest_framework import serializers
-from .models import GameProfile, Plant, Insect, ShopItem, UserItem
-
-class ShopItemSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ShopItem
-        fields = ['name', 'effect', 'description', 'cost']
-
-class UserItemSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = UserItem
-        fields = ['user', 'item', 'quantity']
+from .models import GameProfile, Plant, Insect
 
 class PlantProgressSerializer(serializers.Serializer):
     """
@@ -44,3 +34,32 @@ class GameProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = GameProfile
         fields = ['points_balance', 'tree', 'insect', 'spins']
+
+
+from .models import Item, ItemEffect, Inventory, Transaction
+
+class ItemEffectSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ItemEffect
+        fields = ['id', 'name', 'effect_type', 'parameters']
+
+class ItemSerializer(serializers.ModelSerializer):
+    effects = ItemEffectSerializer(many=True, read_only=True)
+    
+    class Meta:
+        model = Item
+        fields = ['id', 'name', 'description', 'image', 'price', 'item_type', 'effects', 'cooldown_seconds']
+
+class InventorySerializer(serializers.ModelSerializer):
+    item = ItemSerializer(read_only=True)
+    
+    class Meta:
+        model = Inventory
+        fields = ['item', 'quantity']
+
+class TransactionSerializer(serializers.ModelSerializer):
+    item = ItemSerializer(read_only=True)
+    
+    class Meta:
+        model = Transaction
+        fields = ['id', 'item', 'quantity', 'total_price', 'timestamp']
