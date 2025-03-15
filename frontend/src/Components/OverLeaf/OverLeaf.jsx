@@ -73,7 +73,7 @@ const OverLeaf = () => {
     if (currentInsect && initialLoad === false) {
       showInsectAlert(currentInsect.name);
     }
-  }, [currentInsect?.name]);
+  }, [currentInsect, initialLoad, showInsectAlert]);
 
   const handleAction = async () => {
     if (!selectedIcon) {
@@ -108,56 +108,6 @@ const OverLeaf = () => {
     } else {
       playErrorSound();
     }
-    }, [leveledUp, oldPlantName, showLevelUpEffects, setLeveledUp]);
-  
-    // Handle initial insect notification
-    useEffect(() => {
-      if (currentInsect) {
-        showInsectAlert(currentInsect.name);
-      }
-    }, [currentInsect, showInsectAlert]);
-  
-    // Handle plant action
-    const handleAction = async () => {
-      if (!selectedIcon) {
-        triggerWiggle();
-        return;
-      }
-  
-      const result = await executeAction(selectedIcon);
-      
-      if (result.success) {
-        playActionSound(selectedIcon);
-      } else {
-        playErrorSound();
-      }
-    };
-  
-    if (loading) return <div>Loading...</div>;
-  
-    return (
-      <div>
-        <ConfettiEffect show={showConfetti} />
-  
-        <div className="flex flex-col items-center justify-center min-h-screen w-full px-4 sm:px-6 lg:px-8 relative">
-          <OverLeafBar setSelectedIcon={setSelectedIcon} />
-          <RouletteButton user={user} setUser={setUser} />
-          <DailyRewards />
-          
-          <PlantDisplay
-            plantRef={plantRef}
-            wiggle={wiggle}
-            scale={scale}
-            plantImage={user.plant_image}
-            plantName={user.plant_name}
-            insect={currentInsect}
-            onClick={handleAction}
-          />
-  
-          <StatsDisplay user={user} />
-        </div>
-      </div>
-    );
   };
 
   if (loading) return <div>Loading...</div>;
@@ -169,7 +119,8 @@ const OverLeaf = () => {
       <div className="flex flex-col items-center justify-center min-h-screen w-full px-4 sm:px-6 lg:px-8 relative">
         <OverLeafBar setSelectedIcon={setSelectedIcon} inventory={inventory} selectedIcon={selectedIcon} />
         <RouletteButton user={user} setUser={setUser} />
-
+        <DailyRewards />
+        
         <PlantDisplay
           plantRef={plantRef}
           wiggle={wiggle}
