@@ -1,6 +1,7 @@
 from django.db import models
 from users.models import UserProfile
 from qrcodes.models import QRCode
+from users.models import UserProfile
 
 # Create your models here.
 
@@ -15,6 +16,8 @@ class Post(models.Model):
     private = models.BooleanField(default=False)
     approved = models.BooleanField(null=True, default=None)
     points_received = models.IntegerField(default=0)
+    
+    likes_count = models.IntegerField(default=0)
 
     def __str__(self):
         return f"{self.user.username} | {self.caption} - Points: {self.points_received}"
@@ -34,3 +37,14 @@ def save(self, *args, **kwargs):
         return
     print("doesnt exist")
     raise ValueError("QR Code must match an existing QRCode object")
+
+class Like(models.Model):
+    user = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='post_likes')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user', 'post')
+    
+    def __str__(self):
+        return f"{self.user.username} liked {self.post.caption}"

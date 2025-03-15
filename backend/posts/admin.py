@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Post
+from .models import Post, Like
 from qrcodes.models import QRCode  # Import QRCode to access category reward points
 
 class PostAdmin(admin.ModelAdmin):
@@ -43,3 +43,8 @@ class PostAdmin(admin.ModelAdmin):
     reject_posts.short_description = "Reject selected posts ❌"
 
 admin.site.register(Post, PostAdmin)
+
+class LikeAdmin(admin.ModelAdmin):
+    list_display = ('user', 'post', 'created_at')
+
+admin.site.register(Like, LikeAdmin)

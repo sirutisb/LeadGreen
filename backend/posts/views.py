@@ -4,9 +4,10 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from django.shortcuts import get_object_or_404
 
-from .models import Post
-from .serializers import PostSerializer
+from .models import Post,Like
+from .serializers import PostSerializer, PostLikeSerializer
 from .pagination import PostPagination
 
 from rest_framework import generics
@@ -24,3 +25,27 @@ class PostListCreate(generics.ListCreateAPIView):
     def perform_create(self, serializer):
         # Automatically set the user to the authenticated user
         serializer.save(user=self.request.user)
+
+class ToggleLikePost(APIView):
+    permission_classes = [IsAuthenticatedOrReadOnly]    
+    def post(self, request, post_id):
+        post = get_object_or_404(Post, id = post_id)
+        like, created = Like.objects.get_or_create(user = request.user, post = post)
+        if created:
+            post.likes_count = Like.objects.filter(post=post).count()
+            post.save()
+            return Response({"message": "Liked post"}, status=201)
+        else:
+            return Response({"message": "Already liked"}, status=200)
+    
+    def delete(self, request, post_id):
+        post = get_object_or_404(Post, id=post_id)
+        like = Like.objects.filter(user=request.user, post=post)
+
+        if like.exists():
+            like.delete()
+            post.likes_count = Like.objects.filter(post=post).count()
+            post.save()
+            return Response({"message": "Unliked post"}, status=200)
+        else:
+            return Response({"message": "You haven't liked this post"}, status=400)
