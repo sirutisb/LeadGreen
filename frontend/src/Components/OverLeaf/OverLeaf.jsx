@@ -8,6 +8,7 @@ import useGameData from "../../Hooks/useGameData";
 import usePlantEffects from "../../Hooks/usePlantEffects";
 import GardenShop from "./PopShop";
 // Use <PopShop /> for the popup and <PopShop.ShopButton /> for the button
+import DailyRewards from "./DailyRewards/DailyRewards";
 
 const OverLeaf = () => {
   const [selectedIcon, setSelectedIcon] = useState(null);
@@ -107,6 +108,56 @@ const OverLeaf = () => {
     } else {
       playErrorSound();
     }
+    }, [leveledUp, oldPlantName, showLevelUpEffects, setLeveledUp]);
+  
+    // Handle initial insect notification
+    useEffect(() => {
+      if (currentInsect) {
+        showInsectAlert(currentInsect.name);
+      }
+    }, [currentInsect, showInsectAlert]);
+  
+    // Handle plant action
+    const handleAction = async () => {
+      if (!selectedIcon) {
+        triggerWiggle();
+        return;
+      }
+  
+      const result = await executeAction(selectedIcon);
+      
+      if (result.success) {
+        playActionSound(selectedIcon);
+      } else {
+        playErrorSound();
+      }
+    };
+  
+    if (loading) return <div>Loading...</div>;
+  
+    return (
+      <div>
+        <ConfettiEffect show={showConfetti} />
+  
+        <div className="flex flex-col items-center justify-center min-h-screen w-full px-4 sm:px-6 lg:px-8 relative">
+          <OverLeafBar setSelectedIcon={setSelectedIcon} />
+          <RouletteButton user={user} setUser={setUser} />
+          <DailyRewards />
+          
+          <PlantDisplay
+            plantRef={plantRef}
+            wiggle={wiggle}
+            scale={scale}
+            plantImage={user.plant_image}
+            plantName={user.plant_name}
+            insect={currentInsect}
+            onClick={handleAction}
+          />
+  
+          <StatsDisplay user={user} />
+        </div>
+      </div>
+    );
   };
 
   if (loading) return <div>Loading...</div>;

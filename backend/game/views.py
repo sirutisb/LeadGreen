@@ -13,6 +13,8 @@ from .serializers import GameProfileSerializer, PlantProgressSerializer, InsectS
 from rest_framework import generics
 from django.db import models
 
+from django.utils.timezone import now
+
 import random
 
 from rest_framework import viewsets
@@ -361,3 +363,72 @@ class InventoryViewSet(viewsets.ReadOnlyModelViewSet):
         queryset = self.get_queryset()
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+        
+
+reward_day_cycle = {
+    1 : {"reward": "water", "amount" : 5},
+    2 : {"reward": "spin", "amount" : 2},
+    3 : {"reward": "soil", "amount" : 3},
+    4 : {"reward": "spin", "amount" : 4},
+    5 : {"reward": "glove", "amount" : 2},
+    6 : {"reward": "spin", "amount" : 6},
+    7 : {"reward": "pest", "amount" : 2},
+}
+
+class DailyRewardView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    # fetch info from database on daily reward info
+
+    def get(self, request):
+        user = request.user
+        profile = user.game_profile
+
+        # get user information
+        can_collect = profile.can_collect_daily_reward()
+        current_day = profile.current_day
+
+        reward_response = []
+
+        # build reward response information
+        for day in range(1, 8):
+            reward_info = reward_day_cycle[day]
+
+            is_collected = day < current_day
+            can_collect_today = can_collect and day == profile.current_day
+
+
+            reward_response.append({
+                "day": day,
+                "reward": reward_info["reward"],
+                "amount": reward_info["amount"],
+                "isCollected": is_collected,
+                "canCollect": can_collect_today
+            })
+
+        return Response(reward_response, status=status.HTTP_200_OK)
+    
+    def post(self, request):
+        user = request.user
+        profile = user.game_profile
+
+        # if cant collect
+        if not profile.can_collect_daily_reward():
+            return Response(
+                {"message": "Reward not available"},
+                status = status.HTTP_400_BAD_REQUEST
+            )
+        
+        profile.collect_daily_reward()
+
+        return Response({"message": "Reward collected"}, status=status.HTTP_200_OK)
+
+class StreakView(APIView):
+    """ get response for user current streak"""
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        profile = user.game_profile
+
+        return Response({"streak": profile.streak}, status = status.HTTP_200_OK)

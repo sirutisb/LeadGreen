@@ -15,4 +15,6 @@ urlpatterns = [
     path('spin/prizes/', views.GetPrizes.as_view()),
     path('use-item/<int:item_id>/', views.UseItemView.as_view(), name='use-item'),
     path('', include(router.urls)),
+    path('reward/', views.DailyRewardView.as_view()),
+    path('streak/', views.StreakView.as_view()),
 ]
