@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import axios from 'axios';
 import { ShoppingBag, Sparkles, Clock, X, Plus, Minus, ShoppingCart } from 'lucide-react';
 import greencoinIcon from '../../assets/peng.svg';
 
@@ -19,8 +20,8 @@ const GardenShop = ({ isOpen, onClose, user, setUser }) => {
     const fetchShopItems = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`${API_BASE_URL}/api/game/items`);
-        const data = await response.json();
+        const response = await axios.get(`${API_BASE_URL}/api/game/items`);
+        const data = response.data;
         
         if (data.success && Array.isArray(data.items)) {
           setShopItems(data.items);
@@ -31,6 +32,14 @@ const GardenShop = ({ isOpen, onClose, user, setUser }) => {
             initialQuantities[item.id] = 1;
           });
           setItemQuantities(initialQuantities);
+          
+          // Update user coins/points from the API response
+          if (data.points !== undefined) {
+            setUser(prevUser => ({
+              ...prevUser,
+              coins: data.points
+            }));
+          }
         } else {
           setError('Failed to load shop items');
         }
@@ -44,6 +53,7 @@ const GardenShop = ({ isOpen, onClose, user, setUser }) => {
 
     fetchShopItems();
   }, []);
+    
 
   // Initialize inventory on component mount
   useEffect(() => {
@@ -57,6 +67,16 @@ const GardenShop = ({ isOpen, onClose, user, setUser }) => {
           initialInventory[item.id] = Math.floor(Math.random() * 3); // Random 0-2 items for demo
         });
         setInventory(initialInventory);
+        
+        // If you have an actual endpoint:
+        /*
+        const response = await axios.get(`${API_BASE_URL}/api/game/inventory`, {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          }
+        });
+        setInventory(response.data.inventory);
+        */
       } catch (err) {
         console.error('Inventory fetch error:', err);
       }
@@ -97,7 +117,66 @@ const GardenShop = ({ isOpen, onClose, user, setUser }) => {
     });
   };
 
-  // Handle purchase
+  // // Handle purchase
+  // const handlePurchase = async (item) => {
+  //   const quantity = itemQuantities[item.id] || 1;
+  //   const totalPrice = item.price * quantity;
+    
+  //   if (user.coins >= totalPrice) {
+  //     const button = document.getElementById(`buy-btn-${item.id}`);
+  //     if (button) {
+  //       button.classList.add("scale-90");
+  //       setTimeout(() => {
+  //         button.classList.remove("scale-90");
+  //       }, 150);
+  //     }
+      
+  //     try {
+  //       // Using the actual purchase endpoint with environment variable
+  //       const response = await fetch(`${API_BASE_URL}/api/game/items/${item.id}/purchase/`, {
+  //         method: 'POST',
+  //         headers: {
+  //           'Content-Type': 'application/json',
+  //           'Authorization': `Bearer ${localStorage.getItem('token')}` // Add token if needed
+  //         },
+  //         body: JSON.stringify({
+  //           quantity: quantity
+  //         })
+  //       });
+        
+  //       const result = await response.json();
+        
+  //       if (result.success) {
+  //         // Update user coins
+  //         setUser({
+  //           ...user,
+  //           coins: user.coins - totalPrice
+  //         });
+          
+  //         // Update inventory
+  //         setInventory({
+  //           ...inventory,
+  //           [item.id]: (inventory[item.id] || 0) + quantity
+  //         });
+          
+  //         // Reset quantity to 1 after purchase
+  //         setItemQuantities(prev => ({
+  //           ...prev,
+  //           [item.id]: 1
+  //         }));
+          
+  //         alert(`Successfully purchased ${quantity} ${item.name}!`);
+  //       } else {
+  //         alert(result.message || "Purchase failed. Please try again.");
+  //       }
+  //     } catch (err) {
+  //       alert("Purchase failed. Please try again.");
+  //       console.error('Purchase error:', err);
+  //     }
+  //   } else {
+  //     alert("Not enough coins!");
+  //   }
+  // };
   const handlePurchase = async (item) => {
     const quantity = itemQuantities[item.id] || 1;
     const totalPrice = item.price * quantity;
@@ -112,25 +191,23 @@ const GardenShop = ({ isOpen, onClose, user, setUser }) => {
       }
       
       try {
-        // Using the actual purchase endpoint with environment variable
-        const response = await fetch(`${API_BASE_URL}/api/game/items/${item.id}/purchase/`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('token')}` // Add token if needed
-          },
-          body: JSON.stringify({
-            quantity: quantity
-          })
-        });
+        const response = await axios.post(
+          `${API_BASE_URL}/api/game/items/${item.id}/purchase/`,
+          { quantity: quantity },
+          {
+            headers: {
+              'Authorization': `Bearer ${localStorage.getItem('token')}` // Add token if needed
+            }
+          }
+        );
         
-        const result = await response.json();
+        const result = response.data;
         
         if (result.success) {
-          // Update user coins
+          // Update user coins - check if result contains updated points
           setUser({
             ...user,
-            coins: user.coins - totalPrice
+            coins: result.points !== undefined ? result.points : user.coins - totalPrice
           });
           
           // Update inventory
@@ -150,7 +227,7 @@ const GardenShop = ({ isOpen, onClose, user, setUser }) => {
           alert(result.message || "Purchase failed. Please try again.");
         }
       } catch (err) {
-        alert("Purchase failed. Please try again.");
+        alert(err.response?.data?.message || "Purchase failed. Please try again.");
         console.error('Purchase error:', err);
       }
     } else {
@@ -347,7 +424,7 @@ const GardenShop = ({ isOpen, onClose, user, setUser }) => {
           <div>
             <p className="text-gray-500 text-sm">Your balance:</p>
             <p className="text-emerald-600 flex items-center text-base font-semibold">
-              <span>{user?.coins || 200}</span>
+              <span>{user?.coins || 0}</span>
               <img 
                 src={greencoinIcon} 
                 className="w-7 h-7 object-contain"
