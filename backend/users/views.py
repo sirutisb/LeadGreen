@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import AllowAny
 from .models import UserProfile
 from game.serializers import PlantProgressSerializer, InsectSerializer
 from .serializers import  BasicUserProfileSerializer, UserWithGameSerializer, UserWithPostSerializer, UserPageSerializer
@@ -35,30 +36,20 @@ class UserPostsView(generics.ListAPIView):
         return Post.objects.filter(user_id=user_id).order_by('-created_at') # Should it only show their approved posts?
     
 class UserProfileView(APIView):
+    permission_classes = [AllowAny]
     def get(self, request, pk):
-        try:
+        try:    
             user = UserProfile.objects.get(id=pk)
-            queryset = GameProfile.objects.all().order_by('-lifetime_points')
-            
-            rank = None
-            for i, profile in enumerate(queryset, 1):
-                if profile.user == user:
-                    rank = i
-                    break
-           
-
             return Response({
-                'user' : UserPageSerializer(user).data,
-                'tree' : PlantProgressSerializer(user.game_profile).data,
-                'posts' : UserWithPostSerializer(user.post_set.all().order_by('-created_at'), many=True,).data,
-                'rank' : rank
+                'user': UserPageSerializer(user).data,
+                'tree': PlantProgressSerializer(user.game_profile).data,
+                'posts': PostSerializer(
+                    user.post_set.order_by('-created_at'),
+                    many=True
+                ).data,
+                'rank': user.game_profile.get_rank()
             })
         except UserProfile.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-
-
-
-
-        
-
-            
+            return Response({
+                'error': 'User not found'
+            }, status=status.HTTP_404_NOT_FOUND)

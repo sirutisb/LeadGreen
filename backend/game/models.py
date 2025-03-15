@@ -127,6 +127,12 @@ class GameProfile(models.Model):
     def __str__(self):
         return f"{self.user.username} | Level {self.tree_level} | Points {self.points_balance} | Spins {self.spins}"
 
+    def get_rank(self):
+        """Get user's rank based on lifetime points"""
+        return GameProfile.objects.filter(
+            lifetime_points__gt=self.lifetime_points
+        ).count() + 1
+
 @receiver(post_save, sender=UserProfile)
 def create_game_profile(sender, instance, created, **kwargs):
     """
