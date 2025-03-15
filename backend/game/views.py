@@ -258,9 +258,14 @@ class ItemViewSet(viewsets.ModelViewSet):
         """List all available items in the shop"""
         queryset = self.get_queryset()
         serializer = self.get_serializer(queryset, many=True)
+        
+        # Get user's point balance if authenticated
+        points_balance = request.user.game_profile.points_balance if request.user.is_authenticated else 0
+        
         return Response({
             "success": True,
-            "items": serializer.data
+            "items": serializer.data,
+            "points": points_balance
         }, status=status.HTTP_200_OK)
 
     @action(detail=True, methods=['post'])
