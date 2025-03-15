@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Post, Like
+from .models import Post, PostLike
 from qrcodes.models import QRCode  # Import QRCode to access category reward points
 
 class PostAdmin(admin.ModelAdmin):
@@ -10,7 +10,7 @@ class PostAdmin(admin.ModelAdmin):
     def approve_posts(self, request, queryset):
         for post in queryset:
             # Only update posts that haven't been approved yet
-            if post.approved == True:
+            if post.approved:
                 continue
 
             # Look up the QRCode corresponding to the post's qr_code field
@@ -24,10 +24,7 @@ class PostAdmin(admin.ModelAdmin):
 
             # Update the user's game profile to add the reward points
             try:
-                # Assumes a one-to-one relationship with related_name='game_profile'
                 game_profile = post.user.game_profile
-
-                # TODO give game_profile a private method to give points (makes sure there are no discrepency between points_balance and lifetime_points)
                 game_profile.add_points(reward)
                 game_profile.spins += 1
                 game_profile.save()
@@ -47,4 +44,4 @@ admin.site.register(Post, PostAdmin)
 class LikeAdmin(admin.ModelAdmin):
     list_display = ('user', 'post', 'created_at')
 
-admin.site.register(Like, LikeAdmin)
+admin.site.register(PostLike, LikeAdmin)

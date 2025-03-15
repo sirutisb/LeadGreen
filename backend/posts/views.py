@@ -6,12 +6,14 @@ from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from django.shortcuts import get_object_or_404
 
-from .models import Post,Like
+from .models import Post,PostLike
 from .serializers import PostSerializer, PostLikeSerializer
 from .pagination import PostPagination
 
 from rest_framework import generics
 from django.db import models
+from django.db import transaction
+from django.db.models import F, Q
 
 class PostListCreate(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticatedOrReadOnly]
@@ -19,7 +21,7 @@ class PostListCreate(generics.ListCreateAPIView):
     pagination_class = PostPagination
 
     def get_queryset(self):
-        queryset = Post.objects.all().filter(approved=True)
+        queryset = Post.objects.filter(approved=True)
         return queryset
     
     def perform_create(self, serializer):
@@ -27,25 +29,25 @@ class PostListCreate(generics.ListCreateAPIView):
         serializer.save(user=self.request.user)
 
 class ToggleLikePost(APIView):
-    permission_classes = [IsAuthenticatedOrReadOnly]    
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
+    @transaction.atomic
     def post(self, request, post_id):
-        post = get_object_or_404(Post, id = post_id)
-        like, created = Like.objects.get_or_create(user = request.user, post = post)
+        post = get_object_or_404(Post, id=post_id)
+        like, created = PostLike.objects.get_or_create(
+            user=request.user, 
+            post=post
+        )
         if created:
-            post.likes_count = Like.objects.filter(post=post).count()
-            post.save()
+            Post.objects.filter(id=post.id).update(likes_count=F('likes_count') + 1)
             return Response({"message": "Liked post"}, status=201)
-        else:
-            return Response({"message": "Already liked"}, status=200)
-    
+        return Response({"message": "Already liked"}, status=200)
+
+    @transaction.atomic
     def delete(self, request, post_id):
         post = get_object_or_404(Post, id=post_id)
-        like = Like.objects.filter(user=request.user, post=post)
-
-        if like.exists():
-            like.delete()
-            post.likes_count = Like.objects.filter(post=post).count()
-            post.save()
+        result = PostLike.objects.filter(user=request.user, post=post).delete()
+        if result[0] > 0:
+            Post.objects.filter(id=post.id).update(likes_count=F('likes_count') - 1)
             return Response({"message": "Unliked post"}, status=200)
-        else:
-            return Response({"message": "You haven't liked this post"}, status=400)
+        return Response({"message": "You haven't liked this post"}, status=400)
