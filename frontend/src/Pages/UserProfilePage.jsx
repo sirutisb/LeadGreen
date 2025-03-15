@@ -10,7 +10,6 @@ import AuthContext from "../Context/AuthContext"
 
 export default function UserProfile() {
   const { user, logoutUser } = useContext(AuthContext)
-  const [activeTab, setActiveTab] = useState("overview")
 
   // Mock data - replace with actual data from your backend
   const userData = {
@@ -109,23 +108,8 @@ export default function UserProfile() {
 
         {/* Tabs */}
         <div className="flex border-b border-gray-200 mb-8">
-          <button
-            className={`px-4 py-2 font-medium ${activeTab === "overview" ? "text-green-600 border-b-2 border-green-600" : "text-gray-500 hover:text-gray-700"}`}
-            onClick={() => setActiveTab("overview")}
-          >
+          <button className="px-4 py-2 font-medium text-green-600 border-b-2 border-green-600">
             Overview
-          </button>
-          <button
-            className={`px-4 py-2 font-medium ${activeTab === "activity" ? "text-green-600 border-b-2 border-green-600" : "text-gray-500 hover:text-gray-700"}`}
-            onClick={() => setActiveTab("activity")}
-          >
-            Activity
-          </button>
-          <button
-            className={`px-4 py-2 font-medium ${activeTab === "tree" ? "text-green-600 border-b-2 border-green-600" : "text-gray-500 hover:text-gray-700"}`}
-            onClick={() => setActiveTab("tree")}
-          >
-            My Tree
           </button>
         </div>
 
@@ -133,7 +117,6 @@ export default function UserProfile() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Left Column */}
           <div className="md:col-span-2">
-            {activeTab === "overview" && (
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}>
                 {/* Stats Cards */}
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
@@ -145,7 +128,7 @@ export default function UserProfile() {
                   ))}
                 </div>
 
-                {/* Recent Activity */}
+                {/* Recent Activity
                 <div className="bg-white rounded-lg shadow-md p-6 mb-8">
                   <h2 className="text-xl font-serif font-bold mb-4 flex items-center gap-2">
                     <Calendar className="h-5 w-5 text-green-600" /> Recent Activity
@@ -165,7 +148,7 @@ export default function UserProfile() {
                       </div>
                     ))}
                   </div>
-                </div>
+                </div> */}
 
                 {/* Sustainability Tips */}
                 <div className="bg-white rounded-lg shadow-md p-6">
@@ -181,9 +164,8 @@ export default function UserProfile() {
                   </div>
                 </div>
               </motion.div>
-            )}
 
-            {activeTab === "activity" && (
+            {/* {activeTab === "activity" && (
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -220,86 +202,85 @@ export default function UserProfile() {
                   ))}
                 </div>
               </motion.div>
-            )}
+            )} */}
 
-            {activeTab === "tree" && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.5 }}
-                className="bg-white rounded-lg shadow-md p-6"
-              >
-                <div className="text-center mb-8">
-                  <h2 className="text-xl font-serif font-bold mb-2">My Virtual Tree</h2>
-                  <p className="text-gray-600">
-                    Meet {userData.treeName}, your level {userData.treeLevel} tree!
-                  </p>
-                </div>
+          
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5 }}
+              className="bg-white rounded-lg shadow-md p-6 mt-8"
+            >
+              <div className="text-center mb-8">
+                <h2 className="text-xl font-serif font-bold mb-2">My Virtual Tree</h2>
+                <p className="text-gray-600">
+                  Meet {userData.treeName}, your level {userData.treeLevel} tree!
+                </p>
+              </div>
 
-                <div className="flex justify-center mb-8">
-                  <div className="relative">
-                    <div className="h-64 w-64 bg-green-50 rounded-full flex items-center justify-center">
-                      <TreePine className="h-32 w-32 text-green-600" />
-                    </div>
-                    <div className="absolute -top-2 -right-2 bg-green-600 text-white h-10 w-10 rounded-full flex items-center justify-center font-bold">
-                      Lv.{userData.treeLevel}
-                    </div>
+              <div className="flex justify-center mb-8">
+                <div className="relative">
+                  <div className="h-64 w-64 bg-green-50 rounded-full flex items-center justify-center">
+                    <TreePine className="h-32 w-32 text-green-600" />
+                  </div>
+                  <div className="absolute -top-2 -right-2 bg-green-600 text-white h-10 w-10 rounded-full flex items-center justify-center font-bold">
+                    Lv.{userData.treeLevel}
                   </div>
                 </div>
+              </div>
 
-                <div className="mb-8">
-                  <h3 className="font-medium text-gray-700 mb-2">Growth Progress</h3>
-                  <div className="w-full bg-gray-200 rounded-full h-4">
-                    <div
-                      className="bg-green-600 h-4 rounded-full"
-                      style={{ width: `${(userData.points % 500) / 5}%` }}
-                    ></div>
-                  </div>
-                  <div className="flex justify-between mt-2 text-sm text-gray-600">
-                    <span>Current: {userData.points % 500} pts</span>
-                    <span>Next Level: 500 pts</span>
-                  </div>
+              <div className="mb-8">
+                <h3 className="font-medium text-gray-700 mb-2">Growth Progress</h3>
+                <div className="w-full bg-gray-200 rounded-full h-4">
+                  <div
+                    className="bg-green-600 h-4 rounded-full"
+                    style={{ width: `${(userData.points % 500) / 5}%` }}
+                  ></div>
+                </div>
+                <div className="flex justify-between mt-2 text-sm text-gray-600">
+                  <span>Current: {userData.points % 500} pts</span>
+                  <span>Next Level: 500 pts</span>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="bg-green-50 rounded-lg p-4">
+                  <h3 className="font-medium text-green-800 mb-2">Tree Benefits</h3>
+                  <ul className="space-y-2 text-gray-700">
+                    <li className="flex items-center gap-2">
+                      <Leaf className="h-4 w-4 text-green-600" />
+                      Absorbs CO₂: 25kg per year
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <Leaf className="h-4 w-4 text-green-600" />
+                      Produces oxygen for 2 people
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <Leaf className="h-4 w-4 text-green-600" />
+                      Habitat for 5 virtual wildlife species
+                    </li>
+                  </ul>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="bg-green-50 rounded-lg p-4">
-                    <h3 className="font-medium text-green-800 mb-2">Tree Benefits</h3>
-                    <ul className="space-y-2 text-gray-700">
-                      <li className="flex items-center gap-2">
-                        <Leaf className="h-4 w-4 text-green-600" />
-                        Absorbs CO₂: 25kg per year
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <Leaf className="h-4 w-4 text-green-600" />
-                        Produces oxygen for 2 people
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <Leaf className="h-4 w-4 text-green-600" />
-                        Habitat for 5 virtual wildlife species
-                      </li>
-                    </ul>
-                  </div>
-
-                  <div className="bg-green-50 rounded-lg p-4">
-                    <h3 className="font-medium text-green-800 mb-2">Upcoming Rewards</h3>
-                    <ul className="space-y-2 text-gray-700">
-                      <li className="flex items-center gap-2">
-                        <Award className="h-4 w-4 text-green-600" />
-                        Level 5: New tree appearance
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <Award className="h-4 w-4 text-green-600" />
-                        Level 7: Unlock garden background
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <Award className="h-4 w-4 text-green-600" />
-                        Level 10: Special "Forest Guardian" badge
-                      </li>
-                    </ul>
-                  </div>
+                <div className="bg-green-50 rounded-lg p-4">
+                  <h3 className="font-medium text-green-800 mb-2">Upcoming Rewards</h3>
+                  <ul className="space-y-2 text-gray-700">
+                    <li className="flex items-center gap-2">
+                      <Award className="h-4 w-4 text-green-600" />
+                      Level 5: New tree appearance
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <Award className="h-4 w-4 text-green-600" />
+                      Level 7: Unlock garden background
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <Award className="h-4 w-4 text-green-600" />
+                      Level 10: Special "Forest Guardian" badge
+                    </li>
+                  </ul>
                 </div>
-              </motion.div>
-            )}
+              </div>
+            </motion.div>
           </div>
 
           {/* Right Column */}
@@ -328,7 +309,7 @@ export default function UserProfile() {
             </motion.div>
 
             {/* Upcoming Events */}
-            <motion.div
+            {/* <motion.div
               className="bg-white rounded-lg shadow-md p-6"
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -371,7 +352,7 @@ export default function UserProfile() {
                   View All Events
                 </button>
               </div>
-            </motion.div>
+            </motion.div> */}
           </div>
         </div>
       </div>
