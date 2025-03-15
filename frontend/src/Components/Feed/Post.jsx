@@ -1,7 +1,32 @@
-import React from "react";
-import { Box, Typography, Avatar } from "@mui/material";
+import React, { useState } from "react";
+import { Box, Typography, Avatar, IconButton } from "@mui/material";
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import axiosInstance from "../../Context/axiosInstance";
+import { toastError, toastSuccess } from "../utils/toastCustom";
 
 const Post = ({ post }) => {
+  const [isLiked, setIsLiked] = useState(post.liked_by_user);
+  const [likesCount, setLikesCount] = useState(post.likes_count);
+
+  const handleLike = async () => {
+    try {
+      const response = await axiosInstance({
+        method: isLiked ? 'delete' : 'post',
+        url: `/posts/${post.id}/like/`
+      });
+      
+      if (response.status === 200) {
+        setIsLiked(!isLiked);
+        setLikesCount(isLiked ? likesCount - 1 : likesCount + 1);
+        toastSuccess(isLiked ? "Post unliked!" : "Post liked!");
+      }
+    } catch (error) {
+      toastError("Error toggling like!");
+      console.error("Error:", error);
+    }
+  };
+
   return (
     <Box
       sx={{
@@ -78,6 +103,31 @@ const Post = ({ post }) => {
           alt="Post"
           style={{ width: "100%", height: "auto", display: "block" }}
         />
+      </Box>
+
+      {/* Like Button and Count */}
+      <Box sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
+        <IconButton 
+          onClick={handleLike}
+          sx={{ 
+            color: isLiked ? '#1B6630' : 'grey',
+            '&:hover': {
+              color: isLiked ? '#145022' : '#1B6630',
+            }
+          }}
+        >
+          {isLiked ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+        </IconButton>
+        <Typography 
+          variant="body2" 
+          sx={{ 
+            color: '#1B6630',
+            fontWeight: 'bold',
+            ml: 1 
+          }}
+        >
+          {likesCount} {likesCount === 1 ? 'like' : 'likes'}
+        </Typography>
       </Box>
 
     </Box>
