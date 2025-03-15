@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import UserProfile
+from posts.models import Post
 
 # For use in posts and profile pages etc
 class BasicUserProfileSerializer(serializers.ModelSerializer):
@@ -18,14 +19,25 @@ class UserWithGameSerializer(serializers.ModelSerializer):
         model = UserProfile
         fields = ['id', 'username', 'profile_picture', 'points_balance', 'tree_level', 'current_plant']
 
-    def get_current_plant(self, obj):
-        # Return a simplified version of the current plant
-        plant = obj.game_profile.current_plant
-        if plant:
+class UserPageSerializer(serializers.ModelSerializer):
+    points_balance = serializers.IntegerField(source='game_profile.points_balance')
+    class Meta:
+        model = UserProfile
+        fields = ['id', 'username', 'profile_picture', 'points_balance']
+
+class UserWithPostSerializer(serializers.ModelSerializer):
+    # Post-related fields from Post
+
+    class Meta:
+        model = Post
+        fields = ['caption', 'created_at', 'points_received']
+
+    def get_latest_post(self, obj):
+        post = obj.post_set.order_by('-created_at').first()
+        if post:
             return {
-                'id': plant.id,
-                'name': plant.name,
-                'level': plant.level,
-                'image': plant.image.url if plant.image else None
+                'caption': post.caption,
+                'created_at': post.created_at,
+                'points' : post.points_received
             }
         return None

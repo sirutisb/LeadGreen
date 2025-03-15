@@ -11,6 +11,7 @@ import LoginPage from "./Pages/LoginPage";
 import PrivateRoute from "./Context/PrivateRoute";
 import { AuthProvider } from "./Context/AuthContext";
 import NavBar from "./Components/NavBar/NavBar";
+import UserProfile from "./Pages/UserProfilePage";
 
 function App() {
 
@@ -35,6 +36,7 @@ function App() {
             <Route path="/feed" element={<FeedPage />} />
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/login" element={<LoginPage />} />
+            <Route path="/profile" element={<UserProfile />} />
         </Routes>
         </AuthProvider>
       <ToastContainer />
