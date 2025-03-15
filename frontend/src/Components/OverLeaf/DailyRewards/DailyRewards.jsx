@@ -1,6 +1,6 @@
 import { useState } from "react"
 import DailyRewardsModal from "./DailyRewardsModal"
-import Button from "@mui/material/Button"
+import { motion } from "framer-motion"
 
 // Import your custom icons from assets
 import waterIcon from "../../../assets/water.svg"
@@ -71,36 +71,24 @@ export default function DailyRewards() {
   }
 
   return (
-    <div className="absolute top-8 right-5 px-3 py-2 rounded-lg">
-      <Button
+    <>
+      <motion.button
+        className="absolute top-45 left-5 bg-gradient-to-r from-green-500 to-black text-white font-bold py-2 px-6 rounded-lg shadow-md transition-all hover:scale-110"
         onClick={() => setOpen(true)}
-        variant="contained"
-        sx={{
-          background: 'linear-gradient(45deg, #008236 30%, #00A53D 90%)',
-          color: 'white',
-          borderRadius: '8px',
-          textTransform: 'none',
-          boxShadow: '0 3px 5px 2px rgba(0, 133, 54, .3)',
-          transition: 'all 0.3s ease-in-out',
-          '&:hover': {
-            boxShadow: '0 6px 10px 4px rgba(0, 133, 54, .5)',
-          },
-        }}
+        whileTap={{ scale: 0.9 }}
       >
-        Rewards
-      </Button>
+        🎁 Rewards
+      </motion.button>
 
-      {open && (
-        <DailyRewardsModal
-          open={open}
-          rewards={rewards}
-          streak={streak}
-          collectReward={collectReward}
-          getRewardIcon={getRewardIcon}
-          renderStreakFlames={renderStreakFlames}
-          onClose={() => setOpen(false)}
-        />
-      )}
-    </div>
+      <DailyRewardsModal
+        open={open}
+        onClose={() => setOpen(false)}
+        rewards={rewards}
+        onCollect={collectReward}
+        streak={streak}
+        getRewardIcon={getRewardIcon}
+        renderStreakFlames={renderStreakFlames}
+      />
+    </>
   )
 }
