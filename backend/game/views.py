@@ -25,11 +25,11 @@ def build_response(profile, success, message, status_code):
     serializer = GameProfileSerializer(profile)
     response_data = serializer.data
     
-    # Add inventory information
+    # add inventory information
     inventory = Inventory.objects.filter(user=profile.user)
     inventory_serializer = InventorySerializer(inventory, many=True)
     
-    # Add custom messages and inventory
+    # add custom messages and inventory
     response_data.update({
         "success": success,
         "message": message,
@@ -66,7 +66,7 @@ class UseItemView(APIView):
         """Apply all effects of an item"""
         messages = []
         
-        # First apply item-specific parameters if they exist
+        # Apply item-specific parameters if exist
         if item.parameters:
             if 'growth_amount' in item.parameters:
                 profile.grow_tree(item.parameters['growth_amount'])
@@ -76,7 +76,7 @@ class UseItemView(APIView):
                 profile.spawn_insect()
                 messages.append("An insect has appeared!")
         
-        # Then apply any linked effects
+        #  apply any linked effects
         for effect in item.effects.all():
             params = effect.parameters
             
@@ -159,18 +159,16 @@ class UseItemView(APIView):
         if error_message:
             return build_response(profile, False, error_message, status.HTTP_200_OK)
 
-        # Get item
         item = inventory.item
         
-        # Check prerequisites (like existing insect)
-        # Insects block all actions that don't remove insects
+        # Check prerequisites - existing insect?
+        # insects block all actions that don't remove insects
         if profile.current_insect is not None and not item.effects.filter(effect_type='REMOVE_INSECT').exists():
             return build_response(profile, False, "There is an insect on the tree! Use an appropriate item first.", status.HTTP_200_OK)
 
         # Consume the item
         self.consume_item(inventory)
 
-        # Apply all effects
         effect_messages = self.apply_effects(profile, item)
         
         try:
@@ -203,7 +201,7 @@ class GetPrizes(APIView):
         return Response({"success": True, "prizes": prizes}, status=status.HTTP_200_OK)
     
 
-# TODO: Reuse functions to avoid response code duplication
+# TODO: reuse functions to avoid response code duplication
 class SpinView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -222,11 +220,11 @@ class SpinView(APIView):
                 "prize_amount": 0,
             }, status=status.HTTP_200_OK)
         
-        # Select random prize based on weights
+        # select random prize based on weights
         prize_index = random.choices(range(len(prizes)), weights=[prize["weight"] for prize in prizes], k=1)[0]
         prize_reward = prizes[prize_index]["value"]
 
-        # No points won
+        #No points won
         if prize_reward == 0:
             profile.spins -= 1
             profile.save()
@@ -238,7 +236,7 @@ class SpinView(APIView):
                 "prize_index": prize_index,
                 "prize_amount": prize_reward,
             }, status=status.HTTP_200_OK)
-        else: # Won points
+        else: # won points
             profile.add_points(prize_reward)
             profile.spins -= 1
             profile.save()
@@ -252,9 +250,9 @@ class SpinView(APIView):
             }, status=status.HTTP_200_OK)
 
 class ItemViewSet(viewsets.ModelViewSet):
-    queryset = Item.objects.all().order_by('price')  # Order by price for consistent listing
+    queryset = Item.objects.all().order_by('price')  # order by price
     serializer_class = ItemSerializer
-    permission_classes = [AllowAny]  # Allow anyone to view shop items
+    permission_classes = [AllowAny]  # anyone can view shop items
 
     def list(self, request, *args, **kwargs):
         """List all available items in the shop"""
@@ -286,7 +284,7 @@ class ItemViewSet(viewsets.ModelViewSet):
         total_price = item.price * quantity
         user_profile = request.user.game_profile
 
-        # Check if user has enough points
+        #Check if user has enough points
         if user_profile.points_balance < total_price:
             return Response({
                 "success": False,
@@ -299,7 +297,7 @@ class ItemViewSet(viewsets.ModelViewSet):
         user_profile.points_balance -= total_price
         user_profile.save()
 
-        # Update or create inventory
+        # update / create inventory
         inventory, created = Inventory.objects.get_or_create(
             user=request.user,
             item=item,
@@ -309,7 +307,7 @@ class ItemViewSet(viewsets.ModelViewSet):
             inventory.quantity += quantity
             inventory.save()
 
-        # Record transaction
+        # record transaction
         transaction = Transaction.objects.create(
             user=request.user,
             item=item,
@@ -330,7 +328,7 @@ class WaterTreeAction(APIView):
     permission_classes = [IsAuthenticated]
     
     def post(self, request, *args, **kwargs):
-        # Assuming water item has ID 1
+        #Assuming water item has ID 1
         return UseItemView().post(request, item_id=4)
 
 class SoilTreeAction(APIView):
@@ -346,12 +344,12 @@ class GloveTreeAction(APIView):
     permission_classes = [IsAuthenticated]
     
     def post(self, request, *args, **kwargs):
-        # Assuming glove item has ID 3
+        # assuming glove item has ID 3
         return UseItemView().post(request, item_id=6)
 
 class InventoryViewSet(viewsets.ReadOnlyModelViewSet):
     """
-    ViewSet for viewing user's inventory
+    viewSet for viewing user's inventory
     """
     serializer_class = InventorySerializer
     permission_classes = [IsAuthenticated]

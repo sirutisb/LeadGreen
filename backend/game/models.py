@@ -4,7 +4,10 @@ from django.dispatch import receiver
 from users.models import UserProfile
 from random import choice
 
+from django.utils.timezone import now
 from django.utils import timezone
+from django.conf import settings
+from datetime import timedelta
 
 class Plant(models.Model):
     """
@@ -131,7 +134,7 @@ class GameProfile(models.Model):
         if self.shield_expires_at and self.shield_expires_at > timezone.now():
             return  # Shield prevents insect spawn
         
-        # Selects an insect that is at the same level or lower than the tree level
+        # Selects an insect that is at the same level / lower than the tree level
         available_insects = Insect.objects.filter(level__lte=self.tree_level)
         if available_insects.exists():
             self.current_insect = choice(available_insects)
@@ -202,7 +205,7 @@ def create_game_profile(sender, instance, created, **kwargs):
             spins=5
         )
 
-# Connect the signal
+# Connect signal
 post_save.connect(create_game_profile, sender=UserProfile)
 
 class Prize(models.Model):
@@ -211,7 +214,7 @@ class Prize(models.Model):
     weight = models.FloatField()
     style = models.JSONField(default=dict)  # For storing color styles as JSON
 
-#Shop Items and transactions
+#shop Items and transactions
 class ItemEffect(models.Model):
     """
     Generic effects that items can have when used
@@ -227,12 +230,12 @@ class ItemEffect(models.Model):
         ('MULTIPLIER', 'Point Multiplier'),
         ('RANDOM_REWARD', 'Random Reward'),
         ('TIME_BOOST', 'Time Boost'),
-        # Add more effect types as needed
+        # Add effect types as needed
     ]
 
     name = models.CharField(max_length=64)
     effect_type = models.CharField(max_length=32, choices=EFFECT_TYPES)
-    # Store effect parameters as JSON for flexibility
+    # Store effect parameters as JSON 
     parameters = models.JSONField(default=dict, blank=True, help_text="Effect-specific parameters (e.g. growth_amount, points, chances)")
     
     def __str__(self):
@@ -240,9 +243,9 @@ class ItemEffect(models.Model):
 
 class Item(models.Model):
     ITEM_TYPE = [
-        ('TOOL', 'Tool'), # For tools, they are always available to use (infinite item count)
-        ('CONSUMABLE', 'Consumable'), # For consumables, the item is used (limited item count)
-        ('SPECIAL', 'Special'), # For special items, the effect is applied to the user (to be reworked later)
+        ('TOOL', 'Tool'), # tools - always available to use (infinite item count)
+        ('CONSUMABLE', 'Consumable'), # Consumables - item is used (limited item count)
+        ('SPECIAL', 'Special'), # Special items - effect is applied to the user (to be reworked later)
     ]
     
     name = models.CharField(max_length=32)
@@ -257,7 +260,7 @@ class Item(models.Model):
     item_type = models.CharField(max_length=20, choices=ITEM_TYPE)
     effects = models.ManyToManyField(ItemEffect, related_name='items', blank=True)  # Made optional
     cooldown_seconds = models.IntegerField(default=0)
-    # Add item-specific parameters
+    # add item specific parameters
     parameters = models.JSONField(default=dict, blank=True, help_text="Item-specific parameters (e.g. growth_amount, spawn_chance)")
 
     def __str__(self):
