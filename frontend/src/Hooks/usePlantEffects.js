@@ -11,18 +11,29 @@ import soilSound from "../assets/sounds/soil.mp3";
 import gloveSound from "../assets/sounds/glove2.mp3";
 import levelSound from "../assets/sounds/level.mp3";
 
+// Sound configuration mapping using item IDs
+const ITEM_EFFECTS = {
+  1: { sound: waterDropSound, volume: 1.0, color: "#94f9ff" },  // Water
+  2: { sound: soilSound, volume: 0.7, color: "#805A36" },       // Soil
+  3: { sound: gloveSound, volume: 0.6, color: "#FFD700" }       // Glove
+};
+
 export default function usePlantEffects(plantRef) {
   const [showConfetti, setShowConfetti] = useState(false);
   const [wiggle, setWiggle] = useState(false);
   const [sparkColor, setSparkColor] = useState("#248335");
   
-  // Sound hooks
-  const [playWaterDrop] = useSound(waterDropSound, { volume: 1 });
-  const [playsoil] = useSound(soilSound, { volume: 0.7 });
-  const [playGlove] = useSound(gloveSound, { volume: 0.6 });
+  // Sound hooks for non-item sounds
   const [playLevelUp] = useSound(levelSound, { volume: 1.0 });
   const [playInsect] = useSound(snailSound, { volume: 1.0 });
   const [playAlert] = useSound(alertSound, { volume: 0.8 });
+
+  // Create sound hooks for items
+  const soundHooks = {};
+  Object.entries(ITEM_EFFECTS).forEach(([itemId, config]) => {
+    const [play] = useSound(config.sound, { volume: config.volume });
+    soundHooks[itemId] = play;
+  });
 
   // Animation setup
   const burst = useRef(null);
@@ -60,30 +71,19 @@ export default function usePlantEffects(plantRef) {
     }
   };
 
-  const getActionEffects = (action) => {
-    switch (action) {
-      case "soil":
-        return {
-          sound: playsoil,
-          color: "#805A36"
-        };
-      case "water":
-        return {
-          sound: playWaterDrop,
-          color: "#94f9ff"
-        };
-      case "glove":
-        return {
-          sound: playGlove,
-          color: "#FFD700"
-        };
-      default:
-        return null;
+  const getActionEffects = (itemId) => {
+    const itemConfig = ITEM_EFFECTS[itemId];
+    if (itemConfig) {
+      return {
+        sound: soundHooks[itemId],
+        color: itemConfig.color
+      };
     }
+    return null;
   };
 
-  const playActionSound = (action) => {
-    const effects = getActionEffects(action);
+  const playActionSound = (itemId) => {
+    const effects = getActionEffects(itemId);
     if (effects) {
       effects.sound();
       setSparkColor(effects.color);
