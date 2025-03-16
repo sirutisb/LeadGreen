@@ -346,7 +346,7 @@ const GardenShop = ({ isOpen, onClose, user, setUser, onPurchase }) => {
                     </div>
                     <div className="flex justify-between items-center mt-1">
                       <div className="flex items-center space-x-2">
-                        <span className="text-gray-700 font-bold">{item.price}</span>
+                        <span className="text-gray-700 font-bold">{item.price * (itemQuantities[item.id] || 1)}</span>
                         <img 
                           src={greencoinIcon} 
                           className="w-6 h-6 object-contain"
