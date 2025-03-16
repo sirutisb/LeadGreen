@@ -7,6 +7,7 @@ import ConfettiEffect from "./ConfettiEffect";
 import useGameData from "../../Hooks/useGameData";
 import usePlantEffects from "../../Hooks/usePlantEffects";
 import GardenShop from "./PopShop";
+import { performAction, fetchInventory } from "./gameService";
 // Use <PopShop /> for the popup and <PopShop.ShopButton /> for the button
 import DailyRewards from "./DailyRewards/DailyRewards";
 
@@ -14,28 +15,27 @@ const OverLeaf = () => {
   const [selectedIcon, setSelectedIcon] = useState(null);
   const [shopOpen, setShopOpen] = useState(false);
   const plantRef = useRef(null);
+  const [inventory, setInventory] = useState([]);
 
-  // 🔹 Inventory data stored in OverLeaf
-  const [inventory, setInventory] = useState([
-    { id: "soil", label: "Soil", tooltip: "Helps plant growth x3", amount: 5 },
-    { id: "water", label: "Water", tooltip: "Grow plant, increase size", amount: 3 },
-    { id: "glove", label: "Glove", tooltip: "Removes insects", amount: 2 },
-    { id: "soil", label: "Soil", tooltip: "Helps plant growth x3", amount: 5 },
-    { id: "water", label: "Water", tooltip: "Grow plant, increase size", amount: 3 },
-    { id: "glove", label: "Glove", tooltip: "Removes insects", amount: 2 },
-    { id: "soil", label: "Soil", tooltip: "Helps plant growth x3", amount: 5 },
-    { id: "water", label: "Water", tooltip: "Grow plant, increase size", amount: 3 },
-    { id: "glove", label: "Glove", tooltip: "Removes insects", amount: 2 },
-    { id: "soil", label: "Soil", tooltip: "Helps plant growth x3", amount: 5 },
-    { id: "water", label: "Water", tooltip: "Grow plant, increase size", amount: 3 },
-    { id: "glove", label: "Glove", tooltip: "Removes insects", amount: 2 },
-    { id: "soil", label: "Soil", tooltip: "Helps plant growth x3", amount: 5 },
-    { id: "water", label: "Water", tooltip: "Grow plant, increase size", amount: 3 },
-    { id: "glove", label: "Glove", tooltip: "Removes insects", amount: 2 },
-    { id: "soil", label: "Soil", tooltip: "Helps plant growth x3", amount: 5 },
-    { id: "water", label: "Water", tooltip: "Grow plant, increase size", amount: 3 },
-    { id: "glove", label: "Glove", tooltip: "Removes insects", amount: 2 },
-  ]);
+  // Fetch inventory data
+  const loadInventory = async () => {
+    try {
+      const data = await fetchInventory();
+      const formattedInventory = data.map(item => ({
+        id: item.item.id,
+        label: item.item.name,
+        amount: item.quantity,
+        image: item.item.image
+      }));
+      setInventory(formattedInventory);
+    } catch (error) {
+      console.error("Error fetching inventory:", error);
+    }
+  };
+
+  useEffect(() => {
+    loadInventory();
+  }, []);
 
   const {
     user,
@@ -43,7 +43,6 @@ const OverLeaf = () => {
     loading,
     currentInsect,
     fetchUserData,
-    executeAction,
     scale,
     prevLevel,
     initialLoad,
@@ -90,22 +89,62 @@ const OverLeaf = () => {
       return;
     }
 
-    const result = await executeAction(selectedIcon);
-    console.log(result);
-    
-    if (result.success) {
-      playActionSound(selectedIcon);
-
-      setInventory((prev) =>
-        prev
-          .map((i) => (i.id === selectedIcon ? { ...i, amount: i.amount - 1 } : i))
-          .filter((i) => i.amount > 0) // Remove item when amount reaches 0
+    try {
+      // Optimistically update the inventory
+      setInventory(prev =>
+        prev.map(i => i.id === selectedIcon 
+          ? { ...i, amount: i.amount - 1 }
+          : i
+        ).filter(i => i.amount > 0)
       );
 
-      if (item.amount - 1 <= 0) {
-        setSelectedIcon(null);
+      const result = await performAction(selectedIcon);
+      
+      if (result.success) {
+        playActionSound(selectedIcon);
+
+        // Update game state first to show animations
+        await fetchUserData();
+        
+        // Then verify inventory state
+        const serverInventory = await fetchInventory();
+        const serverItem = serverInventory.find(i => i.item.id === selectedIcon);
+        if (!serverItem || serverItem.quantity !== item.amount - 1) {
+          const formattedInventory = serverInventory.map(item => ({
+            id: item.item.id,
+            label: item.item.name,
+            amount: item.quantity,
+            image: item.item.image
+          }));
+          setInventory(formattedInventory);
+        }
+
+        if (item.amount - 1 <= 0) {
+          setSelectedIcon(null);
+        }
+      } else {
+        // If action failed, revert the optimistic update
+        const originalInventory = await fetchInventory();
+        const formattedInventory = originalInventory.map(item => ({
+          id: item.item.id,
+          label: item.item.name,
+          amount: item.quantity,
+          image: item.item.image
+        }));
+        setInventory(formattedInventory);
+        playErrorSound();
       }
-    } else {
+    } catch (error) {
+      console.error("Error using item:", error);
+      // On error, revert the optimistic update
+      const originalInventory = await fetchInventory();
+      const formattedInventory = originalInventory.map(item => ({
+        id: item.item.id,
+        label: item.item.name,
+        amount: item.quantity,
+        image: item.item.image
+      }));
+      setInventory(formattedInventory);
       playErrorSound();
     }
   };

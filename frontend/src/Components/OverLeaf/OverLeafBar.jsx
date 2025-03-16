@@ -188,9 +188,9 @@ const OverLeafBar = ({ setSelectedIcon, inventory, selectedIcon }) => {
                     }}
                   >
                     <motion.img
-                      src={`/assets/${item.id}.svg`}
+                      src={item.image || `/assets/items/${item.id}.svg`}
                       alt={item.label}
-                      className="w-12 h-12 aspect-square"
+                      className="w-12 h-12 aspect-square object-cover rounded-lg"
                       animate={{
                         scale: selectedIcon === item.id ? 1.2 : 1,
                         filter: selectedIcon === item.id
