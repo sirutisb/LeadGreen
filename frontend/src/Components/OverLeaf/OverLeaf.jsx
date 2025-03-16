@@ -69,10 +69,17 @@ const OverLeaf = () => {
     }
   }, [leveledUp, oldPlantName, showLevelUpEffects, setLeveledUp]);
 
+  // Track previous insect for comparison
+  const prevInsectRef = useRef(null);
+
   useEffect(() => {
     if (currentInsect && initialLoad === false) {
-      showInsectAlert(currentInsect.name);
+      // Only show alert if it's a new insect (different from previous)
+      if (!prevInsectRef.current || prevInsectRef.current.name !== currentInsect.name) {
+        showInsectAlert(currentInsect.name);
+      }
     }
+    prevInsectRef.current = currentInsect;
   }, [currentInsect, initialLoad, showInsectAlert]);
 
   const handleAction = async () => {
