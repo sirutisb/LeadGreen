@@ -265,9 +265,9 @@ const OverLeafBar = ({ setSelectedIcon, inventory, selectedIcon }) => {
                     transition={{ type: "spring", stiffness: 400, damping: 15 }}
                   >
                     <motion.img
-                      src={`/assets/${item.id}.svg`}
+                      src={item.image || `/assets/items/${item.id}.svg`}
                       alt={item.label}
-                      className="w-12 h-12 aspect-square"
+                      className="w-12 h-12 aspect-square object-cover rounded-lg"
                       animate={{
                         filter: selectedIcon === item.id
                           ? "drop-shadow(0px 0px 12px rgba(27, 102, 48, 0.7))"

@@ -328,30 +328,6 @@ class ItemViewSet(viewsets.ModelViewSet):
             "remaining_points": user_profile.points_balance
         }, status=status.HTTP_201_CREATED)
 
-class WaterTreeAction(APIView):
-    """Wrapper for water item usage to maintain frontend compatibility"""
-    permission_classes = [IsAuthenticated]
-    
-    def post(self, request, *args, **kwargs):
-        #Assuming water item has ID 1
-        return UseItemView().post(request, item_id=4)
-
-class SoilTreeAction(APIView):
-    """Wrapper for soil item usage to maintain frontend compatibility"""
-    permission_classes = [IsAuthenticated]
-    
-    def post(self, request, *args, **kwargs):
-        # Assuming soil item has ID 2
-        return UseItemView().post(request, item_id=5)
-
-class GloveTreeAction(APIView):
-    """Wrapper for glove item usage to maintain frontend compatibility"""
-    permission_classes = [IsAuthenticated]
-    
-    def post(self, request, *args, **kwargs):
-        # assuming glove item has ID 3
-        return UseItemView().post(request, item_id=6)
-
 class InventoryViewSet(viewsets.ReadOnlyModelViewSet):
     """
     viewSet for viewing user's inventory

@@ -55,14 +55,18 @@ export default function useGameData() {
 
   const handleInsect = (insectData) => {
     if (insectData) {
+      // Only update state if it's a new insect or we didn't have one before
       if (!currentInsect || currentInsect.name !== insectData.name) {
         setCurrentInsect({ name: insectData.name, image: insectData.image || "" });
         return true; // New insect detected
       }
-    } else {
+      return false; // Same insect, no update needed
+    } else if (currentInsect) {
+      // Only clear if we actually had an insect
       setCurrentInsect(null);
+      return true; // Insect was removed
     }
-    return false;
+    return false; // No change in insect state
   };
 
   const executeAction = async (action) => {

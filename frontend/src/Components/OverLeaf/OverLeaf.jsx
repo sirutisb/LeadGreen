@@ -7,6 +7,7 @@ import ConfettiEffect from "./ConfettiEffect";
 import useGameData from "../../Hooks/useGameData";
 import usePlantEffects from "../../Hooks/usePlantEffects";
 import GardenShop from "./PopShop";
+import { fetchInventory } from "./gameService";
 // Use <PopShop /> for the popup and <PopShop.ShopButton /> for the button
 import DailyRewards from "./DailyRewards/DailyRewards";
 
@@ -14,28 +15,27 @@ const OverLeaf = () => {
   const [selectedIcon, setSelectedIcon] = useState(null);
   const [shopOpen, setShopOpen] = useState(false);
   const plantRef = useRef(null);
+  const [inventory, setInventory] = useState([]);
 
-  // 🔹 Inventory data stored in OverLeaf
-  const [inventory, setInventory] = useState([
-    { id: "soil", label: "Soil", tooltip: "Helps plant growth x3", amount: 5 },
-    { id: "water", label: "Water", tooltip: "Grow plant, increase size", amount: 3 },
-    { id: "glove", label: "Glove", tooltip: "Removes insects", amount: 2 },
-    { id: "soil", label: "Soil", tooltip: "Helps plant growth x3", amount: 5 },
-    { id: "water", label: "Water", tooltip: "Grow plant, increase size", amount: 3 },
-    { id: "glove", label: "Glove", tooltip: "Removes insects", amount: 2 },
-    { id: "soil", label: "Soil", tooltip: "Helps plant growth x3", amount: 5 },
-    { id: "water", label: "Water", tooltip: "Grow plant, increase size", amount: 3 },
-    { id: "glove", label: "Glove", tooltip: "Removes insects", amount: 2 },
-    { id: "soil", label: "Soil", tooltip: "Helps plant growth x3", amount: 5 },
-    { id: "water", label: "Water", tooltip: "Grow plant, increase size", amount: 3 },
-    { id: "glove", label: "Glove", tooltip: "Removes insects", amount: 2 },
-    { id: "soil", label: "Soil", tooltip: "Helps plant growth x3", amount: 5 },
-    { id: "water", label: "Water", tooltip: "Grow plant, increase size", amount: 3 },
-    { id: "glove", label: "Glove", tooltip: "Removes insects", amount: 2 },
-    { id: "soil", label: "Soil", tooltip: "Helps plant growth x3", amount: 5 },
-    { id: "water", label: "Water", tooltip: "Grow plant, increase size", amount: 3 },
-    { id: "glove", label: "Glove", tooltip: "Removes insects", amount: 2 },
-  ]);
+  // Fetch inventory data
+  const loadInventory = async () => {
+    try {
+      const data = await fetchInventory();
+      const formattedInventory = data.map(item => ({
+        id: item.item.id,
+        label: item.item.name,
+        amount: item.quantity,
+        image: item.item.image
+      }));
+      setInventory(formattedInventory);
+    } catch (error) {
+      console.error("Error fetching inventory:", error);
+    }
+  };
+
+  useEffect(() => {
+    loadInventory();
+  }, []);
 
   const {
     user,
@@ -69,10 +69,17 @@ const OverLeaf = () => {
     }
   }, [leveledUp, oldPlantName, showLevelUpEffects, setLeveledUp]);
 
+  // Track previous insect for comparison
+  const prevInsectRef = useRef(null);
+
   useEffect(() => {
     if (currentInsect && initialLoad === false) {
-      showInsectAlert(currentInsect.name);
+      // Only show alert if it's a new insect (different from previous)
+      if (!prevInsectRef.current || prevInsectRef.current.name !== currentInsect.name) {
+        showInsectAlert(currentInsect.name);
+      }
     }
+    prevInsectRef.current = currentInsect;
   }, [currentInsect, initialLoad, showInsectAlert]);
 
   const handleAction = async () => {
@@ -90,22 +97,38 @@ const OverLeaf = () => {
       return;
     }
 
+    // Optimistically update the inventory
+    setInventory(prev =>
+      prev.map(i => i.id === selectedIcon 
+        ? { ...i, amount: i.amount - 1 }
+        : i
+      ).filter(i => i.amount > 0)
+    );
+
     const result = await executeAction(selectedIcon);
-    console.log(result);
     
     if (result.success) {
       playActionSound(selectedIcon);
 
-      setInventory((prev) =>
-        prev
-          .map((i) => (i.id === selectedIcon ? { ...i, amount: i.amount - 1 } : i))
-          .filter((i) => i.amount > 0) // Remove item when amount reaches 0
-      );
+      // Verify inventory state
+      const serverInventory = await fetchInventory();
+      const serverItem = serverInventory.find(i => i.item.id === selectedIcon);
+      if (!serverItem || serverItem.quantity !== item.amount - 1) {
+        const formattedInventory = serverInventory.map(item => ({
+          id: item.item.id,
+          label: item.item.name,
+          amount: item.quantity,
+          image: item.item.image
+        }));
+        setInventory(formattedInventory);
+      }
 
       if (item.amount - 1 <= 0) {
         setSelectedIcon(null);
       }
     } else {
+      // If action failed, revert the optimistic update
+      await loadInventory();
       playErrorSound();
     }
   };
@@ -142,6 +165,7 @@ const OverLeaf = () => {
           onClose={() => setShopOpen(false)} 
           user={user}
           setUser={setUser}
+          onPurchase={loadInventory}
         />
       </div>
     </div>

@@ -9,9 +9,18 @@ export const fetchGameData = async () => {
   }
 };
 
-export const performAction = async (action) => {
+export const fetchInventory = async () => {
+  try {
+    const response = await axiosInstance.get("/game/inventory/");
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const performAction = async (itemId) => {
     try {
-      const endpoint = `/game/tree/${action}/`;
+      const endpoint = `/game/use-item/${itemId}/`;
       const response = await axiosInstance.post(endpoint);
       return response.data;
     } catch (error) {
