@@ -158,6 +158,7 @@ const OverLeaf = () => {
           onClose={() => setShopOpen(false)} 
           user={user}
           setUser={setUser}
+          onPurchase={loadInventory}
         />
       </div>
     </div>
