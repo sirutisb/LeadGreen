@@ -7,6 +7,7 @@ const OverLeafBar = ({ setSelectedIcon, inventory, selectedIcon }) => {
   const [canScrollRight, setCanScrollRight] = useState(false);
   const [hoveredItem, setHoveredItem] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
+  
   const updateScrollState = () => {
     const container = scrollContainer.current;
     if (!container) return;
@@ -63,6 +64,30 @@ const OverLeafBar = ({ setSelectedIcon, inventory, selectedIcon }) => {
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
+
+  // Function to use item (placeholder for drag end)
+  const useItem = (item) => {
+    if (item.amount > 0) {
+      setSelectedIcon(item.id);
+    }
+  };
+
+  // Get image URL
+  const getItemImageUrl = (item) => {
+    // If the item has a full URL, use it
+    if (item.image && (item.image.startsWith('http://') || item.image.startsWith('https://'))) {
+      return item.image;
+    }
+    
+    // Otherwise, try to use the local asset
+    if (item.id) {
+      // First check if we have a local asset matching the ID
+      return `/assets/${item.id}.svg`;
+    }
+    
+    // Fallback to a generic icon if needed
+    return '/assets/item-default.svg';
+  };
 
   // Variants for animations
   const barVariants = {
@@ -202,7 +227,7 @@ const OverLeafBar = ({ setSelectedIcon, inventory, selectedIcon }) => {
           >
             {inventory.map((item) => (
               <motion.div
-                key={`${item.id}-${item.amount}`}
+                key={item.id}
                 className="relative flex flex-col items-center inventory-item"
                 variants={itemVariants}
                 style={{ 
@@ -265,7 +290,7 @@ const OverLeafBar = ({ setSelectedIcon, inventory, selectedIcon }) => {
                     transition={{ type: "spring", stiffness: 400, damping: 15 }}
                   >
                     <motion.img
-                      src={`/assets/${item.id}.svg`}
+                      src={item.image}
                       alt={item.label}
                       className="w-12 h-12 aspect-square"
                       animate={{

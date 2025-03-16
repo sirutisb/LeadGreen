@@ -1,4 +1,5 @@
 import React, { useRef, useEffect, useState } from "react";
+import axios from "axios";
 import OverLeafBar from "./OverLeafBar";
 import RouletteButton from "./RouletteButton";
 import PlantDisplay from "./PlantDisplay";
@@ -7,35 +8,15 @@ import ConfettiEffect from "./ConfettiEffect";
 import useGameData from "../../Hooks/useGameData";
 import usePlantEffects from "../../Hooks/usePlantEffects";
 import GardenShop from "./PopShop";
-// Use <PopShop /> for the popup and <PopShop.ShopButton /> for the button
 import DailyRewards from "./DailyRewards/DailyRewards";
+import axiosInstance from "../../Context/axiosInstance";
 
 const OverLeaf = () => {
   const [selectedIcon, setSelectedIcon] = useState(null);
   const [shopOpen, setShopOpen] = useState(false);
   const plantRef = useRef(null);
-
-  // 🔹 Inventory data stored in OverLeaf
-  const [inventory, setInventory] = useState([
-    { id: "soil", label: "Soil", tooltip: "Helps plant growth x3", amount: 5 },
-    { id: "water", label: "Water", tooltip: "Grow plant, increase size", amount: 3 },
-    { id: "glove", label: "Glove", tooltip: "Removes insects", amount: 2 },
-    { id: "soil", label: "Soil", tooltip: "Helps plant growth x3", amount: 5 },
-    { id: "water", label: "Water", tooltip: "Grow plant, increase size", amount: 3 },
-    { id: "glove", label: "Glove", tooltip: "Removes insects", amount: 2 },
-    { id: "soil", label: "Soil", tooltip: "Helps plant growth x3", amount: 5 },
-    { id: "water", label: "Water", tooltip: "Grow plant, increase size", amount: 3 },
-    { id: "glove", label: "Glove", tooltip: "Removes insects", amount: 2 },
-    { id: "soil", label: "Soil", tooltip: "Helps plant growth x3", amount: 5 },
-    { id: "water", label: "Water", tooltip: "Grow plant, increase size", amount: 3 },
-    { id: "glove", label: "Glove", tooltip: "Removes insects", amount: 2 },
-    { id: "soil", label: "Soil", tooltip: "Helps plant growth x3", amount: 5 },
-    { id: "water", label: "Water", tooltip: "Grow plant, increase size", amount: 3 },
-    { id: "glove", label: "Glove", tooltip: "Removes insects", amount: 2 },
-    { id: "soil", label: "Soil", tooltip: "Helps plant growth x3", amount: 5 },
-    { id: "water", label: "Water", tooltip: "Grow plant, increase size", amount: 3 },
-    { id: "glove", label: "Glove", tooltip: "Removes insects", amount: 2 },
-  ]);
+  const [inventory, setInventory] = useState([]);
+  const [inventoryLoading, setInventoryLoading] = useState(true);
 
   const {
     user,
@@ -43,7 +24,6 @@ const OverLeaf = () => {
     loading,
     currentInsect,
     fetchUserData,
-    executeAction,
     scale,
     prevLevel,
     initialLoad,
@@ -61,6 +41,51 @@ const OverLeaf = () => {
     showInsectAlert,
     playErrorSound,
   } = usePlantEffects(plantRef);
+
+  // Fetch inventory data from API
+  useEffect(() => {
+    const fetchInventory = async () => {
+      try {
+        setInventoryLoading(true);
+        const response = await axiosInstance.get('/game/inventory/');
+        // Map API response to the format expected by the OverLeafBar component
+        const formattedInventory = response.data.map(item => ({
+          id: item.item.id.toString(),
+          label: item.item.name,
+          tooltip: item.item.description,
+          amount: item.quantity,
+          image: item.item.image,
+          effects: item.item.effects,
+          itemType: item.item.item_type,
+          cooldown: item.item.cooldown_seconds
+        }));
+        
+        setInventory(formattedInventory);
+      } catch (error) {
+        console.error("Failed to fetch inventory:", error);
+      } finally {
+        setInventoryLoading(false);
+      }
+    };
+
+    fetchInventory();
+  }, []);
+
+  // Update inventory from response
+  const updateInventoryFromResponse = (inventoryData) => {
+    const formattedInventory = inventoryData.map(item => ({
+      id: item.item.id.toString(),
+      label: item.item.name,
+      tooltip: item.item.description,
+      amount: item.quantity,
+      image: item.item.image,
+      effects: item.item.effects,
+      itemType: item.item.item_type,
+      cooldown: item.item.cooldown_seconds
+    }));
+    
+    setInventory(formattedInventory);
+  };
 
   useEffect(() => {
     if (leveledUp && oldPlantName) {
@@ -90,27 +115,72 @@ const OverLeaf = () => {
       return;
     }
 
-    const result = await executeAction(selectedIcon);
-    console.log(result);
-    
-    if (result.success) {
-      playActionSound(selectedIcon);
+    try {
+      // Call the API to use the item
+      const response = await axiosInstance.post(`/game/use-item/${selectedIcon}/`);
+      const result = response.data;
+      
+      if (result.success) {
+        // Play the appropriate sound
+        playActionSound(item.id);
+        
+        // Update the inventory from the response
+        updateInventoryFromResponse(result.inventory);
+        // Update user data with the response
+        setUser(prevUser => ({
+          ...prevUser,
+          points: result.points_balance,
+          plant_name: result.tree.name,
+          plant_level: result.tree.level,
+          plant_growth: result.tree.growth,
+          plant_image: result.tree.image,
+          spins: result.spins
+        }));
+        console.log(user)
 
-      setInventory((prev) =>
-        prev
-          .map((i) => (i.id === selectedIcon ? { ...i, amount: i.amount - 1 } : i))
-          .filter((i) => i.amount > 0) // Remove item when amount reaches 0
-      );
+        // If the insect was removed or changed, update it
+        if (result.insect !== currentInsect) {
+          // If your useGameData hook has a setter for currentInsect, use it here
+          // setCurrentInsect(result.insect);
+          // Otherwise, you might need to fetch user data again
+          fetchUserData();
+        }
 
-      if (item.amount - 1 <= 0) {
-        setSelectedIcon(null);
+        // Check if this item is now depleted
+        const updatedQuantity = result.inventory.find(i => i.item.id.toString() === selectedIcon)?.quantity || 0;
+        if (updatedQuantity <= 0) {
+          setSelectedIcon(null);
+        }
+        
+        // Display any message from the backend
+        if (result.message) {
+          console.log(result.message);
+          // You could add a toast notification here
+        }
+      } else {
+        // If the action failed, play error sound
+        playErrorSound();
+        console.error("Action failed:", result.message);
       }
-    } else {
+    } catch (error) {
       playErrorSound();
+      console.error("Error using item:", error);
     }
   };
 
-  if (loading) return <div>Loading...</div>;
+  // Function to refresh inventory and user data
+  const refreshGameData = async () => {
+    try {
+      await fetchUserData();
+      const response = await axios.get('/api/game/inventory/');
+      
+      updateInventoryFromResponse(response.data);
+    } catch (error) {
+      console.error("Failed to refresh game data:", error);
+    }
+  };
+
+  if (loading || inventoryLoading) return <div>Loading...</div>;
 
   return (
     <div>
@@ -118,8 +188,8 @@ const OverLeaf = () => {
 
       <div className="flex flex-col items-center justify-center min-h-screen w-full px-4 sm:px-6 lg:px-8 relative">
         <OverLeafBar setSelectedIcon={setSelectedIcon} inventory={inventory} selectedIcon={selectedIcon} />
-        <RouletteButton user={user} setUser={setUser} />
-        <DailyRewards />
+        <RouletteButton user={user} setUser={setUser} onSpinComplete={refreshGameData} />
+        <DailyRewards onRewardClaimed={refreshGameData} />
         
         <PlantDisplay
           plantRef={plantRef}
@@ -142,6 +212,7 @@ const OverLeaf = () => {
           onClose={() => setShopOpen(false)} 
           user={user}
           setUser={setUser}
+          refreshGameData={refreshGameData}
         />
       </div>
     </div>
