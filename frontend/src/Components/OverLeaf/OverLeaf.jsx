@@ -7,7 +7,7 @@ import ConfettiEffect from "./ConfettiEffect";
 import useGameData from "../../Hooks/useGameData";
 import usePlantEffects from "../../Hooks/usePlantEffects";
 import GardenShop from "./PopShop";
-import { performAction, fetchInventory } from "./gameService";
+import { fetchInventory } from "./gameService";
 // Use <PopShop /> for the popup and <PopShop.ShopButton /> for the button
 import DailyRewards from "./DailyRewards/DailyRewards";
 
@@ -43,6 +43,7 @@ const OverLeaf = () => {
     loading,
     currentInsect,
     fetchUserData,
+    executeAction,
     scale,
     prevLevel,
     initialLoad,
@@ -89,62 +90,38 @@ const OverLeaf = () => {
       return;
     }
 
-    try {
-      // Optimistically update the inventory
-      setInventory(prev =>
-        prev.map(i => i.id === selectedIcon 
-          ? { ...i, amount: i.amount - 1 }
-          : i
-        ).filter(i => i.amount > 0)
-      );
+    // Optimistically update the inventory
+    setInventory(prev =>
+      prev.map(i => i.id === selectedIcon 
+        ? { ...i, amount: i.amount - 1 }
+        : i
+      ).filter(i => i.amount > 0)
+    );
 
-      const result = await performAction(selectedIcon);
-      
-      if (result.success) {
-        playActionSound(selectedIcon);
+    const result = await executeAction(selectedIcon);
+    
+    if (result.success) {
+      playActionSound(selectedIcon);
 
-        // Update game state first to show animations
-        await fetchUserData();
-        
-        // Then verify inventory state
-        const serverInventory = await fetchInventory();
-        const serverItem = serverInventory.find(i => i.item.id === selectedIcon);
-        if (!serverItem || serverItem.quantity !== item.amount - 1) {
-          const formattedInventory = serverInventory.map(item => ({
-            id: item.item.id,
-            label: item.item.name,
-            amount: item.quantity,
-            image: item.item.image
-          }));
-          setInventory(formattedInventory);
-        }
-
-        if (item.amount - 1 <= 0) {
-          setSelectedIcon(null);
-        }
-      } else {
-        // If action failed, revert the optimistic update
-        const originalInventory = await fetchInventory();
-        const formattedInventory = originalInventory.map(item => ({
+      // Verify inventory state
+      const serverInventory = await fetchInventory();
+      const serverItem = serverInventory.find(i => i.item.id === selectedIcon);
+      if (!serverItem || serverItem.quantity !== item.amount - 1) {
+        const formattedInventory = serverInventory.map(item => ({
           id: item.item.id,
           label: item.item.name,
           amount: item.quantity,
           image: item.item.image
         }));
         setInventory(formattedInventory);
-        playErrorSound();
       }
-    } catch (error) {
-      console.error("Error using item:", error);
-      // On error, revert the optimistic update
-      const originalInventory = await fetchInventory();
-      const formattedInventory = originalInventory.map(item => ({
-        id: item.item.id,
-        label: item.item.name,
-        amount: item.quantity,
-        image: item.item.image
-      }));
-      setInventory(formattedInventory);
+
+      if (item.amount - 1 <= 0) {
+        setSelectedIcon(null);
+      }
+    } else {
+      // If action failed, revert the optimistic update
+      await loadInventory();
       playErrorSound();
     }
   };
