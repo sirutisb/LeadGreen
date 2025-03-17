@@ -41,11 +41,12 @@ class UserProfileView(APIView):
         try:    
             user = UserProfile.objects.get(id=pk)
             return Response({
-                'user': UserPageSerializer(user).data,
+                'user': UserPageSerializer(user, context={'request': request}).data,
                 'tree': PlantProgressSerializer(user.game_profile).data,
                 'posts': PostSerializer(
                     user.post_set.order_by('-created_at'),
-                    many=True
+                    many=True,
+                    context={'request': request}
                 ).data,
                 'rank': user.game_profile.get_rank()
             })
