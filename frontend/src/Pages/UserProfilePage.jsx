@@ -463,9 +463,13 @@ export default function UserProfile() {
                 <p className="text-gray-600">You're in the top 5% of eco-warriors!</p>
               </div>
               <div className="mt-4">
-                <button className="w-full py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
+                <Link 
+                className ="w-full py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                to = {'/leaderboards/'}
+
+                >
                   View Leaderboard
-                </button>
+                </Link>
               </div>
             </motion.div>
           </div>
