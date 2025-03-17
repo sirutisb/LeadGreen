@@ -8,7 +8,7 @@ def create_initial_items(apps, schema_editor):
 
     # Create effects
     water_effect = ItemEffect.objects.create(
-        name="Water Growth",
+        name="Water",
         effect_type='GROW',
         parameters={'growth_amount': 0.1}
     )

@@ -10,18 +10,26 @@ const Post = ({ post }) => {
   const [likesCount, setLikesCount] = useState(post.likes_count);
 
   const handleLike = async () => {
+    const newIsLiked = !isLiked;
+    const newLikesCount = newIsLiked ? likesCount + 1 : likesCount - 1;
+    
     try {
+      // Optimistically update UI
+      setIsLiked(newIsLiked);
+      setLikesCount(newLikesCount);
+      
       const response = await axiosInstance({
-        method: isLiked ? 'delete' : 'post',
+        method: newIsLiked ? 'post' : 'delete',
         url: `/posts/${post.id}/like/`
       });
       
       if (response.status === 200) {
-        setIsLiked(!isLiked);
-        setLikesCount(isLiked ? likesCount - 1 : likesCount + 1);
-        toastSuccess(isLiked ? "Post unliked!" : "Post liked!");
+        toastSuccess(newIsLiked ? "Post liked!" : "Post unliked!");
       }
     } catch (error) {
+      // Revert UI changes if request fails
+      setIsLiked(!newIsLiked);
+      setLikesCount(likesCount);
       toastError("Error toggling like!");
       console.error("Error:", error);
     }

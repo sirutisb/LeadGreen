@@ -17,8 +17,8 @@ class list_pointsBalance(generics.ListAPIView):
     pagination_class = StandardResultsSetPagination
 
     def get_queryset(self):
-        # get all  GameProfile objects ordered by points balance in descending order
-        queryset = GameProfile.objects.all().order_by('-points_balance')
+        # get all GameProfile objects ordered by points balance in descending order, excluding staff users
+        queryset = GameProfile.objects.filter(user__is_staff=False).order_by('-points_balance')
         return queryset
 
     def list(self, request, *args, **kwargs):
@@ -44,8 +44,8 @@ class list_lifetimePoints(generics.ListAPIView):
     pagination_class = StandardResultsSetPagination
 
     def get_queryset(self):
-        # Get all GameProfile objects ordered by lifetime points in descending order
-        queryset = GameProfile.objects.all().order_by('-lifetime_points')
+        # Get all GameProfile objects ordered by lifetime points in descending order, excluding staff users
+        queryset = GameProfile.objects.filter(user__is_staff=False).order_by('-lifetime_points')
         return queryset
     
     def list(self, request, *args, **kwargs):
@@ -70,8 +70,8 @@ class list_treeLevel(generics.ListAPIView):
     pagination_class = StandardResultsSetPagination
 
     def get_queryset(self):
-        # Get all GameProfile objects ordered by tree level in descending order
-        queryset = GameProfile.objects.all().order_by('-tree_level')
+        # Get all GameProfile objects ordered by tree level in descending order, excluding staff users
+        queryset = GameProfile.objects.filter(user__is_staff=False).order_by('-tree_level')
         return queryset
     
     def list(self, request, *args, **kwargs):
