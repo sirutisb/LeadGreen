@@ -9,6 +9,7 @@ import Page from "./Page"
 import AuthContext from "../Context/AuthContext"
 import userService from "../Hooks/userService"
 import { useParams } from "react-router-dom"
+import { Link } from "react-router-dom"
 
 export default function UserProfile() {
   const { user, logoutUser } = useContext(AuthContext)
@@ -190,12 +191,12 @@ export default function UserProfile() {
               <div className="h-24 w-24 md:h-32 md:w-32 rounded-full border-4 border-white bg-green-100 flex items-center justify-center overflow-hidden">
                 {profileData.user.profile_picture ? (
                   <img
-                  src={profileData.user.profile_picture || "/placeholder.svg"}
-                  alt={`${profileData.user.username}'s profile`}
-                  className="h-full w-full object-cover"
-                />
+                    src={profileData.user.profile_picture}
+                    alt={`${profileData.user.username}'s profile`}
+                    className="h-full w-full object-cover"
+                  />
                 ) : (
-                <User className="h-16 w-16 md:h-20 md:w-20 text-green-600" />
+                  <User className="h-16 w-16 md:h-20 md:w-20 text-green-600" />
                 )}
               </div>
               {isOwnProfile && (
@@ -460,14 +461,20 @@ export default function UserProfile() {
                 <div className="inline-flex items-center justify-center h-24 w-24 rounded-full bg-green-100 mb-4">
                   <span className="text-3xl font-bold text-green-700">#{userData.rank}</span>
                 </div>
-                <p className="text-gray-600">You're in the top 5% of eco-warriors!</p>
+                <p className="text-gray-600 mt-4">
+                  {userData.rank <= 10 
+                    ? "You're in the top 10 eco-warriors! 🌟" 
+                    : userData.rank <= 50 
+                    ? "You're in the top 50 eco-warriors! 🌱" 
+                    : "Keep growing to climb the ranks! 🌿"}
+                </p>
               </div>
               <div className="mt-4">
                 <Link 
-                className ="w-full py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-                to = {'/leaderboards/'}
-
+                  className="w-full py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center gap-2"
+                  to="/leaderboard"
                 >
+                  <TrendingUp className="h-4 w-4" />
                   View Leaderboard
                 </Link>
               </div>

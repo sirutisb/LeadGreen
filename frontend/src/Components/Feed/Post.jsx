@@ -75,14 +75,24 @@ const Post = ({ post }) => {
 
 
       <Box display="flex" alignItems="center" mb={2}>
-        <Avatar
-          src={post.user.profile_picture} // Uses profile picture if available
-          sx={{
-            width: 40,
-            height: 40,
-            bgcolor: "#1B6630",
-          }}
-        />
+        <Link 
+          to={`/profile/${post.user.id}`}
+          style={{ textDecoration: 'none' }}
+        >
+          <Avatar
+            src={post.user.profile_picture}
+            sx={{
+              width: 40,
+              height: 40,
+              bgcolor: "#1B6630",
+              cursor: 'pointer',
+              transition: 'transform 0.2s',
+              '&:hover': {
+                transform: 'scale(1.1)'
+              }
+            }}
+          />
+        </Link>
         <Link 
           to={`/profile/${post.user.id}`}
           style={{ textDecoration: 'none' }}

@@ -6,6 +6,7 @@ import "../Components/LeaderboardPage.css";
 import NavBar from "../Components/NavBar/NavBar.jsx";
 import Footer from "../Components/Footer.jsx";
 import TopContributorsPodium from "../Components/TopContributorsPodium";
+import { Link } from "react-router-dom";
 
 const API_BASE_URL = import.meta.env.VITE_BACKEND + "/api/leaderboard";
 
@@ -128,9 +129,12 @@ const LeaderboardPage = () => {
 
             {/* Username with subtle glow for top 3 */}
             <div>
-              <span className={`font-semibold text-gray-800 ${isTopThree ? "glow-text-green" : ""}`}>
+              <Link 
+                to={`/profile/${user.user.id}`}
+                className={`font-semibold text-gray-800 hover:text-green-600 ${isTopThree ? "glow-text-green" : ""}`}
+              >
                 {user.user.username}
-              </span>
+              </Link>
               <div className="text-xs text-gray-500 flex items-center">
                 <Leaf className="w-3 h-3 text-green-500 mr-1" />
                 Level {user.tree_level} Tree
@@ -216,8 +220,13 @@ const LeaderboardPage = () => {
             <span>#{indexOfFirstEntry + index + 1}</span>
           )}
         </div>
-        <div className={`col-span-4 font-semibold text-black text-center ${isTopThree ? "glow-text-green" : ""}`}>
-          {user.user.username}
+        <div className="col-span-4 font-semibold text-black text-center">
+          <Link 
+            to={`/profile/${user.user.id}`}
+            className={`hover:text-green-600 ${isTopThree ? "glow-text-green" : ""}`}
+          >
+            {user.user.username}
+          </Link>
         </div>
         <div className="col-span-2 text-center font-bold text-green-600">{user.points_balance}</div>
         <div className="col-span-1 text-center">
