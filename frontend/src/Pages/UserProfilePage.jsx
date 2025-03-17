@@ -310,7 +310,7 @@ export default function UserProfile() {
                   <div className="text-center mb-8">
                     <h2 className="text-xl font-serif font-bold mb-2">My Virtual Tree</h2>
                     <p className="text-gray-600">
-                      Meet {userData.treeName}, your level {profileData.tree_level} tree!
+                      Meet {userData.treeName}, your level {userData.treeLevel} tree!
                     </p>
                   </div>
 
@@ -320,7 +320,7 @@ export default function UserProfile() {
                         <TreePine className="h-32 w-32 text-green-600" />
                       </div>
                       <div className="absolute -top-2 -right-2 bg-green-600 text-white h-10 w-10 rounded-full flex items-center justify-center font-bold">
-                        Lv.{profileData.tree.tree_level}
+                        Lv.{userData.treeLevel}
                       </div>
                     </div>
                   </div>
@@ -331,13 +331,13 @@ export default function UserProfile() {
                       <div
                         className="bg-green-600 h-4 rounded-full"
                         style={{
-                          width: `${(profileData.tree.progress_to_next_level / profileData.tree.points_needed_for_next_level) * 100}%`,
+                          width: `${(userData.treeGrowth) * 100}%`,
                         }}
                       ></div>
                     </div>
                     <div className="flex justify-between mt-2 text-sm text-gray-600">
-                      <span>Current: {profileData.tree.progress_to_next_level} pts</span>
-                      <span>Next Level: {profileData.tree.points_needed_for_next_level} pts</span>
+                      <span>Current: {(userData.treeGrowth) * 100} pts</span>
+                      <span>Next Level: {100 -((userData.treeGrowth) * 100)} pts</span>
                     </div>
                   </div>
 
@@ -347,15 +347,15 @@ export default function UserProfile() {
                       <ul className="space-y-2 text-gray-700">
                         <li className="flex items-center gap-2">
                           <Leaf className="h-4 w-4 text-green-600" />
-                          Absorbs CO₂: {profileData.tree.tree_level * 5}kg per year
+                          Absorbs CO₂: {userData.treeLevel * 5}kg per year
                         </li>
                         <li className="flex items-center gap-2">
                           <Leaf className="h-4 w-4 text-green-600" />
-                          Produces oxygen for {profileData.tree.tree_level} people
+                          Produces oxygen for {userData.treeLevel} people
                         </li>
                         <li className="flex items-center gap-2">
                           <Leaf className="h-4 w-4 text-green-600" />
-                          Habitat for {profileData.tree.tree_level * 2} virtual wildlife species
+                          Habitat for {userData.treeLevel * 2} virtual wildlife species
                         </li>
                       </ul>
                     </div>
@@ -365,11 +365,11 @@ export default function UserProfile() {
                       <ul className="space-y-2 text-gray-700">
                         <li className="flex items-center gap-2">
                           <Award className="h-4 w-4 text-green-600" />
-                          Level {profileData.tree.tree_level + 1}: New tree appearance
+                          Level {userData.treeLevel + 1}: New tree appearance
                         </li>
                         <li className="flex items-center gap-2">
                           <Award className="h-4 w-4 text-green-600" />
-                          Level {profileData.tree.tree_level + 3}: Unlock garden background
+                          Level {userData.treeLevel + 3}: Unlock garden background
                         </li>
                         <li className="flex items-center gap-2">
                           <Award className="h-4 w-4 text-green-600" />
