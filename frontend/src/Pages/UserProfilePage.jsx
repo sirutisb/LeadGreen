@@ -133,8 +133,9 @@ export default function UserProfile() {
     location: "San Francisco, CA", 
     points: profileData.user.points_balance,
     rank: profileData.rank,
-    treeLevel: profileData.user.tree_level || 1, 
-    treeName: "Oakley", 
+    treeLevel: profileData.tree.level || -1, 
+    treeName: profileData.tree.name,
+    treeGrowth: profileData.tree.growth, 
     badges: [
       { name: "Early Adopter", icon: <Award className="h-6 w-6" /> },
       { name: "Tree Hugger", icon: <TreePine className="h-6 w-6" /> },
@@ -389,7 +390,7 @@ export default function UserProfile() {
               transition={{ duration: 0.5 }}
               className="bg-white rounded-lg shadow-md p-6"
             >
-              <h2 className="text-xl font-serif font-bold mb-6">Post History</h2>
+              <h2 className="text-xl font-serif font-bold mb-6 text-black">Post History</h2>
 
               {userPosts.length > 0 ? (
                 <div className="space-y-6">
@@ -404,7 +405,7 @@ export default function UserProfile() {
                       <div className="flex-1">
                         <div className="flex justify-between items-start">
                           <div>
-                            <p className="font-medium">{post.caption}</p>
+                            <p className="font-medium text-black">{post.caption}</p>
                             <p className="text-sm text-gray-500 mt-1">
                               {new Date(post.created_at).toLocaleDateString()}
                             </p>
