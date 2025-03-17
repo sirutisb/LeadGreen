@@ -4,6 +4,7 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import axiosInstance from "../../Context/axiosInstance";
 import { toastError, toastSuccess } from "../utils/toastCustom";
+import { Link } from "react-router-dom";
 
 const Post = ({ post }) => {
   const [isLiked, setIsLiked] = useState(post.liked_by_user);
@@ -82,12 +83,25 @@ const Post = ({ post }) => {
             bgcolor: "#1B6630",
           }}
         />
-        <Typography
-          variant="h6"
-          sx={{ ml: 2, color: "#1B6630", fontWeight: "bold" }}
+        <Link 
+          to={`/profile/${post.user.id}`}
+          style={{ textDecoration: 'none' }}
         >
-          {post.user.username}
-        </Typography>
+          <Typography
+            variant="h6"
+            sx={{ 
+              ml: 2, 
+              color: "#1B6630", 
+              fontWeight: "bold",
+              '&:hover': {
+                color: '#145022',
+                textDecoration: 'underline'
+              }
+            }}
+          >
+            {post.user.username}
+          </Typography>
+        </Link>
       </Box>
 
             <Typography
