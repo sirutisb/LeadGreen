@@ -28,15 +28,14 @@ export default function UserProfile() {
   useEffect(() => {
     const fetchProfileData = async () => {
       if (!profileId) return
-
-      try{
-        const data = await userService.getUserProfile(profileId)
-        setProfileData(data)
-        setError(null)
-      } catch(err){
-        console.error("Failed to fetch profile data: ", err)
-        setError("Failed to load profile!")
-      }
+        try{
+          const data = await userService.getUserProfile(profileId)
+          setProfileData(data)
+          setError(null)
+        } catch(err){
+          console.error("Failed to fetch profile data: ", err)
+          setError("Failed to load profile!")
+        }
     }
 
     fetchProfileData()
@@ -45,14 +44,13 @@ export default function UserProfile() {
   useEffect(() => {
     const fetchUserPosts = async () => {
       if (!profileId) return
-
-      try {
-        const data = await userService.getUserPosts(profileId, 1)
-        setUserPosts(data.results)
-        setHasMorePosts(!!data.next)
-      } catch (err) {
-        console.error("Failed to fetch user posts:", err)
-      }
+        try {
+          const data = await userService.getUserPosts(profileId, 1)
+          setUserPosts(data.results)
+          setHasMorePosts(!!data.next)
+        } catch (err) {
+          console.error("Failed to fetch user posts:", err)
+        }
     }
 
     fetchUserPosts()
@@ -128,32 +126,30 @@ export default function UserProfile() {
   }
 
 
-  // Mock data - replace with actual data from your backend
   const userData = {
-    name: user?.username || "Jane Green",
-    joinDate: "March 2023",
-    bio: "Environmental enthusiast and sustainability advocate. Working towards a greener future one action at a time.",
-    location: "San Francisco, CA",
-    points: 1250,
-    rank: 15,
-    treeLevel: 4,
-    treeName: "Oakley",
+    name: profileData.user.username,
+    joinDate: "Member since 2023", 
+    bio: "Environmental enthusiast and sustainability advocate.", 
+    location: "San Francisco, CA", 
+    points: profileData.user.points_balance,
+    rank: profileData.rank,
+    treeLevel: profileData.user.tree_level || 1, 
+    treeName: "Oakley", 
     badges: [
       { name: "Early Adopter", icon: <Award className="h-6 w-6" /> },
       { name: "Tree Hugger", icon: <TreePine className="h-6 w-6" /> },
       { name: "Eco Warrior", icon: <Leaf className="h-6 w-6" /> },
     ],
     stats: [
-      { label: "Actions", value: 47 },
-      { label: "Points", value: 1250 },
-      { label: "CO₂ Saved", value: "125kg" },
+      { label: "Post", value: profileData.posts.length },
+      { label: "Points", value: profileData.user.points_balance },
+      { label: "CO₂ Saved", value: `${Math.floor(profileData.user.points_balance / 10)}kg` }, // Example calculation
     ],
-    recentActivity: [
-      { action: "Recycled paper waste", date: "2 days ago", points: 15 },
-      { action: "Used public transport", date: "3 days ago", points: 20 },
-      { action: "Planted a tree", date: "1 week ago", points: 100 },
-      { action: "Reduced water usage", date: "2 weeks ago", points: 25 },
-    ],
+    recentActivity: profileData.posts.slice(0, 4).map((post) => ({
+      action: post.caption,
+      date: new Date(post.created_at).toLocaleDateString(),
+      points: post.points_received,
+    })),
   }
 
   return (
@@ -222,7 +218,7 @@ export default function UserProfile() {
             <div className="flex-1">
               <div className="flex flex-col md:flex-row md:items-center justify-between">
                 <div>
-                  <h1 className="text-2xl md:text-3xl font-serif font-bold">{userData.name}</h1>
+                  <h1 className="text-2xl md:text-3xl font-serif font-bold text-black">{userData.name}</h1>
                   <p className="text-gray-500 flex items-center gap-1 mt-1">
                     <Calendar className="h-4 w-4" /> Joined {userData.joinDate}
                   </p>
@@ -277,6 +273,7 @@ export default function UserProfile() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Left Column */}
           <div className="md:col-span-2">
+            {activeTab === "overview" && (
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}>
                 {/* Stats Cards */}
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
@@ -301,147 +298,149 @@ export default function UserProfile() {
                     </p>
                   </div>
                 </div>
-              </motion.div>
-              
-              {/* Post Tab */}
-              {activeTab === "post" && (
+
+              {/* Tree */}
               <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.5 }}
-                className="bg-white rounded-lg shadow-md p-6"
-              >
-                <h2 className="text-xl font-serif font-bold mb-6">Post History</h2>
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.5 }}
+                  className="bg-white rounded-lg shadow-md p-6 mt-8"
+                >
+                  <div className="text-center mb-8">
+                    <h2 className="text-xl font-serif font-bold mb-2">My Virtual Tree</h2>
+                    <p className="text-gray-600">
+                      Meet {userData.treeName}, your level {profileData.tree_level} tree!
+                    </p>
+                  </div>
 
-                {userPosts.length > 0 ? (
-                  <div className="space-y-6">
-                    {userPosts.map((post, index) => (
-                      <div
-                        key={post.id || index}
-                        className="flex gap-4 border-b border-gray-100 pb-6 last:border-0 last:pb-0"
-                      >
-                        <div className="bg-green-100 h-10 w-10 rounded-full flex items-center justify-center flex-shrink-0">
-                          <Leaf className="h-5 w-5 text-green-600" />
-                        </div>
-                        <div className="flex-1">
-                          <div className="flex justify-between items-start">
-                            <div>
-                              <p className="font-medium">{post.caption}</p>
-                              <p className="text-sm text-gray-500 mt-1">
-                                {new Date(post.created_at).toLocaleDateString()}
-                              </p>
-                            </div>
-                            <div className="bg-green-50 px-2 py-1 rounded-full text-sm font-medium text-green-700">
-                              +{post.points_received} pts
-                            </div>
-                          </div>
-                          <div className="mt-2 flex items-center gap-2">
-                            <button className="text-sm text-gray-500 hover:text-gray-700">Like</button>
-                            <span className="text-gray-300">•</span>
-                            <button className="text-sm text-gray-500 hover:text-gray-700">Comment</button>
-                            <span className="text-gray-300">•</span>
-                            <button className="text-sm text-gray-500 hover:text-gray-700">Share</button>
-                          </div>
-                        </div>
+                  <div className="flex justify-center mb-8">
+                    <div className="relative">
+                      <div className="h-64 w-64 bg-green-50 rounded-full flex items-center justify-center">
+                        <TreePine className="h-32 w-32 text-green-600" />
                       </div>
-                    ))}
+                      <div className="absolute -top-2 -right-2 bg-green-600 text-white h-10 w-10 rounded-full flex items-center justify-center font-bold">
+                        Lv.{profileData.tree.tree_level}
+                      </div>
+                    </div>
                   </div>
-                ) : (
-                  <p className="text-gray-500 text-center py-4">No post found.</p>
-                )}
 
-                {hasMorePosts && (
-                  <div className="mt-6 text-center">
-                    <button
-                      onClick={loadMorePosts}
-                      disabled={loadingMorePosts}
-                      className="px-4 py-2 bg-green-50 text-green-700 rounded-lg hover:bg-green-100 transition-colors"
-                    >
-                      {loadingMorePosts ? "Loading..." : "Load More"}
-                    </button>
+                  <div className="mb-8">
+                    <h3 className="font-medium text-gray-700 mb-2">Growth Progress</h3>
+                    <div className="w-full bg-gray-200 rounded-full h-4">
+                      <div
+                        className="bg-green-600 h-4 rounded-full"
+                        style={{
+                          width: `${(profileData.tree.progress_to_next_level / profileData.tree.points_needed_for_next_level) * 100}%`,
+                        }}
+                      ></div>
+                    </div>
+                    <div className="flex justify-between mt-2 text-sm text-gray-600">
+                      <span>Current: {profileData.tree.progress_to_next_level} pts</span>
+                      <span>Next Level: {profileData.tree.points_needed_for_next_level} pts</span>
+                    </div>
                   </div>
-                )}
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="bg-green-50 rounded-lg p-4">
+                      <h3 className="font-medium text-green-800 mb-2">Tree Benefits</h3>
+                      <ul className="space-y-2 text-gray-700">
+                        <li className="flex items-center gap-2">
+                          <Leaf className="h-4 w-4 text-green-600" />
+                          Absorbs CO₂: {profileData.tree.tree_level * 5}kg per year
+                        </li>
+                        <li className="flex items-center gap-2">
+                          <Leaf className="h-4 w-4 text-green-600" />
+                          Produces oxygen for {profileData.tree.tree_level} people
+                        </li>
+                        <li className="flex items-center gap-2">
+                          <Leaf className="h-4 w-4 text-green-600" />
+                          Habitat for {profileData.tree.tree_level * 2} virtual wildlife species
+                        </li>
+                      </ul>
+                    </div>
+
+                    <div className="bg-green-50 rounded-lg p-4">
+                      <h3 className="font-medium text-green-800 mb-2">Upcoming Rewards</h3>
+                      <ul className="space-y-2 text-gray-700">
+                        <li className="flex items-center gap-2">
+                          <Award className="h-4 w-4 text-green-600" />
+                          Level {profileData.tree.tree_level + 1}: New tree appearance
+                        </li>
+                        <li className="flex items-center gap-2">
+                          <Award className="h-4 w-4 text-green-600" />
+                          Level {profileData.tree.tree_level + 3}: Unlock garden background
+                        </li>
+                        <li className="flex items-center gap-2">
+                          <Award className="h-4 w-4 text-green-600" />
+                          Level 10: Special "Forest Guardian" badge
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </motion.div>
               </motion.div>
             )}
 
+            {/* Post Tab */}
+            {activeTab === "post" && (
             <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.5 }}
-                className="bg-white rounded-lg shadow-md p-6"
-              >
-                <div className="text-center mb-8">
-                  <h2 className="text-xl font-serif font-bold mb-2">My Virtual Tree</h2>
-                  <p className="text-gray-600">
-                    Meet {userData.treeName}, your level {profileData.tree.tree_level} tree!
-                  </p>
-                </div>
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5 }}
+              className="bg-white rounded-lg shadow-md p-6"
+            >
+              <h2 className="text-xl font-serif font-bold mb-6">Post History</h2>
 
-                <div className="flex justify-center mb-8">
-                  <div className="relative">
-                    <div className="h-64 w-64 bg-green-50 rounded-full flex items-center justify-center">
-                      <TreePine className="h-32 w-32 text-green-600" />
-                    </div>
-                    <div className="absolute -top-2 -right-2 bg-green-600 text-white h-10 w-10 rounded-full flex items-center justify-center font-bold">
-                      Lv.{profileData.tree.tree_level}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="mb-8">
-                  <h3 className="font-medium text-gray-700 mb-2">Growth Progress</h3>
-                  <div className="w-full bg-gray-200 rounded-full h-4">
+              {userPosts.length > 0 ? (
+                <div className="space-y-6">
+                  {userPosts.map((post, index) => (
                     <div
-                      className="bg-green-600 h-4 rounded-full"
-                      style={{
-                        width: `${(profileData.tree.progress_to_next_level / profileData.tree.points_needed_for_next_level) * 100}%`,
-                      }}
-                    ></div>
-                  </div>
-                  <div className="flex justify-between mt-2 text-sm text-gray-600">
-                    <span>Current: {profileData.tree.progress_to_next_level} pts</span>
-                    <span>Next Level: {profileData.tree.points_needed_for_next_level} pts</span>
-                  </div>
+                      key={post.id || index}
+                      className="flex gap-4 border-b border-gray-100 pb-6 last:border-0 last:pb-0"
+                    >
+                      <div className="bg-green-100 h-10 w-10 rounded-full flex items-center justify-center flex-shrink-0">
+                        <Leaf className="h-5 w-5 text-green-600" />
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <p className="font-medium">{post.caption}</p>
+                            <p className="text-sm text-gray-500 mt-1">
+                              {new Date(post.created_at).toLocaleDateString()}
+                            </p>
+                          </div>
+                          <div className="bg-green-50 px-2 py-1 rounded-full text-sm font-medium text-green-700">
+                            +{post.points_received} pts
+                          </div>
+                        </div>
+                        <div className="mt-2 flex items-center gap-2">
+                          <button className="text-sm text-gray-500 hover:text-gray-700">Like</button>
+                          <span className="text-gray-300">•</span>
+                          <button className="text-sm text-gray-500 hover:text-gray-700">Comment</button>
+                          <span className="text-gray-300">•</span>
+                          <button className="text-sm text-gray-500 hover:text-gray-700">Share</button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
+              ) : (
+                <p className="text-gray-500 text-center py-4">No post found.</p>
+              )}
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="bg-green-50 rounded-lg p-4">
-                    <h3 className="font-medium text-green-800 mb-2">Tree Benefits</h3>
-                    <ul className="space-y-2 text-gray-700">
-                      <li className="flex items-center gap-2">
-                        <Leaf className="h-4 w-4 text-green-600" />
-                        Absorbs CO₂: {profileData.tree.tree_level * 5}kg per year
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <Leaf className="h-4 w-4 text-green-600" />
-                        Produces oxygen for {profileData.tree.tree_level} people
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <Leaf className="h-4 w-4 text-green-600" />
-                        Habitat for {profileData.tree.tree_level * 2} virtual wildlife species
-                      </li>
-                    </ul>
-                  </div>
-
-                  <div className="bg-green-50 rounded-lg p-4">
-                    <h3 className="font-medium text-green-800 mb-2">Upcoming Rewards</h3>
-                    <ul className="space-y-2 text-gray-700">
-                      <li className="flex items-center gap-2">
-                        <Award className="h-4 w-4 text-green-600" />
-                        Level {profileData.tree.tree_level + 1}: New tree appearance
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <Award className="h-4 w-4 text-green-600" />
-                        Level {profileData.tree.tree_level + 3}: Unlock garden background
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <Award className="h-4 w-4 text-green-600" />
-                        Level 10: Special "Forest Guardian" badge
-                      </li>
-                    </ul>
-                  </div>
+              {hasMorePosts && (
+                <div className="mt-6 text-center">
+                  <button
+                    onClick={loadMorePosts}
+                    disabled={loadingMorePosts}
+                    className="px-4 py-2 bg-green-50 text-green-700 rounded-lg hover:bg-green-100 transition-colors"
+                  >
+                    {loadingMorePosts ? "Loading..." : "Load More"}
+                  </button>
                 </div>
-              </motion.div>
+              )}
+            </motion.div>
+            )}
           </div>
 
           {/* Right Column */}
