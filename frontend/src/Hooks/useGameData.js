@@ -24,6 +24,7 @@ export default function useGameData() {
         plant_image: data.tree.image,
         spins: data.spins,
         insect: data.insect || null,
+        plant_growth: data.tree.growth 
       };
       
       // Store previous level info before updating
