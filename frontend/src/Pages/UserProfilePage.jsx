@@ -336,8 +336,8 @@ export default function UserProfile() {
                       ></div>
                     </div>
                     <div className="flex justify-between mt-2 text-sm text-gray-600">
-                      <span>Current: {(userData.treeGrowth) * 100} pts</span>
-                      <span>Next Level: {100 -((userData.treeGrowth) * 100)} pts</span>
+                      <span>Current: {Math.round((userData.treeGrowth) * 100)} pts</span>
+                      <span>Next Level: {Math.round(100 -((userData.treeGrowth) * 100))} pts</span>
                     </div>
                   </div>
 
