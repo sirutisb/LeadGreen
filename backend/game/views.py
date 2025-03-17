@@ -302,15 +302,8 @@ class ItemViewSet(viewsets.ModelViewSet):
         user_profile.points_balance -= total_price
         user_profile.save()
 
-        # update / create inventory
-        inventory, created = Inventory.objects.get_or_create(
-            user=request.user,
-            item=item,
-            defaults={'quantity': quantity}
-        )
-        if not created:
-            inventory.quantity += quantity
-            inventory.save()
+        # Add items to inventory using the new method
+        inventory = user_profile.add_to_inventory(item, quantity)
 
         # record transaction
         transaction = Transaction.objects.create(

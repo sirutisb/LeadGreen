@@ -189,6 +189,30 @@ class GameProfile(models.Model):
             lifetime_points__gt=self.lifetime_points
         ).count() + 1
 
+    def add_to_inventory(self, item, amount=1):
+        """
+        Add specified amount of items to user's inventory
+        
+        Args:
+            item (Item): The item to add to inventory
+            amount (int): Amount of items to add, defaults to 1
+            
+        Returns:
+            Inventory: The updated or created inventory entry
+        """
+        try:
+            inventory_item = Inventory.objects.get(user=self.user, item=item)
+            inventory_item.quantity += amount
+            inventory_item.save()
+        except Inventory.DoesNotExist:
+            inventory_item = Inventory.objects.create(
+                user=self.user,
+                item=item,
+                quantity=amount
+            )
+        
+        return inventory_item
+
 @receiver(post_save, sender=UserProfile)
 def create_game_profile(sender, instance, created, **kwargs):
     """
