@@ -1,43 +1,157 @@
 "use client"
 
-import { useState, useContext } from "react"
+import { useState, useContext, useEffect } from "react"
 import { motion } from "framer-motion"
 import { User, Settings, Award, Leaf, TreePine, Calendar, TrendingUp, Edit, Camera, LogOut } from "lucide-react"
 import NavBar from "../Components/NavBar/NavBar"
 import Footer from "../Components/Footer"
 import Page from "./Page"
 import AuthContext from "../Context/AuthContext"
+import userService from "../Hooks/userService"
+import { useParams } from "react-router-dom"
+import { Link } from "react-router-dom"
 
 export default function UserProfile() {
   const { user, logoutUser } = useContext(AuthContext)
+  const { userId } = useParams()// Get userId from URL if viewing other users
   const [activeTab, setActiveTab] = useState("overview")
+  const [profileData, setProfileData] = useState(null)
+  const [error, setError] = useState(null)
+  const [userPosts, setUserPosts] = useState([])
+  const [postsPage, setPostsPage] = useState(1)
+  const [hasMorePosts, setHasMorePosts] = useState(true)
+  const [loadingMorePosts, setLoadingMorePosts] = useState(false)
 
-  // Mock data - replace with actual data from your backend
+  // Determine which user profile to load
+  const profileId = userId || (user && user.id)
+  const isOwnProfile = !userId || (user && userId === user.id)
+
+  useEffect(() => {
+    const fetchProfileData = async () => {
+      if (!profileId) return
+        try{
+          const data = await userService.getUserProfile(profileId)
+          setProfileData(data)
+          setError(null)
+        } catch(err){
+          console.error("Failed to fetch profile data: ", err)
+          setError("Failed to load profile!")
+        }
+    }
+
+    fetchProfileData()
+  }, [profileId])
+
+  useEffect(() => {
+    const fetchUserPosts = async () => {
+      if (!profileId) return
+        try {
+          const data = await userService.getUserPosts(profileId, 1)
+          setUserPosts(data.results)
+          setHasMorePosts(!!data.next)
+        } catch (err) {
+          console.error("Failed to fetch user posts:", err)
+        }
+    }
+
+    fetchUserPosts()
+  }, [profileId])
+
+  // Load more posts
+  const loadMorePosts = async () => {
+    if (loadingMorePosts || !hasMorePosts) return
+
+    setLoadingMorePosts(true)
+    try {
+      const nextPage = postsPage + 1
+      const data = await userService.getUserPosts(profileId, nextPage)
+
+      setUserPosts((prev) => [...prev, ...data.results])
+      setPostsPage(nextPage)
+      setHasMorePosts(!!data.next)
+    } catch (err) {
+      console.error("Failed to load more posts:", err)
+    } finally {
+      setLoadingMorePosts(false)
+    }
+  }
+
+  // Handle profile picture upload
+  const handleProfilePictureUpload = async (e) => {
+    if (!isOwnProfile) return
+
+    const file = e.target.files[0]
+    if (!file) return
+
+    try {
+      await userService.uploadProfilePicture(user.id, file)
+      // Refresh profile data
+      const data = await userService.getUserProfile(profileId)
+      setProfileData(data)
+    } catch (err) {
+      console.error("Failed to upload profile picture:", err)
+      alert("Failed to upload profile picture. Please try again.")
+    }
+  }
+
+  if (error) {
+    return (
+      <Page className="bg-[#f3f1ea]">
+        <NavBar />
+        <div className="container mx-auto px-4 py-20 text-center">
+          <div className="bg-red-50 text-red-700 p-4 rounded-lg inline-block">
+            <p>{error}</p>
+            <button
+              onClick={() => window.location.reload()}
+              className="mt-4 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+            >
+              Retry
+            </button>
+          </div>
+        </div>
+        <Footer />
+      </Page>
+    )
+  }
+
+  if (!profileData) {
+    return (
+      <Page className="bg-[#f3f1ea]">
+        <NavBar />
+        <div className="container mx-auto px-4 py-20 text-center">
+          <p>User not found</p>
+        </div>
+        <Footer />
+      </Page>
+    )
+  }
+
+
   const userData = {
-    name: user?.username || "Jane Green",
-    joinDate: "March 2023",
-    bio: "Environmental enthusiast and sustainability advocate. Working towards a greener future one action at a time.",
-    location: "San Francisco, CA",
-    points: 1250,
-    rank: 15,
-    treeLevel: 4,
-    treeName: "Oakley",
+    name: profileData.user.username,
+    joinDate: "Member since 2023", 
+    bio: "Environmental enthusiast and sustainability advocate.", 
+    location: "San Francisco, CA", 
+    points: profileData.user.points_balance,
+    rank: profileData.rank,
+    treeLevel: profileData.tree.level || -1, 
+    treeName: profileData.tree.name,
+    treeGrowth: profileData.tree.growth, 
     badges: [
       { name: "Early Adopter", icon: <Award className="h-6 w-6" /> },
       { name: "Tree Hugger", icon: <TreePine className="h-6 w-6" /> },
       { name: "Eco Warrior", icon: <Leaf className="h-6 w-6" /> },
     ],
     stats: [
-      { label: "Actions", value: 47 },
-      { label: "Points", value: 1250 },
-      { label: "CO₂ Saved", value: "125kg" },
+      { label: "Post", value: profileData.posts.length },
+      { label: "Points", value: profileData.user.points_balance },
+      { label: "CO₂ Saved", value: `${Math.floor(profileData.user.points_balance / 10)}kg` }, // Example calculation
     ],
-    recentActivity: [
-      { action: "Recycled paper waste", date: "2 days ago", points: 15 },
-      { action: "Used public transport", date: "3 days ago", points: 20 },
-      { action: "Planted a tree", date: "1 week ago", points: 100 },
-      { action: "Reduced water usage", date: "2 weeks ago", points: 25 },
-    ],
+    recentActivity: profileData.posts.slice(0, 4).map((post) => ({
+      action: post.caption,
+      date: new Date(post.created_at).toLocaleDateString(),
+      points: post.points_received,
+    })),
   }
 
   return (
@@ -54,32 +168,65 @@ export default function UserProfile() {
         >
           {/* Cover Photo */}
           <div className="h-48 bg-gradient-to-r from-green-400 to-green-600 relative">
-            <button className="absolute bottom-4 right-4 bg-white p-2 rounded-full shadow-md">
-              <Camera className="h-5 w-5 text-green-600" />
-            </button>
-          </div>
+            {isOwnProfile && (
+                <label
+                  className="absolute bottom-4 right-4 bg-white p-2 rounded-full shadow-md cursor-pointer"
+                >
+                  <Camera className="h-5 w-5 text-green-600" />
+                  <input
+                    id="cover-upload"
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => console.log("Cover photo upload:", e.target.files[0])}
+                  />
+                </label>
+              )}
+            </div>
+
 
           <div className="px-6 py-4 md:px-8 md:py-6 flex flex-col md:flex-row gap-6 relative">
             {/* Profile Picture */}
             <div className="relative -mt-20 md:-mt-24">
               <div className="h-24 w-24 md:h-32 md:w-32 rounded-full border-4 border-white bg-green-100 flex items-center justify-center overflow-hidden">
-                <User className="h-16 w-16 md:h-20 md:w-20 text-green-600" />
+                {profileData.user.profile_picture ? (
+                  <img
+                    src={profileData.user.profile_picture}
+                    alt={`${profileData.user.username}'s profile`}
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  <User className="h-16 w-16 md:h-20 md:w-20 text-green-600" />
+                )}
               </div>
-              <button className="absolute bottom-0 right-0 bg-white p-1.5 rounded-full shadow-md">
-                <Edit className="h-4 w-4 text-green-600" />
-              </button>
+              {isOwnProfile && (
+                <label
+                  htmlFor="profile-upload"
+                  className="absolute bottom-0 right-0 bg-white p-1.5 rounded-full shadow-md cursor-pointer"
+                >
+                  <Edit className="h-4 w-4 text-green-600" />
+                  <input
+                    id="profile-upload"
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleProfilePictureUpload}
+                  />
+                </label>
+              )}
             </div>
 
             {/* User Info */}
             <div className="flex-1">
               <div className="flex flex-col md:flex-row md:items-center justify-between">
                 <div>
-                  <h1 className="text-2xl md:text-3xl font-serif font-bold">{userData.name}</h1>
+                  <h1 className="text-2xl md:text-3xl font-serif font-bold text-black">{userData.name}</h1>
                   <p className="text-gray-500 flex items-center gap-1 mt-1">
                     <Calendar className="h-4 w-4" /> Joined {userData.joinDate}
                   </p>
                 </div>
 
+                {isOwnProfile && (
                 <div className="flex gap-3 mt-4 md:mt-0">
                   <button className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-full hover:bg-green-700 transition-colors">
                     <Settings className="h-4 w-4" /> Edit Profile
@@ -91,6 +238,7 @@ export default function UserProfile() {
                     <LogOut className="h-4 w-4" /> Log Out
                   </button>
                 </div>
+                )}
               </div>
 
               <p className="mt-4 text-gray-600">{userData.bio}</p>
@@ -109,23 +257,17 @@ export default function UserProfile() {
 
         {/* Tabs */}
         <div className="flex border-b border-gray-200 mb-8">
-          <button
+        <button
             className={`px-4 py-2 font-medium ${activeTab === "overview" ? "text-green-600 border-b-2 border-green-600" : "text-gray-500 hover:text-gray-700"}`}
             onClick={() => setActiveTab("overview")}
           >
             Overview
           </button>
           <button
-            className={`px-4 py-2 font-medium ${activeTab === "activity" ? "text-green-600 border-b-2 border-green-600" : "text-gray-500 hover:text-gray-700"}`}
-            onClick={() => setActiveTab("activity")}
+            className={`px-4 py-2 font-medium ${activeTab === "post" ? "text-green-600 border-b-2 border-green-600" : "text-gray-500 hover:text-gray-700"}`}
+            onClick={() => setActiveTab("post")}
           >
-            Activity
-          </button>
-          <button
-            className={`px-4 py-2 font-medium ${activeTab === "tree" ? "text-green-600 border-b-2 border-green-600" : "text-gray-500 hover:text-gray-700"}`}
-            onClick={() => setActiveTab("tree")}
-          >
-            My Tree
+            Post
           </button>
         </div>
 
@@ -145,28 +287,6 @@ export default function UserProfile() {
                   ))}
                 </div>
 
-                {/* Recent Activity */}
-                <div className="bg-white rounded-lg shadow-md p-6 mb-8">
-                  <h2 className="text-xl font-serif font-bold mb-4 flex items-center gap-2">
-                    <Calendar className="h-5 w-5 text-green-600" /> Recent Activity
-                  </h2>
-                  <div className="space-y-4">
-                    {userData.recentActivity.map((activity, index) => (
-                      <div key={index} className="border-b border-gray-100 pb-4 last:border-0 last:pb-0">
-                        <div className="flex justify-between items-start">
-                          <div>
-                            <p className="font-medium">{activity.action}</p>
-                            <p className="text-sm text-gray-500">{activity.date}</p>
-                          </div>
-                          <div className="bg-green-50 px-2 py-1 rounded-full text-sm font-medium text-green-700">
-                            +{activity.points} pts
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
                 {/* Sustainability Tips */}
                 <div className="bg-white rounded-lg shadow-md p-6">
                   <h2 className="text-xl font-serif font-bold mb-4 flex items-center gap-2">
@@ -180,32 +300,119 @@ export default function UserProfile() {
                     </p>
                   </div>
                 </div>
+
+              {/* Tree */}
+              <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.5 }}
+                  className="bg-white rounded-lg shadow-md p-6 mt-8"
+                >
+                  <div className="text-center mb-8">
+                    <h2 className="text-xl font-serif font-bold mb-2">My Virtual Tree</h2>
+                    <p className="text-gray-600">
+                      Meet {userData.treeName}, your level {userData.treeLevel} tree!
+                    </p>
+                  </div>
+
+                  <div className="flex justify-center mb-8">
+                    <div className="relative">
+                      <div className="h-64 w-64 bg-green-50 rounded-full flex items-center justify-center">
+                        <TreePine className="h-32 w-32 text-green-600" />
+                      </div>
+                      <div className="absolute -top-2 -right-2 bg-green-600 text-white h-10 w-10 rounded-full flex items-center justify-center font-bold">
+                        Lv.{userData.treeLevel}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="mb-8">
+                    <h3 className="font-medium text-gray-700 mb-2">Growth Progress</h3>
+                    <div className="w-full bg-gray-200 rounded-full h-4">
+                      <div
+                        className="bg-green-600 h-4 rounded-full"
+                        style={{
+                          width: `${(userData.treeGrowth) * 100}%`,
+                        }}
+                      ></div>
+                    </div>
+                    <div className="flex justify-between mt-2 text-sm text-gray-600">
+                      <span>Current: {Math.round((userData.treeGrowth) * 100)} pts</span>
+                      <span>Next Level: {Math.round(100 -((userData.treeGrowth) * 100))} pts</span>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="bg-green-50 rounded-lg p-4">
+                      <h3 className="font-medium text-green-800 mb-2">Tree Benefits</h3>
+                      <ul className="space-y-2 text-gray-700">
+                        <li className="flex items-center gap-2">
+                          <Leaf className="h-4 w-4 text-green-600" />
+                          Absorbs CO₂: {userData.treeLevel * 5}kg per year
+                        </li>
+                        <li className="flex items-center gap-2">
+                          <Leaf className="h-4 w-4 text-green-600" />
+                          Produces oxygen for {userData.treeLevel} people
+                        </li>
+                        <li className="flex items-center gap-2">
+                          <Leaf className="h-4 w-4 text-green-600" />
+                          Habitat for {userData.treeLevel * 2} virtual wildlife species
+                        </li>
+                      </ul>
+                    </div>
+
+                    <div className="bg-green-50 rounded-lg p-4">
+                      <h3 className="font-medium text-green-800 mb-2">Upcoming Rewards</h3>
+                      <ul className="space-y-2 text-gray-700">
+                        <li className="flex items-center gap-2">
+                          <Award className="h-4 w-4 text-green-600" />
+                          Level {userData.treeLevel + 1}: New tree appearance
+                        </li>
+                        <li className="flex items-center gap-2">
+                          <Award className="h-4 w-4 text-green-600" />
+                          Level {userData.treeLevel + 3}: Unlock garden background
+                        </li>
+                        <li className="flex items-center gap-2">
+                          <Award className="h-4 w-4 text-green-600" />
+                          Level 10: Special "Forest Guardian" badge
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </motion.div>
               </motion.div>
             )}
 
-            {activeTab === "activity" && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.5 }}
-                className="bg-white rounded-lg shadow-md p-6"
-              >
-                <h2 className="text-xl font-serif font-bold mb-6">Activity History</h2>
+            {/* Post Tab */}
+            {activeTab === "post" && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5 }}
+              className="bg-white rounded-lg shadow-md p-6"
+            >
+              <h2 className="text-xl font-serif font-bold mb-6 text-black">Post History</h2>
 
+              {userPosts.length > 0 ? (
                 <div className="space-y-6">
-                  {[...userData.recentActivity, ...userData.recentActivity].map((activity, index) => (
-                    <div key={index} className="flex gap-4 border-b border-gray-100 pb-6 last:border-0 last:pb-0">
+                  {userPosts.map((post, index) => (
+                    <div
+                      key={post.id || index}
+                      className="flex gap-4 border-b border-gray-100 pb-6 last:border-0 last:pb-0"
+                    >
                       <div className="bg-green-100 h-10 w-10 rounded-full flex items-center justify-center flex-shrink-0">
                         <Leaf className="h-5 w-5 text-green-600" />
                       </div>
                       <div className="flex-1">
                         <div className="flex justify-between items-start">
                           <div>
-                            <p className="font-medium">{activity.action}</p>
-                            <p className="text-sm text-gray-500 mt-1">{activity.date}</p>
+                            <p className="font-medium text-black">{post.caption}</p>
+                            <p className="text-sm text-gray-500 mt-1">
+                              {new Date(post.created_at).toLocaleDateString()}
+                            </p>
                           </div>
                           <div className="bg-green-50 px-2 py-1 rounded-full text-sm font-medium text-green-700">
-                            +{activity.points} pts
+                            +{post.points_received} pts
                           </div>
                         </div>
                         <div className="mt-2 flex items-center gap-2">
@@ -219,86 +426,22 @@ export default function UserProfile() {
                     </div>
                   ))}
                 </div>
-              </motion.div>
-            )}
+              ) : (
+                <p className="text-gray-500 text-center py-4">No post found.</p>
+              )}
 
-            {activeTab === "tree" && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.5 }}
-                className="bg-white rounded-lg shadow-md p-6"
-              >
-                <div className="text-center mb-8">
-                  <h2 className="text-xl font-serif font-bold mb-2">My Virtual Tree</h2>
-                  <p className="text-gray-600">
-                    Meet {userData.treeName}, your level {userData.treeLevel} tree!
-                  </p>
+              {hasMorePosts && (
+                <div className="mt-6 text-center">
+                  <button
+                    onClick={loadMorePosts}
+                    disabled={loadingMorePosts}
+                    className="px-4 py-2 bg-green-50 text-green-700 rounded-lg hover:bg-green-100 transition-colors"
+                  >
+                    {loadingMorePosts ? "Loading..." : "Load More"}
+                  </button>
                 </div>
-
-                <div className="flex justify-center mb-8">
-                  <div className="relative">
-                    <div className="h-64 w-64 bg-green-50 rounded-full flex items-center justify-center">
-                      <TreePine className="h-32 w-32 text-green-600" />
-                    </div>
-                    <div className="absolute -top-2 -right-2 bg-green-600 text-white h-10 w-10 rounded-full flex items-center justify-center font-bold">
-                      Lv.{userData.treeLevel}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="mb-8">
-                  <h3 className="font-medium text-gray-700 mb-2">Growth Progress</h3>
-                  <div className="w-full bg-gray-200 rounded-full h-4">
-                    <div
-                      className="bg-green-600 h-4 rounded-full"
-                      style={{ width: `${(userData.points % 500) / 5}%` }}
-                    ></div>
-                  </div>
-                  <div className="flex justify-between mt-2 text-sm text-gray-600">
-                    <span>Current: {userData.points % 500} pts</span>
-                    <span>Next Level: 500 pts</span>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="bg-green-50 rounded-lg p-4">
-                    <h3 className="font-medium text-green-800 mb-2">Tree Benefits</h3>
-                    <ul className="space-y-2 text-gray-700">
-                      <li className="flex items-center gap-2">
-                        <Leaf className="h-4 w-4 text-green-600" />
-                        Absorbs CO₂: 25kg per year
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <Leaf className="h-4 w-4 text-green-600" />
-                        Produces oxygen for 2 people
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <Leaf className="h-4 w-4 text-green-600" />
-                        Habitat for 5 virtual wildlife species
-                      </li>
-                    </ul>
-                  </div>
-
-                  <div className="bg-green-50 rounded-lg p-4">
-                    <h3 className="font-medium text-green-800 mb-2">Upcoming Rewards</h3>
-                    <ul className="space-y-2 text-gray-700">
-                      <li className="flex items-center gap-2">
-                        <Award className="h-4 w-4 text-green-600" />
-                        Level 5: New tree appearance
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <Award className="h-4 w-4 text-green-600" />
-                        Level 7: Unlock garden background
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <Award className="h-4 w-4 text-green-600" />
-                        Level 10: Special "Forest Guardian" badge
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              </motion.div>
+              )}
+            </motion.div>
             )}
           </div>
 
@@ -318,58 +461,22 @@ export default function UserProfile() {
                 <div className="inline-flex items-center justify-center h-24 w-24 rounded-full bg-green-100 mb-4">
                   <span className="text-3xl font-bold text-green-700">#{userData.rank}</span>
                 </div>
-                <p className="text-gray-600">You're in the top 5% of eco-warriors!</p>
+                <p className="text-gray-600 mt-4">
+                  {userData.rank <= 10 
+                    ? "You're in the top 10 eco-warriors! 🌟" 
+                    : userData.rank <= 50 
+                    ? "You're in the top 50 eco-warriors! 🌱" 
+                    : "Keep growing to climb the ranks! 🌿"}
+                </p>
               </div>
               <div className="mt-4">
-                <button className="w-full py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
+                <Link 
+                  className="w-full py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center gap-2"
+                  to="/leaderboard"
+                >
+                  <TrendingUp className="h-4 w-4" />
                   View Leaderboard
-                </button>
-              </div>
-            </motion.div>
-
-            {/* Upcoming Events */}
-            <motion.div
-              className="bg-white rounded-lg shadow-md p-6"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: 0.3 }}
-            >
-              <h2 className="text-xl font-serif font-bold mb-4 flex items-center gap-2">
-                <Calendar className="h-5 w-5 text-green-600" /> Upcoming Events
-              </h2>
-              <div className="space-y-4">
-                <div className="border-b border-gray-100 pb-4">
-                  <p className="font-medium">Campus Clean-up Day</p>
-                  <p className="text-sm text-gray-500 mt-1">This Saturday, 10:00 AM</p>
-                  <div className="mt-2">
-                    <span className="inline-block bg-green-50 text-green-700 text-xs px-2 py-1 rounded-full">
-                      +100 bonus points
-                    </span>
-                  </div>
-                </div>
-                <div className="border-b border-gray-100 pb-4">
-                  <p className="font-medium">Sustainable Living Workshop</p>
-                  <p className="text-sm text-gray-500 mt-1">Next Tuesday, 4:00 PM</p>
-                  <div className="mt-2">
-                    <span className="inline-block bg-green-50 text-green-700 text-xs px-2 py-1 rounded-full">
-                      +75 bonus points
-                    </span>
-                  </div>
-                </div>
-                <div>
-                  <p className="font-medium">Tree Planting Initiative</p>
-                  <p className="text-sm text-gray-500 mt-1">Next Month, May 15</p>
-                  <div className="mt-2">
-                    <span className="inline-block bg-green-50 text-green-700 text-xs px-2 py-1 rounded-full">
-                      +200 bonus points
-                    </span>
-                  </div>
-                </div>
-              </div>
-              <div className="mt-6">
-                <button className="w-full py-2 border border-green-600 text-green-600 rounded-lg hover:bg-green-50 transition-colors">
-                  View All Events
-                </button>
+                </Link>
               </div>
             </motion.div>
           </div>

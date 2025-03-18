@@ -6,6 +6,7 @@ import "../Components/LeaderboardPage.css";
 import NavBar from "../Components/NavBar/NavBar.jsx";
 import Footer from "../Components/Footer.jsx";
 import TopContributorsPodium from "../Components/TopContributorsPodium";
+import { Link } from "react-router-dom";
 
 const API_BASE_URL = import.meta.env.VITE_BACKEND + "/api/leaderboard";
 
@@ -15,10 +16,30 @@ const LeaderboardPage = () => {
   const [leaderboardData, setLeaderboardData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [nextPage, setNextPage] = useState(null);
+  const [previousPage, setPreviousPage] = useState(null);
+  const [totalCount, setTotalCount] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
   const [expandedRows, setExpandedRows] = useState({});
-  const entriesPerPage = 10;
+
+  // Get current page and total pages from backend data
+  const getPageInfo = () => {
+    let currentPage = 1;
+    if (nextPage) {
+      const pageMatch = nextPage.match(/page=(\d+)/);
+      if (pageMatch) {
+        currentPage = parseInt(pageMatch[1]) - 1;
+      }
+    } else if (previousPage) {
+      const pageMatch = previousPage.match(/page=(\d+)/);
+      if (pageMatch) {
+        currentPage = parseInt(pageMatch[1]) + 1;
+      }
+    }
+    const pageSize = leaderboardData.length;
+    const totalPages = Math.ceil(totalCount / pageSize);
+    return { currentPage, totalPages };
+  };
 
   // Sorting options for the leaderboard
   const sortOptions = [
@@ -49,6 +70,9 @@ const LeaderboardPage = () => {
       try {
         const response = await axios.get(`${API_BASE_URL}/${sortBy}/`);
         setLeaderboardData(response.data.results || []);
+        setNextPage(response.data.next);
+        setPreviousPage(response.data.previous);
+        setTotalCount(response.data.count);
       } catch (error) {
         setError(error.response?.data?.message || "Failed to fetch leaderboard data");
         console.error("Error fetching leaderboard:", error);
@@ -60,13 +84,28 @@ const LeaderboardPage = () => {
     fetchLeaderboard();
   }, [sortBy]);
 
+  const handlePageChange = async (url) => {
+    if (!url) return;
+    setLoading(true);
+    try {
+      const response = await axios.get(url);
+      setLeaderboardData(response.data.results || []);
+      setNextPage(response.data.next);
+      setPreviousPage(response.data.previous);
+      setTotalCount(response.data.count);
+    } catch (error) {
+      setError(error.response?.data?.message || "Failed to fetch leaderboard data");
+      console.error("Error fetching leaderboard:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const toggleExpandRow = (userRank) => {
-    console.log("Toggling row for rank:", userRank); // Debug log
-    setExpandedRows((prev) => {
-      const newExpandedRows = { ...prev, [userRank]: !prev[userRank] };
-      console.log("Updated expandedRows:", newExpandedRows); // Debug log
-      return newExpandedRows;
-    });
+    setExpandedRows((prev) => ({
+      ...prev,
+      [userRank]: !prev[userRank]
+    }));
   };
   
   // Filter leaderboard based on the search term
@@ -77,12 +116,6 @@ const LeaderboardPage = () => {
   // Get top 3 contributors for the podium
   const topThreeContributors = leaderboardData.slice(0, 3);
 
-  // Pagination logic
-  const indexOfLastEntry = currentPage * entriesPerPage;
-  const indexOfFirstEntry = indexOfLastEntry - entriesPerPage;
-  const currentEntries = filteredLeaderboard.slice(indexOfFirstEntry, indexOfLastEntry);
-  const totalPages = Math.ceil(filteredLeaderboard.length / entriesPerPage);
-
   // Get medal color based on rank
   const getMedalColor = (rank) => {
     if (rank === 1) return "text-yellow-500";
@@ -92,9 +125,8 @@ const LeaderboardPage = () => {
   };
 
   const MobileTableRow = ({ user, index }) => {
-    const rank = indexOfFirstEntry + index + 1;
-    const isExpanded = expandedRows[user.rank] || false; // Use user.rank here
-    const isTopThree = rank <= 3;
+    const isExpanded = expandedRows[user.rank] || false;
+    const isTopThree = user.rank <= 3;
   
     const animationDelay = `${index * 0.08}s`;
 
@@ -118,19 +150,22 @@ const LeaderboardPage = () => {
             {/* Rank with medal for top 3 */}
             <div className="relative flex items-center justify-center w-10 h-10">
               {isTopThree ? (
-                <Trophy className={`w-8 h-8 ${getMedalColor(rank)} animate-pulse-slow`} />
+                <Trophy className={`w-8 h-8 ${getMedalColor(user.rank)} animate-pulse-slow`} />
               ) : (
                 <div className="flex items-center justify-center w-8 h-8 rounded-full bg-green-100 text-green-700 font-bold">
-                  {rank}
+                  {user.rank}
                 </div>
               )}
             </div>
 
             {/* Username with subtle glow for top 3 */}
             <div>
-              <span className={`font-semibold text-gray-800 ${isTopThree ? "glow-text-green" : ""}`}>
+              <Link 
+                to={`/profile/${user.user.id}`}
+                className={`font-semibold text-gray-800 hover:text-green-600 ${isTopThree ? "glow-text-green" : ""}`}
+              >
                 {user.user.username}
-              </span>
+              </Link>
               <div className="text-xs text-gray-500 flex items-center">
                 <Leaf className="w-3 h-3 text-green-500 mr-1" />
                 Level {user.tree_level} Tree
@@ -198,8 +233,7 @@ const LeaderboardPage = () => {
 
   // Component for desktop table row
   const DesktopTableRow = ({ user, index }) => {
-    const rank = indexOfFirstEntry + index + 1;
-    const isTopThree = rank <= 3;
+    const isTopThree = user.rank <= 3;
 
     return (
       <div
@@ -211,13 +245,18 @@ const LeaderboardPage = () => {
       >
         <div className="col-span-1 font-bold text-lg text-gray-500 flex items-center justify-center">
           {isTopThree ? (
-            <Trophy className={`w-6 h-6 ${getMedalColor(rank)} animate-pulse-slow`} />
+            <Trophy className={`w-6 h-6 ${getMedalColor(user.rank)} animate-pulse-slow`} />
           ) : (
-            <span>#{indexOfFirstEntry + index + 1}</span>
+            <span>#{user.rank}</span>
           )}
         </div>
-        <div className={`col-span-4 font-semibold text-black text-center ${isTopThree ? "glow-text-green" : ""}`}>
-          {user.user.username}
+        <div className="col-span-4 font-semibold text-black text-center">
+          <Link 
+            to={`/profile/${user.user.id}`}
+            className={`hover:text-green-600 ${isTopThree ? "glow-text-green" : ""}`}
+          >
+            {user.user.username}
+          </Link>
         </div>
         <div className="col-span-2 text-center font-bold text-green-600">{user.points_balance}</div>
         <div className="col-span-1 text-center">
@@ -299,7 +338,6 @@ const LeaderboardPage = () => {
                 value={searchTerm}
                 onChange={(e) => {
                   setSearchTerm(e.target.value);
-                  setCurrentPage(1);
                 }}
               />
               <Search className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
@@ -320,7 +358,6 @@ const LeaderboardPage = () => {
                   }}
                   onClick={() => {
                     setSortBy(option.key);
-                    setCurrentPage(1);
                   }}
                 >
                   {option.label}
@@ -374,9 +411,9 @@ const LeaderboardPage = () => {
             )}
 
             {/* Responsive Table Content */}
-            {!loading && !error && currentEntries.length > 0 ? (
+            {!loading && !error && leaderboardData.length > 0 ? (
               <div className={`${isMobile ? "space-y-2 px-2" : ""} leaderboard-container`}>
-                {currentEntries.map((user, index) => (
+                {leaderboardData.map((user, index) => (
                   isMobile ? (
                     <MobileTableRow key={user.id} user={user} index={index} />
                   ) : (
@@ -393,25 +430,25 @@ const LeaderboardPage = () => {
           </div>
 
           {/* Pagination - Improved mobile layout with animations */}
-          {currentEntries.length > 0 && (
+          {leaderboardData.length > 0 && (
             <div className="mt-8 px-4 animate-fade-in">
               <div className="flex justify-between items-center max-w-md mx-auto">
                 <button
-                  onClick={() => setCurrentPage(Math.max(currentPage - 1, 1))}
-                  disabled={currentPage === 1}
-                  className="px-4 py-2 bg-green-100 text-green-600 font-medium rounded-full disabled:bg-gray-200 disabled:text-gray-400 shadow-sm transition-all duration-300 w-24 text-center hover:shadow-md hover:bg-green-200 transform hover:scale-105"
+                  onClick={() => handlePageChange(previousPage)}
+                  disabled={!previousPage}
+                  className="px-4 py-2 bg-green-100 text-green-600 font-medium rounded-full disabled:bg-gray-200 disabled:text-gray-400 shadow-sm transition-all duration-300 w-24 text-center hover:shadow-md hover:bg-green-200 transform hover:scale-105 disabled:hover:scale-100 disabled:hover:shadow-sm"
                 >
                   Previous
                 </button>
 
                 <div className="bg-white text-green-700 px-4 py-2 rounded-full shadow-sm text-sm font-medium transition-all duration-300 pulse-animation">
-                  Page {currentPage} of {totalPages}
+                  Page {getPageInfo().currentPage} of {getPageInfo().totalPages}
                 </div>
 
                 <button
-                  onClick={() => setCurrentPage(Math.min(currentPage + 1, totalPages))}
-                  disabled={currentPage === totalPages}
-                  className="px-4 py-2 bg-green-100 text-green-600 font-medium rounded-full disabled:bg-gray-200 disabled:text-gray-400 shadow-sm transition-all duration-300 w-24 text-center hover:shadow-md hover:bg-green-200 transform hover:scale-105"
+                  onClick={() => handlePageChange(nextPage)}
+                  disabled={!nextPage}
+                  className="px-4 py-2 bg-green-100 text-green-600 font-medium rounded-full disabled:bg-gray-200 disabled:text-gray-400 shadow-sm transition-all duration-300 w-24 text-center hover:shadow-md hover:bg-green-200 transform hover:scale-105 disabled:hover:scale-100 disabled:hover:shadow-sm"
                 >
                   Next
                 </button>

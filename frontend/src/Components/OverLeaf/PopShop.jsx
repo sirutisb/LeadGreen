@@ -4,7 +4,7 @@ import { ShoppingBag, Sparkles, Clock, X, Plus, Minus, ShoppingCart } from 'luci
 import greencoinIcon from '../../assets/peng.svg';
 import { toastError, toastSuccess } from "../utils/toastCustom";
 
-const GardenShop = ({ isOpen, onClose, user, setUser }) => {
+const GardenShop = ({ isOpen, onClose, user, setUser, onPurchase }) => {
   const [animateItems, setAnimateItems] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const [inventory, setInventory] = useState({});
@@ -194,24 +194,17 @@ const GardenShop = ({ isOpen, onClose, user, setUser }) => {
             coins: result.remaining_points
           }));
           
-          // Update inventory
-          setInventory(prev => ({
-            ...prev,
-            [item.id]: (prev[item.id] || 0) + quantity
-          }));
+          // Call the callback to update parent's inventory
+          if (onPurchase) {
+            onPurchase();
+          }
           
-          // Reset quantity to 1 after purchase
-          setItemQuantities(prev => ({
-            ...prev,
-            [item.id]: 1
-          }));
-          
-          toastSuccess(`Successfully purchased ${quantity} ${item.name}(s)!`);
+          toastSuccess(`Successfully purchased ${quantity} ${item.name}!`);
         } else {
           toastError(result.message || "Purchase failed. Please try again.");
         }
       } catch (err) {
-        toastError(err.response?.data?.message || "Purchase failed. Please try again.");
+        toastError("Purchase failed. Please try again.");
         console.error('Purchase error:', err);
       }
     } else {

@@ -36,7 +36,7 @@ function App() {
             <Route path="/feed" element={<FeedPage />} />
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/login" element={<LoginPage />} />
-            <Route path="/profile" element={<UserProfile />} />
+            <Route path="/profile/:userId?" element={<UserProfile />} />
         </Routes>
         </AuthProvider>
       <ToastContainer />

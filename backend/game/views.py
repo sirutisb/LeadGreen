@@ -302,15 +302,8 @@ class ItemViewSet(viewsets.ModelViewSet):
         user_profile.points_balance -= total_price
         user_profile.save()
 
-        # update / create inventory
-        inventory, created = Inventory.objects.get_or_create(
-            user=request.user,
-            item=item,
-            defaults={'quantity': quantity}
-        )
-        if not created:
-            inventory.quantity += quantity
-            inventory.save()
+        # Add items to inventory using the new method
+        inventory = user_profile.add_to_inventory(item, quantity)
 
         # record transaction
         transaction = Transaction.objects.create(
@@ -327,30 +320,6 @@ class ItemViewSet(viewsets.ModelViewSet):
             "inventory": InventorySerializer(inventory).data,
             "remaining_points": user_profile.points_balance
         }, status=status.HTTP_201_CREATED)
-
-class WaterTreeAction(APIView):
-    """Wrapper for water item usage to maintain frontend compatibility"""
-    permission_classes = [IsAuthenticated]
-    
-    def post(self, request, *args, **kwargs):
-        #Assuming water item has ID 1
-        return UseItemView().post(request, item_id=4)
-
-class SoilTreeAction(APIView):
-    """Wrapper for soil item usage to maintain frontend compatibility"""
-    permission_classes = [IsAuthenticated]
-    
-    def post(self, request, *args, **kwargs):
-        # Assuming soil item has ID 2
-        return UseItemView().post(request, item_id=5)
-
-class GloveTreeAction(APIView):
-    """Wrapper for glove item usage to maintain frontend compatibility"""
-    permission_classes = [IsAuthenticated]
-    
-    def post(self, request, *args, **kwargs):
-        # assuming glove item has ID 3
-        return UseItemView().post(request, item_id=6)
 
 class InventoryViewSet(viewsets.ReadOnlyModelViewSet):
     """

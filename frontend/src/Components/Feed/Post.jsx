@@ -4,24 +4,33 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import axiosInstance from "../../Context/axiosInstance";
 import { toastError, toastSuccess } from "../utils/toastCustom";
+import { Link } from "react-router-dom";
 
 const Post = ({ post }) => {
   const [isLiked, setIsLiked] = useState(post.liked_by_user);
   const [likesCount, setLikesCount] = useState(post.likes_count);
 
   const handleLike = async () => {
+    const newIsLiked = !isLiked;
+    const newLikesCount = newIsLiked ? likesCount + 1 : likesCount - 1;
+    
     try {
+      // Optimistically update UI
+      setIsLiked(newIsLiked);
+      setLikesCount(newLikesCount);
+      
       const response = await axiosInstance({
-        method: isLiked ? 'delete' : 'post',
+        method: newIsLiked ? 'post' : 'delete',
         url: `/posts/${post.id}/like/`
       });
       
       if (response.status === 200) {
-        setIsLiked(!isLiked);
-        setLikesCount(isLiked ? likesCount - 1 : likesCount + 1);
-        toastSuccess(isLiked ? "Post unliked!" : "Post liked!");
+        toastSuccess(newIsLiked ? "Post liked!" : "Post unliked!");
       }
     } catch (error) {
+      // Revert UI changes if request fails
+      setIsLiked(!newIsLiked);
+      setLikesCount(likesCount);
       toastError("Error toggling like!");
       console.error("Error:", error);
     }
@@ -66,20 +75,43 @@ const Post = ({ post }) => {
 
 
       <Box display="flex" alignItems="center" mb={2}>
-        <Avatar
-          src={post.user.profile_picture} // Uses profile picture if available
-          sx={{
-            width: 40,
-            height: 40,
-            bgcolor: "#1B6630",
-          }}
-        />
-        <Typography
-          variant="h6"
-          sx={{ ml: 2, color: "#1B6630", fontWeight: "bold" }}
+        <Link 
+          to={`/profile/${post.user.id}`}
+          style={{ textDecoration: 'none' }}
         >
-          {post.user.username}
-        </Typography>
+          <Avatar
+            src={post.user.profile_picture}
+            sx={{
+              width: 40,
+              height: 40,
+              bgcolor: "#1B6630",
+              cursor: 'pointer',
+              transition: 'transform 0.2s',
+              '&:hover': {
+                transform: 'scale(1.1)'
+              }
+            }}
+          />
+        </Link>
+        <Link 
+          to={`/profile/${post.user.id}`}
+          style={{ textDecoration: 'none' }}
+        >
+          <Typography
+            variant="h6"
+            sx={{ 
+              ml: 2, 
+              color: "#1B6630", 
+              fontWeight: "bold",
+              '&:hover': {
+                color: '#145022',
+                textDecoration: 'underline'
+              }
+            }}
+          >
+            {post.user.username}
+          </Typography>
+        </Link>
       </Box>
 
             <Typography

@@ -1,4 +1,5 @@
 import { Trophy } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const TopContributorsPodium = ({ topContributors }) => {
   // Check if there are enough contributors to display
@@ -40,15 +41,17 @@ const TopContributorsPodium = ({ topContributors }) => {
       <div className="flex justify-center items-end space-x-6">
         {/* Second Place */}
         <div className="flex flex-col items-center">
-          <div className="podium-avatar">
+          <Link to={`/profile/${second.user?.id}`} className="podium-avatar">
             <img
-              src={second.user?.profile_picture || "https://via.placeholder.com/150"}
+              src={second.user?.profile_picture}
               alt={second.user?.username || "Second Place"}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover cursor-pointer transition-transform hover:scale-110"
             />
-          </div>
+          </Link>
           <div className="podium-info text-center mb-2">
-            <p className="font-semibold">{second.user?.username || "Unknown"}</p>
+            <Link to={`/profile/${second.user?.id}`} className="font-semibold hover:text-green-600">
+              {second.user?.username || "Unknown"}
+            </Link>
             <p className="text-sm text-gray-500">{second.lifetime_points} pts</p>
           </div>
           <div
@@ -61,15 +64,17 @@ const TopContributorsPodium = ({ topContributors }) => {
 
         {/* First Place (Centered) */}
         <div className="flex flex-col items-center">
-          <div className="podium-avatar">
+          <Link to={`/profile/${first.user?.id}`} className="podium-avatar">
             <img
-              src={first.user?.profile_picture || "https://via.placeholder.com/150"}
+              src={first.user?.profile_picture}
               alt={first.user?.username || "First Place"}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover cursor-pointer transition-transform hover:scale-110"
             />
-          </div>
+          </Link>
           <div className="podium-info text-center mb-2">
-            <p className="font-semibold">{first.user?.username || "Unknown"}</p>
+            <Link to={`/profile/${first.user?.id}`} className="font-semibold hover:text-green-600">
+              {first.user?.username || "Unknown"}
+            </Link>
             <p className="text-sm text-gray-500">{first.lifetime_points} pts</p>
           </div>
           <div
@@ -83,15 +88,17 @@ const TopContributorsPodium = ({ topContributors }) => {
 
         {/* Third Place */}
         <div className="flex flex-col items-center">
-          <div className="podium-avatar">
+          <Link to={`/profile/${third.user?.id}`} className="podium-avatar">
             <img
-              src={third.user?.profile_picture || "https://via.placeholder.com/150"}
+              src={third.user?.profile_picture}
               alt={third.user?.username || "Third Place"}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover cursor-pointer transition-transform hover:scale-110"
             />
-          </div>
+          </Link>
           <div className="podium-info text-center mb-2">
-            <p className="font-semibold">{third.user?.username || "Unknown"}</p>
+            <Link to={`/profile/${third.user?.id}`} className="font-semibold hover:text-green-600">
+              {third.user?.username || "Unknown"}
+            </Link>
             <p className="text-sm text-gray-500">{third.lifetime_points} pts</p>
           </div>
           <div
