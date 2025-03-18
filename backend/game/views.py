@@ -392,6 +392,7 @@ class DailyRewardView(APIView):
         current_day = profile.current_day
 
         reward_response = []
+        reward_response.append({"streak" : profile.streak})
 
         # build reward response information
         for day in range(1, 8):
@@ -415,10 +416,11 @@ class DailyRewardView(APIView):
         user = request.user
         profile = user.game_profile
 
+        day = request.data.get("day") # get day from frontend
+
         # if cant collect
         if not profile.can_collect_daily_reward():
             return Response(
-                {"message": "Reward not available"},
                 status = status.HTTP_400_BAD_REQUEST
             )
         
