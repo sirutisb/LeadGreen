@@ -17,6 +17,10 @@ from dotenv import load_dotenv
 
 import dj_database_url
 
+import cloudinary
+import cloudinary.uploader
+import cloudinary.api
+
 # Load environment variables
 load_dotenv()
 
@@ -58,7 +62,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'cloudinary_storage',
+    'cloudinary',
 
     'authentication',
     'game',
