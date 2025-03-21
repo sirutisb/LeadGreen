@@ -6,3 +6,7 @@ Pillow
 whitenoise
 python-dotenv
 gunicorn
+dj-database-url
+psycopg2-binary
+requests
+urllib3
