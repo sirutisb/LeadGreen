@@ -17,29 +17,20 @@ export default function useGameData() {
       setLoading(true);
       const data = await fetchGameData();
       
-      const updatedUser = {
-        points_balance: data.points_balance,
-        tree_level: data.tree.level,
-        plant_name: data.tree.name,
-        plant_image: data.tree.image,
-        spins: data.spins,
-        insect: data.insect || null,
-      };
-      
       // Store previous level info before updating
-      setPrevLevel(user?.tree_level || data.tree.level);
+      setPrevLevel(user?.current_plant?.level || data.current_plant.level);
       
       // Check for level up, but don't trigger effects here
-      if (!initialLoad && user && data.tree.level > user.tree_level) {
+      if (!initialLoad && user && data.current_plant.level > user.current_plant.level) {
         setLeveledUp(true);
-        setOldPlantName(user.plant_name);
+        setOldPlantName(user.current_plant.name);
       }
       
-      setUser(updatedUser);
-      setScale(1 + data.tree.growth);
+      setUser(data);
+      setScale(1 + data.tree_growth);
       
-      if (data.insect) {
-        handleInsect(data.insect);
+      if (data.current_insect) {
+        handleInsect(data.current_insect);
       } else {
         setCurrentInsect(null);
       }
@@ -75,24 +66,23 @@ export default function useGameData() {
       
       if (data.success) {
         // Check for level up before updating the state
-        if (user && data.tree.level > user.tree_level) {
+        if (user && data.current_plant.level > user.current_plant.level) {
           setLeveledUp(true);
-          setOldPlantName(user.plant_name);
+          setOldPlantName(user.current_plant.name);
         }
         
         setUser(prev => ({
           ...prev,
           points_balance: data.points_balance,
-          tree_level: data.tree.level,
-          plant_name: data.tree.name,
-          plant_image: data.tree.image, 
-          insect: data.insect || null
+          current_plant: data.current_plant,
+          current_insect: data.current_insect || null,
+          spins: data.spins
         }));
 
-        setScale(Math.round((1 + data.tree.growth) * 100) / 100);
+        setScale(Math.round((1 + data.tree_growth) * 100) / 100);
         
-        if (data.insect) {
-          handleInsect(data.insect);
+        if (data.current_insect) {
+          handleInsect(data.current_insect);
         } else {
           setCurrentInsect(null);
         }
