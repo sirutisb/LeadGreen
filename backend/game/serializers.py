@@ -1,15 +1,26 @@
 from rest_framework import serializers
 from .models import GameProfile, Plant, Insect, Inventory, Item, ItemEffect, Transaction
+from django.conf import settings
 
 class PlantSerializer(serializers.ModelSerializer):
+    image = serializers.SerializerMethodField()
+
     class Meta:
         model = Plant
         fields = ['id', 'name', 'level', 'image']
 
+    def get_image(self, obj):
+        return f"{settings.STATIC_URL}{obj.image}"
+
 class InsectSerializer(serializers.ModelSerializer):
+    image = serializers.SerializerMethodField()
+
     class Meta:
         model = Insect
         fields = ['id', 'name', 'level', 'spawn_chance', 'image']
+
+    def get_image(self, obj):
+        return f"{settings.STATIC_URL}{obj.image}"
 
 class GameProfileSerializer(serializers.ModelSerializer):
     """
