@@ -2,4 +2,7 @@ django
 djangorestframework
 djangorestframework-simplejwt
 django-cors-headers
-Pillow # for images
+Pillow
+whitenoise
+python-dotenv
+gunicorn
