@@ -15,6 +15,8 @@ import os
 from datetime import timedelta
 from dotenv import load_dotenv
 
+import dj_database_url
+
 # Load environment variables
 load_dotenv()
 
@@ -25,15 +27,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'django-insecure-j5v($1+$7pm+*cd%t_a9=&wzi)7@inr+si6@km#&ld57&3rf8m')
+SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '*').split(',')
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS').split(' ')
 
 # CORS settings
-CORS_ALLOWED_ORIGINS = os.getenv('CORS_ALLOWED_ORIGINS', 'http://localhost:3000').split(',')
+CORS_ALLOWED_ORIGINS = os.getenv('CORS_ALLOWED_ORIGINS').split(',')
 CORS_ALLOW_CREDENTIALS = True
 
 # Media files configuration
@@ -167,6 +169,8 @@ DATABASES = {
     }
 }
 
+database_url = os.getenv('DATABASE_URL')
+DATABASES['default'] = dj_database_url.parse(database_url)
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
