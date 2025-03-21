@@ -8,7 +8,7 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticate
 from django.shortcuts import get_object_or_404
 
 from .models import GameProfile, Prize, Item, Inventory, Transaction
-from .serializers import GameProfileSerializer, PlantProgressSerializer, InsectSerializer, InventorySerializer, ItemSerializer, TransactionSerializer
+from .serializers import GameProfileSerializer, InsectSerializer, InventorySerializer, ItemSerializer, TransactionSerializer
 
 from rest_framework import generics
 from django.db import models
