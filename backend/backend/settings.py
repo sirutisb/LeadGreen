@@ -39,19 +39,19 @@ CORS_ALLOWED_ORIGINS = os.getenv('CORS_ALLOWED_ORIGINS').split(' ')
 CORS_ALLOW_CREDENTIALS = True
 
 # Media files configuration
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+# MEDIA_URL = '/media/'
+# MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Static files configuration
-STATIC_URL = '/static/'
-STATIC_ROOT = BASE_DIR / 'staticfiles'
-STATICFILES_DIRS = [
-    BASE_DIR / 'static',
-]
+#STATIC_URL = '/static/'
+# STATIC_ROOT = BASE_DIR / 'staticfiles'
+# STATICFILES_DIRS = [
+#     BASE_DIR / 'static',
+# ]
 
-STATIC_ROOT = BASE_DIR / 'staticfiles'
+# STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+# STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 AUTH_USER_MODEL = 'users.UserProfile'
 
@@ -235,12 +235,62 @@ X_FRAME_OPTIONS = 'DENY'
 AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
 AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
 AWS_STORAGE_BUCKET_NAME = os.getenv('AWS_STORAGE_BUCKET_NAME')
-AWS_S3_REGION_NAME = os.getenv('AWS_S3_REGION_NAME', 'us-east-1')
+AWS_S3_REGION_NAME = os.getenv('AWS_S3_REGION_NAME', 'eu-north-1')
 AWS_S3_FILE_OVERWRITE = False
-AWS_DEFAULT_ACL = None
+AWS_DEFAULT_ACL = None  # Changed from 'public-read' to None
 AWS_S3_VERIFY = True
 AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
 
-# Media files configuration
-DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+# S3 static settings
+#STATIC_ROOT = 'static/'
+STATIC_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/static/'
+
+# S3 media settings
+#MEDIA_ROOT = 'media/'
 MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/media/'
+
+# Storage configuration classes
+# Create a custom storage class to specify locations for static and media files
+STORAGES = {
+    "default": {
+        "BACKEND": "storages.backends.s3.S3Storage",
+        "OPTIONS": {
+            "bucket_name": AWS_STORAGE_BUCKET_NAME,
+            "region_name": AWS_S3_REGION_NAME,
+            "access_key": AWS_ACCESS_KEY_ID,
+            "secret_key": AWS_SECRET_ACCESS_KEY,
+            "default_acl": AWS_DEFAULT_ACL,
+            "file_overwrite": AWS_S3_FILE_OVERWRITE,
+            "object_parameters": {
+                "CacheControl": "max-age=86400",  # 24 hours
+            },
+            "querystring_auth": False,  # Don't add complex authentication-related query parameters
+            "addressing_style": "virtual",  # Use virtual addressing style
+            "location": "media",  # Default file storage goes to media folder
+        },
+    },
+    "staticfiles": {
+        "BACKEND": "storages.backends.s3.S3Storage",
+        "OPTIONS": {
+            "bucket_name": AWS_STORAGE_BUCKET_NAME,
+            "region_name": AWS_S3_REGION_NAME,
+            "access_key": AWS_ACCESS_KEY_ID,
+            "secret_key": AWS_SECRET_ACCESS_KEY,
+            "default_acl": AWS_DEFAULT_ACL,
+            "file_overwrite": AWS_S3_FILE_OVERWRITE,
+            "object_parameters": {
+                "CacheControl": "max-age=86400",  # 24 hours
+            },
+            "querystring_auth": False,
+            "addressing_style": "virtual",
+            "location": "static",  # Static files go to static folder
+        },
+    },
+}
+
+# # Additional AWS Settings
+# AWS_S3_OBJECT_PARAMETERS = {
+#     'CacheControl': 'max-age=86400',  # 24 hours
+# }
+# AWS_QUERYSTRING_AUTH = False  # Don't add complex authentication-related query parameters for requests
+# AWS_S3_ADDRESSING_STYLE = "virtual"  # Use virtual addressing style
