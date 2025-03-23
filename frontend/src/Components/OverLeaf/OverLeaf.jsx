@@ -81,7 +81,6 @@ const OverLeaf = () => {
     }
     prevInsectRef.current = currentInsect;
   }, [currentInsect, initialLoad, showInsectAlert]);
-
   const handleAction = async () => {
     if (!selectedIcon) {
       triggerWiggle();
@@ -142,7 +141,7 @@ const OverLeaf = () => {
       <div className="flex flex-col items-center justify-center min-h-screen w-full px-4 sm:px-6 lg:px-8 relative">
         <OverLeafBar setSelectedIcon={setSelectedIcon} inventory={inventory} selectedIcon={selectedIcon} />
         <RouletteButton user={user} setUser={setUser} />
-        <DailyRewards />
+        <DailyRewards setUser={setUser} setInventory={setInventory}/>
         
         <PlantDisplay
           plantRef={plantRef}
