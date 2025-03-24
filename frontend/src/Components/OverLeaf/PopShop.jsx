@@ -3,6 +3,7 @@ import axiosInstance from "../../Context/axiosInstance";
 import { ShoppingBag, Clock, ShoppingCart } from 'lucide-react';
 import greencoinIcon from '../../assets/peng.svg';
 import { toastError, toastSuccess } from "../utils/toastCustom";
+import { green } from '@mui/material/colors';
 import {
   Dialog,
   Grid,
@@ -334,24 +335,32 @@ GardenShop.ShopButton = ({ onClick }) => {
   return (
     <Button
       onClick={onClick}
-      variant="contained"
       startIcon={<ShoppingCartIcon />}
       sx={{
-        borderRadius: 2,
-        bgcolor: 'primary.main',
+        borderRadius: 28,  // More rounded corners
+        bgcolor: green[500], 
         color: 'white',
         textTransform: 'none',
+        boxShadow: '0 4px 14px rgba(0, 128, 0, 0.2)',  // Soft shadow for depth
+        fontWeight: 600,  // Slightly bolder
+        px: 3,  // More horizontal padding
+        py: 1,  // More vertical padding
+        transition: 'all 0.2s ease',  // Smooth transition for hover effects
         '&:hover': {
-          bgcolor: 'primary.dark',
+          bgcolor: green[600],
+          transform: 'translateY(-2px)',  // Subtle lift effect
+          boxShadow: '0 6px 20px rgba(0, 128, 0, 0.25)',  // Enhanced shadow on hover
         },
-        boxShadow: 3,
-        px: 3,
-        py: 1,
+        '&:active': {
+          transform: 'translateY(1px)',  // Press effect
+          boxShadow: '0 2px 10px rgba(0, 128, 0, 0.2)',  // Reduced shadow when pressed
+        }
       }}
     >
       Shop
     </Button>
   );
 };
+
 
 export default GardenShop;
