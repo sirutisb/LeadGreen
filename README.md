@@ -159,7 +159,7 @@ python manage.py test
 ![Alt Text](https://media.giphy.com/media/mYB4QNUUqlqkohrjVy/giphy.gif)
 
 ### 3. User Profile
-![image](https://github.com/sirutisb/LeadGreen/issues/10#issue-2944615858)
+![image](https://private-user-images.githubusercontent.com/160735849/426284455-d9856bb2-6ce4-4c01-9035-f684705cda41.png?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NDI4NTcyMjIsIm5iZiI6MTc0Mjg1NjkyMiwicGF0aCI6Ii8xNjA3MzU4NDkvNDI2Mjg0NDU1LWQ5ODU2YmIyLTZjZTQtNGMwMS05MDM1LWY2ODQ3MDVjZGE0MS5wbmc_WC1BbXotQWxnb3JpdGhtPUFXUzQtSE1BQy1TSEEyNTYmWC1BbXotQ3JlZGVudGlhbD1BS0lBVkNPRFlMU0E1M1BRSzRaQSUyRjIwMjUwMzI0JTJGdXMtZWFzdC0xJTJGczMlMkZhd3M0X3JlcXVlc3QmWC1BbXotRGF0ZT0yMDI1MDMyNFQyMjU1MjJaJlgtQW16LUV4cGlyZXM9MzAwJlgtQW16LVNpZ25hdHVyZT1hNzQ1NmQ5YjU5ZWM2MTM5OTRiMGZkYTY4YmU2ZDFjZDA1NTFkMjg0NzgxMGRiZjk2ZmNjYTNmMzUwMWZiNzU2JlgtQW16LVNpZ25lZEhlYWRlcnM9aG9zdCJ9.b0YDWH2q9DYaUzyvNBnqMb75GbANEo4euunee1D2a9A)
 
 ### 3. Leaderboard
 ![Alt Text](https://media.giphy.com/media/6ESJHByMEeR7mulQwf/giphy.gif)
