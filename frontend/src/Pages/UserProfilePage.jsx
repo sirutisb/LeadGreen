@@ -10,6 +10,8 @@ import AuthContext from "../Context/AuthContext"
 import userService from "../Hooks/userService"
 import { useParams } from "react-router-dom"
 import { Link } from "react-router-dom"
+import { Typography, Box } from "@mui/material"
+import { toastSuccess, toastError } from "../Components/utils/toastCustom"
 
 export default function UserProfile() {
   const { user, logoutUser } = useContext(AuthContext)
@@ -84,13 +86,14 @@ export default function UserProfile() {
     if (!file) return
 
     try {
-      await userService.uploadProfilePicture(user.id, file)
-      // Refresh profile data
-      const data = await userService.getUserProfile(profileId)
-      setProfileData(data)
+      const formData = new FormData()
+      formData.append('profile_picture', file)
+
+      await userService.uploadProfilePicture(formData)
+      window.location.reload() // Refresh the page after successful upload
     } catch (err) {
       console.error("Failed to upload profile picture:", err)
-      alert("Failed to upload profile picture. Please try again.")
+      toastError(err.response?.data?.error || "Failed to upload profile picture. Please try again.")
     }
   }
 
@@ -129,9 +132,9 @@ export default function UserProfile() {
 
   const userData = {
     name: profileData.user.username,
-    joinDate: "Member since 2023", 
+    joinDate: "Member since 2025", 
     bio: "Environmental enthusiast and sustainability advocate.", 
-    location: "San Francisco, CA", 
+    location: "Exeter, UK",
     points: profileData.user.points_balance,
     rank: profileData.rank,
     treeLevel: profileData.game_profile.tree_level,
@@ -148,7 +151,7 @@ export default function UserProfile() {
     stats: [
       { label: "Posts", value: profileData.posts.length },
       { label: "Points", value: profileData.user.points_balance },
-      { label: "CO₂ Saved", value: `${Math.floor(profileData.user.points_balance / 10)}kg` }, // Example calculation
+      { label: "CO₂ Saved", value: `${Math.floor(profileData.user.points_balance / 31.4)}kg` },
       { label: "Spins", value: profileData.game_profile.spins },
     ],
     recentActivity: profileData.posts.slice(0, 4).map((post) => ({
@@ -172,27 +175,12 @@ export default function UserProfile() {
         >
           {/* Cover Photo */}
           <div className="h-48 bg-gradient-to-r from-green-400 to-green-600 relative">
-            {isOwnProfile && (
-                <label
-                  className="absolute bottom-4 right-4 bg-white p-2 rounded-full shadow-md cursor-pointer"
-                >
-                  <Camera className="h-5 w-5 text-green-600" />
-                  <input
-                    id="cover-upload"
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={(e) => console.log("Cover photo upload:", e.target.files[0])}
-                  />
-                </label>
-              )}
-            </div>
-
+          </div>
 
           <div className="px-6 py-4 md:px-8 md:py-6 flex flex-col md:flex-row gap-6 relative">
             {/* Profile Picture */}
             <div className="relative -mt-20 md:-mt-24">
-              <div className="h-24 w-24 md:h-32 md:w-32 rounded-full border-4 border-white bg-green-100 flex items-center justify-center overflow-hidden">
+              <div className="relative h-24 w-24 md:h-32 md:w-32 rounded-full border-4 border-white bg-green-100 flex items-center justify-center overflow-hidden">
                 {profileData.user.profile_picture ? (
                   <img
                     src={profileData.user.profile_picture}
@@ -202,22 +190,22 @@ export default function UserProfile() {
                 ) : (
                   <User className="h-16 w-16 md:h-20 md:w-20 text-green-600" />
                 )}
+                {isOwnProfile && (
+                  <label
+                    htmlFor="profile-upload"
+                    className="absolute inset-0 rounded-full bg-black bg-opacity-60 flex items-center justify-center opacity-0 hover:opacity-60 transition-opacity cursor-pointer"
+                  >
+                    <Edit className="h-5 w-5 text-white" />
+                    <input
+                      id="profile-upload"
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={handleProfilePictureUpload}
+                    />
+                  </label>
+                )}
               </div>
-              {isOwnProfile && (
-                <label
-                  htmlFor="profile-upload"
-                  className="absolute bottom-0 right-0 bg-white p-1.5 rounded-full shadow-md cursor-pointer"
-                >
-                  <Edit className="h-4 w-4 text-green-600" />
-                  <input
-                    id="profile-upload"
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={handleProfilePictureUpload}
-                  />
-                </label>
-              )}
             </div>
 
             {/* User Info */}
@@ -232,9 +220,19 @@ export default function UserProfile() {
 
                 {isOwnProfile && (
                 <div className="flex gap-3 mt-4 md:mt-0">
-                  <button className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-full hover:bg-green-700 transition-colors">
+                  <label
+                    htmlFor="profile-upload"
+                    className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-full hover:bg-green-700 transition-colors cursor-pointer"
+                  >
                     <Settings className="h-4 w-4" /> Edit Profile
-                  </button>
+                    <input
+                      id="profile-upload"
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={handleProfilePictureUpload}
+                    />
+                  </label>
                   <button
                     onClick={logoutUser}
                     className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-full hover:bg-gray-50 transition-colors"
@@ -293,7 +291,7 @@ export default function UserProfile() {
 
                 {/* Sustainability Tips */}
                 <div className="bg-white rounded-lg shadow-md p-6">
-                  <h2 className="text-xl font-serif font-bold mb-4 flex items-center gap-2">
+                  <h2 className="text-xl font-serif font-bold mb-4 flex items-center gap-2 text-black">
                     <Leaf className="h-5 w-5 text-green-600" /> Sustainability Tips
                   </h2>
                   <div className="bg-green-50 rounded-lg p-4">
@@ -425,12 +423,30 @@ export default function UserProfile() {
                             +{post.points_received} pts
                           </div>
                         </div>
-                        <div className="mt-2 flex items-center gap-2">
-                          <button className="text-sm text-gray-500 hover:text-gray-700">Like</button>
-                          <span className="text-gray-300">•</span>
-                          <button className="text-sm text-gray-500 hover:text-gray-700">Comment</button>
-                          <span className="text-gray-300">•</span>
-                          <button className="text-sm text-gray-500 hover:text-gray-700">Share</button>
+                        {post.image && (
+                          <div className="mt-4 rounded-lg overflow-hidden">
+                            <img
+                              src={post.image}
+                              alt="Post content"
+                              className="w-full h-auto object-cover"
+                            />
+                          </div>
+                        )}
+                        <div className="mt-4 flex items-center gap-4">
+                          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                            <Typography 
+                              variant="body2" 
+                              sx={{ 
+                                color: '#1B6630',
+                                fontWeight: 'bold',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 1
+                              }}
+                            >
+                              <span>❤️</span> {post.likes_count || 0} {post.likes_count === 1 ? 'like' : 'likes'}
+                            </Typography>
+                          </Box>
                         </div>
                       </div>
                     </div>
@@ -464,7 +480,7 @@ export default function UserProfile() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
             >
-              <h2 className="text-xl font-serif font-bold mb-4 flex items-center gap-2">
+              <h2 className="text-xl font-serif font-bold mb-4 flex items-center gap-2 text-black">
                 <TrendingUp className="h-5 w-5 text-green-600" /> Your Rank
               </h2>
               <div className="text-center py-4">
@@ -472,11 +488,17 @@ export default function UserProfile() {
                   <span className="text-3xl font-bold text-green-700">#{userData.rank}</span>
                 </div>
                 <p className="text-gray-600 mt-4">
-                  {userData.rank <= 10 
-                    ? "You're in the top 10 eco-warriors! 🌟" 
-                    : userData.rank <= 50 
-                    ? "You're in the top 50 eco-warriors! 🌱" 
-                    : "Keep growing to climb the ranks! 🌿"}
+                  {userData.rank === 1 
+                    ? "🏆 You're the #1 Eco-Warrior! Amazing job! 🌟" 
+                    : userData.rank === 2
+                    ? "🥈 You're the #2 Eco-Warrior! Incredible achievement! 🌟"
+                    : userData.rank === 3
+                    ? "🥉 You're the #3 Eco-Warrior! Outstanding work! 🌟"
+                    : userData.rank <= 5
+                    ? "🌟 You're in the top 5 eco-warriors! Phenomenal! 🌟"
+                    : userData.rank <= 10
+                    ? "🌱 You're in the top 10 eco-warriors! Fantastic! ✨"
+                    : "🌳 Keep growing to climb the ranks! You're doing great! 🌳"}
                 </p>
               </div>
               <div className="mt-4">

@@ -49,7 +49,7 @@ const OverLeafBar = ({ setSelectedIcon, inventory, selectedIcon }) => {
       const innerPadding = isMobile ? 20 : 40; // 10px left + 10px right on mobile, 20px otherwise
       const N = Math.min(3, inventory.length);
       const contentWidth = N * itemWidth + (N - 1) * gap;
-      const totalWidth = contentWidth + innerPadding + outerPadding;
+      const totalWidth = contentWidth + innerPadding + outerPadding + 120;
       setBarWidth(`${totalWidth}px`);
     };
 
@@ -116,7 +116,7 @@ const OverLeafBar = ({ setSelectedIcon, inventory, selectedIcon }) => {
           exit="exit"
           style={{
             width: barWidth,
-            height: isMobile ? "90px" : "120px", // Smaller height on mobile
+            height: isMobile ? "80px" : "110px", // Smaller height on mobile
             padding: isMobile ? "10px 15px" : "20px 30px", // Reduced padding
             boxShadow: "0 10px 30px rgba(0,0,0,0.15), 0 3px 8px rgba(0,0,0,0.1)",
             zIndex: 50,
@@ -129,10 +129,10 @@ const OverLeafBar = ({ setSelectedIcon, inventory, selectedIcon }) => {
                 onClick={() => scroll(-1)}
                 className="absolute left-2 z-10 p-2 rounded-full bg-white border border-gray-100 shadow-lg hover:bg-gray-50 transition-all"
                 style={{
-                  top: "calc(50% + -18px)",
+                  top: "calc(50% + -22px)",
                   transform: "translateY(-50%)",
-                  height: "48px", // Increased size
-                  width: "48px",
+                  height: "40px", // Increased size
+                  width: "40px",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
@@ -164,10 +164,10 @@ const OverLeafBar = ({ setSelectedIcon, inventory, selectedIcon }) => {
                 onClick={() => scroll(1)}
                 className="absolute right-2 z-10 p-2 rounded-full bg-white border border-gray-100 shadow-lg hover:bg-gray-50 transition-all"
                 style={{
-                  top: "calc(50% + -18px)",
+                  top: "calc(50% + -22px)",
                   transform: "translateY(-50%)",
-                  height: "48px", // Increased size
-                  width: "48px",
+                  height: "40px", // Increased size
+                  width: "40px",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
@@ -262,7 +262,7 @@ const OverLeafBar = ({ setSelectedIcon, inventory, selectedIcon }) => {
                     <motion.img
                       src={item.image || `/assets/items/${item.id}.svg`}
                       alt={item.label}
-                      className={isMobile ? "w-10 h-10 aspect-square object-cover rounded-lg" : "w-12 h-12 aspect-square object-cover rounded-lg"} // Smaller on mobile
+                      className={isMobile ? "w-7 h-7 aspect-square object-cover rounded-lg" : "w-10 h-10 aspect-square object-cover rounded-lg"} // Smaller on mobile
                       animate={{
                         filter: selectedIcon === item.id
                           ? "drop-shadow(0px 0px 12px rgba(27, 102, 48, 0.7))"

@@ -171,6 +171,16 @@ class GameProfile(models.Model):
             self.current_day = 1
         else:
             # if less than 48 - (greater than 24) - add to streak and enumerate day
+            reward = DailyRewardConfig.objects.get(day=self.current_day)
+
+            # add reward based on reward type
+            if reward.reward_type == 'ITEM':
+                self.add_to_inventory(reward.item, reward.amount)
+            elif reward.reward_type == 'SPINS':
+                self.spins += reward.amount
+            elif reward.reward_type == 'POINTS':
+                self.points_balance += reward.amount
+
             self.streak += 1
             self.current_day = (self.current_day % 7) + 1
 
@@ -210,6 +220,7 @@ class GameProfile(models.Model):
             )
         
         return inventory_item
+    
 
 @receiver(post_save, sender=UserProfile)
 def create_game_profile(sender, instance, created, **kwargs):
@@ -286,6 +297,27 @@ class Item(models.Model):
 
     def __str__(self):
         return f"{self.name} | Price: {self.price}"
+    
+class DailyRewardConfig(models.Model):
+
+    day = models.IntegerField(unique=True)
+    
+    reward_type = models.CharField(max_length=32, choices=[
+        ('POINTS', 'Points'),
+        ('SPINS', 'Spins'),
+        ('ITEM', 'Item')
+    ])
+
+    amount = models.IntegerField()
+
+    item = models.ForeignKey(Item, on_delete=models.SET_NULL, null=True, blank=True)
+
+    class Meta:
+        ordering = ['day']
+
+    def __str__(self):
+        return f"Day {self.day} - {self.reward_type}"
+
     
 class Inventory(models.Model):
     user = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
