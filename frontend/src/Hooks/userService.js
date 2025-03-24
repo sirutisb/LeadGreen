@@ -36,12 +36,9 @@ const userService = {
   },
 
   // Upload profile picture
-  uploadProfilePicture: async (userId, imageFile) => {
+  uploadProfilePicture: async (formData) => {
     try {
-      const formData = new FormData();
-      formData.append('profile_picture', imageFile);
-      
-      const response = await axiosInstance.patch(`/users/${userId}/`, formData, {
+      const response = await axiosInstance.post('/users/picture/', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
