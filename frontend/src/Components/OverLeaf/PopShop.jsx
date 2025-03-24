@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, forwardRef } from 'react';
 import axiosInstance from "../../Context/axiosInstance";
 import { ShoppingBag, Clock, ShoppingCart } from 'lucide-react';
 import greencoinIcon from '../../assets/peng.svg';
@@ -15,8 +15,14 @@ import {
   Box,
   CircularProgress,
   Chip,
+  Fade
 } from '@mui/material';
 import { Add, Remove, ShoppingCart as ShoppingCartIcon } from '@mui/icons-material';
+
+// Create a Transition component using Fade with a timeout of 500ms
+const Transition = forwardRef(function Transition(props, ref) {
+  return <Fade ref={ref} {...props} timeout={500} />;
+});
 
 const GardenShop = ({ isOpen, onClose, user, setUser, onPurchase }) => {
   const [animateItems, setAnimateItems] = useState(false);
@@ -154,7 +160,14 @@ const GardenShop = ({ isOpen, onClose, user, setUser, onPurchase }) => {
   if (!isOpen) return null;
 
   return (
-    <Dialog open={isOpen} onClose={onClose} maxWidth="md" fullWidth>
+    <Dialog
+      open={isOpen}
+      onClose={onClose}
+      maxWidth="md"
+      fullWidth
+      TransitionComponent={Transition} // Use fade transition for dialog
+      keepMounted // Optional: keeps the child component mounted during transitions
+    >
       <Box sx={{ bgcolor: 'background.paper', p: 2 }}>
         {/* Header */}
         <Box
@@ -317,25 +330,27 @@ const GardenShop = ({ isOpen, onClose, user, setUser, onPurchase }) => {
   );
 };
 
-// Button to open shop
 GardenShop.ShopButton = ({ onClick }) => {
   return (
-    <IconButton
+    <Button
       onClick={onClick}
+      variant="contained"
+      startIcon={<ShoppingCartIcon />}
       sx={{
-        position: 'fixed',
-        bottom: 16,
-        right: 16,
+        borderRadius: 2,
         bgcolor: 'primary.main',
         color: 'white',
-        '&:hover': { bgcolor: 'primary.dark' },
-        width: 56,
-        height: 56,
+        textTransform: 'none',
+        '&:hover': {
+          bgcolor: 'primary.dark',
+        },
         boxShadow: 3,
+        px: 3,
+        py: 1,
       }}
     >
-      <ShoppingCartIcon />
-    </IconButton>
+      Shop
+    </Button>
   );
 };
 

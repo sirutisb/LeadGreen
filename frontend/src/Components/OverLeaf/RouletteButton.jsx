@@ -18,7 +18,6 @@ const RouletteButton = ({ user, setUser }) => {
 
   const [playSpin, { stop: stopSpin }] = useSound(spinSound, { volume: 1 });
 
-  // 🔹 Fetch spin data when component mounts
   useEffect(() => {
     const fetchSpinData = async () => {
       try {
@@ -36,7 +35,6 @@ const RouletteButton = ({ user, setUser }) => {
     fetchSpinData();
   }, []);
 
-  // 🔹 Handle Spin Click
   const handleSpinClick = async () => {
     if (isSpinning || mustSpin || user.spins <= 0) return;
     setIsSpinning(true);
@@ -82,7 +80,6 @@ const RouletteButton = ({ user, setUser }) => {
     }
   };
 
-  // 🔹 Handle Spin Stop
   const handleSpinStop = () => {
     stopSpin();
     setMustSpin(false);
@@ -101,7 +98,7 @@ const RouletteButton = ({ user, setUser }) => {
   return (
     <>
       <motion.button
-        className={`absolute top-32 left-5 ${
+        className={`${
           user.spins === 0
             ? "bg-gray-400 cursor-not-allowed"
             : "bg-gradient-to-r from-red-500 to-black"
@@ -113,7 +110,6 @@ const RouletteButton = ({ user, setUser }) => {
         🎰 Spins: {user.spins}
       </motion.button>
 
-      {/* 🎡 Roulette Modal */}
       <AnimatePresence>
         {isRouletteOpen && (
           <motion.div

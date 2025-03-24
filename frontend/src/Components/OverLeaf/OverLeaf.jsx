@@ -81,6 +81,7 @@ const OverLeaf = () => {
     }
     prevInsectRef.current = currentInsect;
   }, [currentInsect, initialLoad, showInsectAlert]);
+
   const handleAction = async () => {
     if (!selectedIcon) {
       triggerWiggle();
@@ -98,10 +99,12 @@ const OverLeaf = () => {
 
     // Optimistically update the inventory
     setInventory(prev =>
-      prev.map(i => i.id === selectedIcon 
-        ? { ...i, amount: i.amount - 1 }
-        : i
-      ).filter(i => i.amount > 0)
+      prev
+        .map(i => i.id === selectedIcon 
+          ? { ...i, amount: i.amount - 1 }
+          : i
+        )
+        .filter(i => i.amount > 0)
     );
 
     const result = await executeAction(selectedIcon);
@@ -135,14 +138,23 @@ const OverLeaf = () => {
   if (loading) return <div>Loading...</div>;
 
   return (
-    <div>
+    <div className="relative min-h-screen w-full">
       <ConfettiEffect show={showConfetti} />
 
-      <div className="flex flex-col items-center justify-center min-h-screen w-full px-4 sm:px-6 lg:px-8 relative">
-        <OverLeafBar setSelectedIcon={setSelectedIcon} inventory={inventory} selectedIcon={selectedIcon} />
-        <RouletteButton user={user} setUser={setUser} />
-        <DailyRewards setUser={setUser} setInventory={setInventory}/>
-        
+    <div className="flex justify-between items-start">
+        <div className="flex flex-col justify-center items-start p-4 space-y-4">
+            <OverLeafBar setSelectedIcon={setSelectedIcon} inventory={inventory} selectedIcon={selectedIcon} />
+            <StatsDisplay user={user} />
+            <RouletteButton user={user} setUser={setUser} />
+            <DailyRewards setUser={setUser} setInventory={setInventory} />
+        </div>
+        <div className="flex flex-col justify-center items-end p-4">
+            <GardenShop.ShopButton onClick={() => setShopOpen(true)} />
+        </div>
+    </div>
+
+      {/* Center: Plant Display */}
+      <div className="flex justify-center items-center h-full">
         <PlantDisplay
           plantRef={plantRef}
           wiggle={wiggle}
@@ -152,21 +164,16 @@ const OverLeaf = () => {
           insect={currentInsect}
           onClick={handleAction}
         />
-
-        <StatsDisplay user={user} />
-        
-        {/* Shop integration from PopShop branch */}
-        <GardenShop.ShopButton onClick={() => setShopOpen(true)} />
-        
-        {/* Shop popup from PopShop branch */}
-        <GardenShop 
-          isOpen={shopOpen} 
-          onClose={() => setShopOpen(false)} 
-          user={user}
-          setUser={setUser}
-          onPurchase={loadInventory}
-        />
       </div>
+
+      {/* Shop Popup */}
+      <GardenShop 
+        isOpen={shopOpen} 
+        onClose={() => setShopOpen(false)} 
+        user={user}
+        setUser={setUser}
+        onPurchase={loadInventory}
+      />
     </div>
   );
 };
