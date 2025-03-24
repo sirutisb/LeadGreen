@@ -21,7 +21,7 @@ const Post = ({ post }) => {
       
       const response = await axiosInstance({
         method: newIsLiked ? 'post' : 'delete',
-        url: `/posts/${post.id}/like/`
+        url: `/api/posts/${post.id}/like/`
       });
       
       if (response.status === 200) {

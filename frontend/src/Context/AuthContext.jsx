@@ -23,7 +23,7 @@ export const AuthProvider = ({ children }) => {
   const registerUser = async (e) => {
     setRegisterError(null);
     try {
-      const { data } = await axiosInstance.post(`/auth/register/`, {
+      const { data } = await axiosInstance.post(`/api/auth/register/`, {
         username: e.username,
         email: e.email,
         password: e.password,
@@ -60,7 +60,7 @@ export const AuthProvider = ({ children }) => {
   const loginUser = async (e) => {
     setLoginError(null);
     try {
-      const { data } = await axiosInstance.post(`/auth/login/`, {
+      const { data } = await axiosInstance.post(`/api/auth/login/`, {
         username: e.username,
         password: e.password,
       });
@@ -104,7 +104,7 @@ export const AuthProvider = ({ children }) => {
     }
 
     try {
-      const { data } = await axiosInstance.post(`/auth/token/refresh/`, {
+      const { data } = await axiosInstance.post(`/api/auth/token/refresh/`, {
         refresh: authTokens.refresh,
       });
 // Update tokens in state and localStorage

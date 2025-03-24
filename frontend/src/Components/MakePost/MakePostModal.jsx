@@ -39,7 +39,7 @@ const MakePostModal = ({ open, onClose }) => {
     formData.append("image", images[0].file);
 
     try {
-      const response = await axiosInstance.post("/posts/", formData, {
+      const response = await axiosInstance.post("/api/posts/", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 

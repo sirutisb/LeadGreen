@@ -12,7 +12,7 @@ const QRScannerStep = ({ qrValue, setQrValue, nextStep }) => {
   // Validate QR code with the server
   const validateQRCode = async (scannedCode) => {
     try {
-      const response = await axiosInstance.get("qrcodes/", {
+      const response = await axiosInstance.get("/api/qrcodes/", {
         params: { qr_code: scannedCode }
       });
       return response.data.exists;
