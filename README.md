@@ -193,6 +193,9 @@ curl -X POST http://localhost:8000/api/auth/login/ \
 
 ---
 
+# Deployment
+- [Backend Instructions](docs/deployment.md)
+
 ## Configurations
 
 ### 1. CORS Settings (Enabled by default)
