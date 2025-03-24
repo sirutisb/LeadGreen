@@ -15,6 +15,7 @@ const rewardIcons = {
     water: waterIcon,
     soil: soilIcon,
     glove: gloveIcon,
+    pest: pestIcon
   };
 
 export default function DailyRewards({setUser, setInventory, loadInventory}) {
