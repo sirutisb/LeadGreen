@@ -8,7 +8,6 @@ import useGameData from "../../Hooks/useGameData";
 import usePlantEffects from "../../Hooks/usePlantEffects";
 import GardenShop from "./PopShop";
 import { fetchInventory } from "./gameService";
-// Use <PopShop /> for the popup and <PopShop.ShopButton /> for the button
 import DailyRewards from "./DailyRewards/DailyRewards";
 
 const OverLeaf = () => {
@@ -21,11 +20,11 @@ const OverLeaf = () => {
   const loadInventory = async () => {
     try {
       const data = await fetchInventory();
-      const formattedInventory = data.map(item => ({
+      const formattedInventory = data.map((item) => ({
         id: item.item.id,
         label: item.item.name,
         amount: item.quantity,
-        image: item.item.image
+        image: item.item.image,
       }));
       setInventory(formattedInventory);
     } catch (error) {
@@ -74,50 +73,46 @@ const OverLeaf = () => {
 
   useEffect(() => {
     if (currentInsect && initialLoad === false) {
-      // Only show alert if it's a new insect (different from previous)
       if (!prevInsectRef.current || prevInsectRef.current.name !== currentInsect.name) {
         showInsectAlert(currentInsect.name);
       }
     }
     prevInsectRef.current = currentInsect;
   }, [currentInsect, initialLoad, showInsectAlert]);
+
   const handleAction = async () => {
     if (!selectedIcon) {
       triggerWiggle();
       return;
     }
 
-    // Find the selected item in inventory
     const item = inventory.find((i) => i.id === selectedIcon);
-    
+
     if (!item || item.amount <= 0) {
-      setSelectedIcon(null); 
+      setSelectedIcon(null);
       triggerWiggle();
       return;
     }
 
-    // Optimistically update the inventory
-    setInventory(prev =>
-      prev.map(i => i.id === selectedIcon 
-        ? { ...i, amount: i.amount - 1 }
-        : i
-      ).filter(i => i.amount > 0)
+    setInventory((prev) =>
+      prev
+        .map((i) => (i.id === selectedIcon ? { ...i, amount: i.amount - 1 } : i))
+        .filter((i) => i.amount > 0)
     );
 
     const result = await executeAction(selectedIcon);
-    
+
     if (result.success) {
       playActionSound(selectedIcon);
 
-      // Verify inventory state
       const serverInventory = await fetchInventory();
-      const serverItem = serverInventory.find(i => i.item.id === selectedIcon);
+      const serverItem = serverInventory.find((i) => i.item.id === selectedIcon);
       if (!serverItem || serverItem.quantity !== item.amount - 1) {
-        const formattedInventory = serverInventory.map(item => ({
+        const formattedInventory = serverInventory.map((item) => ({
           id: item.item.id,
           label: item.item.name,
           amount: item.quantity,
-          image: item.item.image
+          image: item.item.image,
         }));
         setInventory(formattedInventory);
       }
@@ -126,7 +121,6 @@ const OverLeaf = () => {
         setSelectedIcon(null);
       }
     } else {
-      // If action failed, revert the optimistic update
       await loadInventory();
       playErrorSound();
     }
@@ -135,14 +129,24 @@ const OverLeaf = () => {
   if (loading) return <div>Loading...</div>;
 
   return (
-    <div>
+    <div className="relative min-h-screen w-full">
       <ConfettiEffect show={showConfetti} />
 
-      <div className="flex flex-col items-center justify-center min-h-screen w-full px-4 sm:px-6 lg:px-8 relative">
-        <OverLeafBar setSelectedIcon={setSelectedIcon} inventory={inventory} selectedIcon={selectedIcon} />
-        <RouletteButton user={user} setUser={setUser} />
-        <DailyRewards setUser={setUser} setInventory={setInventory}/>
-        
+      {/* Top Section: OverLeafBar, StatsDisplay, etc. */}
+      <div className="flex justify-between items-start">
+        <div className="flex flex-col justify-center items-start p-4 space-y-4">
+          <OverLeafBar setSelectedIcon={setSelectedIcon} inventory={inventory} selectedIcon={selectedIcon} />
+          <StatsDisplay user={user} />
+          <RouletteButton user={user} setUser={setUser} />
+          <DailyRewards setUser={setUser} setInventory={setInventory} />
+        </div>
+        <div className="flex flex-col justify-center items-end p-4">
+          <GardenShop.ShopButton onClick={() => setShopOpen(true)} />
+        </div>
+      </div>
+
+      {/* Center: Plant Display */}
+      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
         <PlantDisplay
           plantRef={plantRef}
           wiggle={wiggle}
@@ -152,21 +156,16 @@ const OverLeaf = () => {
           insect={currentInsect}
           onClick={handleAction}
         />
-
-        <StatsDisplay user={user} />
-        
-        {/* Shop integration from PopShop branch */}
-        <GardenShop.ShopButton onClick={() => setShopOpen(true)} />
-        
-        {/* Shop popup from PopShop branch */}
-        <GardenShop 
-          isOpen={shopOpen} 
-          onClose={() => setShopOpen(false)} 
-          user={user}
-          setUser={setUser}
-          onPurchase={loadInventory}
-        />
       </div>
+
+      {/* Shop Popup */}
+      <GardenShop
+        isOpen={shopOpen}
+        onClose={() => setShopOpen(false)}
+        user={user}
+        setUser={setUser}
+        onPurchase={loadInventory}
+      />
     </div>
   );
 };

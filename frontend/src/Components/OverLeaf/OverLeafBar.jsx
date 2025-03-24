@@ -8,6 +8,7 @@ const OverLeafBar = ({ setSelectedIcon, inventory, selectedIcon }) => {
   const [hoveredItem, setHoveredItem] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
   const [barWidth, setBarWidth] = useState("min(700px, 90vw)"); // Initial width
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 640);
 
   // Update scroll button visibility
   const updateScrollState = () => {
@@ -25,7 +26,7 @@ const OverLeafBar = ({ setSelectedIcon, inventory, selectedIcon }) => {
     const item = container.querySelector(".inventory-item");
     if (!item) return;
     const itemWidth = item.offsetWidth;
-    const gap = 40;
+    const gap = isMobile ? 20 : 40;
     const visibleItems = Math.floor(container.clientWidth / (itemWidth + gap));
     const scrollAmount = (itemWidth + gap) * direction * Math.max(1, Math.floor(visibleItems / 2));
     container.scrollBy({ left: scrollAmount, behavior: "smooth" });
@@ -40,25 +41,29 @@ const OverLeafBar = ({ setSelectedIcon, inventory, selectedIcon }) => {
       if (!item) return;
       const itemWidth = item.offsetWidth;
       if (itemWidth === 0) {
-        // Retry if items aren't fully rendered
         setTimeout(calculateBarWidth, 100);
         return;
       }
-      const gap = 40; // Gap between items
-      const outerPadding = 60; // Outer div padding (30px left + 30px right)
-      const innerPadding = 40; // Scroll container padding (20px left + 20px right)
-      const N = Math.min(3, inventory.length); // Number of items to display (max 3)
-      const contentWidth = N * itemWidth + (N - 1) * gap; // Width for N items + gaps
-      const totalWidth = contentWidth + innerPadding + outerPadding; // Total width including all padding
+      const gap = isMobile ? 20 : 40; // Reduced gap on mobile
+      const outerPadding = isMobile ? 30 : 60; // 15px left + 15px right on mobile, 30px otherwise
+      const innerPadding = isMobile ? 20 : 40; // 10px left + 10px right on mobile, 20px otherwise
+      const N = Math.min(3, inventory.length);
+      const contentWidth = N * itemWidth + (N - 1) * gap;
+      const totalWidth = contentWidth + innerPadding + outerPadding;
       setBarWidth(`${totalWidth}px`);
     };
 
-    calculateBarWidth();
-    window.addEventListener("resize", calculateBarWidth);
-    return () => window.removeEventListener("resize", calculateBarWidth);
-  }, [inventory]);
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 640);
+      calculateBarWidth();
+    };
 
-  // Scroll state and observer setup (unchanged)
+    calculateBarWidth();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, [inventory, isMobile]);
+
+  // Scroll state and observer setup
   useEffect(() => {
     const container = scrollContainer.current;
     if (!container) return;
@@ -79,7 +84,7 @@ const OverLeafBar = ({ setSelectedIcon, inventory, selectedIcon }) => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Animation variants (unchanged)
+  // Animation variants
   const barVariants = {
     hidden: { opacity: 0, y: 50 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut", when: "beforeChildren", staggerChildren: 0.05 } },
@@ -110,9 +115,9 @@ const OverLeafBar = ({ setSelectedIcon, inventory, selectedIcon }) => {
           animate="visible"
           exit="exit"
           style={{
-            width: barWidth, // Dynamic width
-            height: "120px",
-            padding: "20px 30px",
+            width: barWidth,
+            height: isMobile ? "90px" : "120px", // Smaller height on mobile
+            padding: isMobile ? "10px 15px" : "20px 30px", // Reduced padding
             boxShadow: "0 10px 30px rgba(0,0,0,0.15), 0 3px 8px rgba(0,0,0,0.1)",
             zIndex: 50,
           }}
@@ -123,7 +128,15 @@ const OverLeafBar = ({ setSelectedIcon, inventory, selectedIcon }) => {
               <motion.button
                 onClick={() => scroll(-1)}
                 className="absolute left-2 z-10 p-2 rounded-full bg-white border border-gray-100 shadow-lg hover:bg-gray-50 transition-all"
-                style={{ top: "calc(50% + -18px)", transform: "translateY(-50%)", height: "40px", width: "40px", display: "flex", alignItems: "center", justifyContent: "center" }}
+                style={{
+                  top: "calc(50% + -18px)",
+                  transform: "translateY(-50%)",
+                  height: "48px", // Increased size
+                  width: "48px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
                 variants={buttonVariants}
                 initial="initial"
                 animate="animate"
@@ -131,7 +144,13 @@ const OverLeafBar = ({ setSelectedIcon, inventory, selectedIcon }) => {
                 whileHover="hover"
                 whileTap="tap"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-emerald-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-8 w-8 text-emerald-700" // Increased icon size
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                 </svg>
               </motion.button>
@@ -144,7 +163,15 @@ const OverLeafBar = ({ setSelectedIcon, inventory, selectedIcon }) => {
               <motion.button
                 onClick={() => scroll(1)}
                 className="absolute right-2 z-10 p-2 rounded-full bg-white border border-gray-100 shadow-lg hover:bg-gray-50 transition-all"
-                style={{ top: "calc(50% + -18px)", transform: "translateY(-50%)", height: "40px", width: "40px", display: "flex", alignItems: "center", justifyContent: "center" }}
+                style={{
+                  top: "calc(50% + -18px)",
+                  transform: "translateY(-50%)",
+                  height: "48px", // Increased size
+                  width: "48px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
                 variants={buttonVariants}
                 initial="initial"
                 animate="animate"
@@ -152,7 +179,13 @@ const OverLeafBar = ({ setSelectedIcon, inventory, selectedIcon }) => {
                 whileHover="hover"
                 whileTap="tap"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-emerald-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-8 w-8 text-emerald-700" // Increased icon size
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
               </motion.button>
@@ -161,13 +194,14 @@ const OverLeafBar = ({ setSelectedIcon, inventory, selectedIcon }) => {
 
           <div
             ref={scrollContainer}
-            className="flex overflow-x-auto flex-nowrap gap-[40px] h-full items-center scrollbar-hide"
+            className="flex overflow-x-auto flex-nowrap h-full items-center scrollbar-hide"
             onScroll={updateScrollState}
             style={{
               width: "100%",
               scrollBehavior: "smooth",
-              padding: "0 20px",
-              justifyContent: inventory.length <= 3 ? "center" : "flex-start", // Center items if 3 or fewer
+              padding: isMobile ? "0 10px" : "0 20px", // Reduced padding
+              gap: isMobile ? "20px" : "40px", // Reduced gap
+              justifyContent: inventory.length <= 3 ? "center" : "flex-start",
               maskImage: "linear-gradient(to right, transparent 0%, black 5%, black 95%, transparent 100%)",
               WebkitMaskImage: "linear-gradient(to right, transparent 0%, black 5%, black 95%, transparent 100%)",
               msOverflowStyle: "none",
@@ -203,7 +237,13 @@ const OverLeafBar = ({ setSelectedIcon, inventory, selectedIcon }) => {
                 >
                   {item.tooltip}
                 </motion.div>
-                <motion.div drag={item.amount > 0} dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }} dragElastic={0.1} onDragStart={() => setIsDragging(true)} onDragEnd={() => setIsDragging(false)}></motion.div>
+                <motion.div
+                  drag={item.amount > 0}
+                  dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
+                  dragElastic={0.1}
+                  onDragStart={() => setIsDragging(true)}
+                  onDragEnd={() => setIsDragging(false)}
+                ></motion.div>
                 <motion.button
                   className="flex flex-col items-center"
                   whileTap={item.amount > 0 ? { scale: 0.85 } : {}}
@@ -222,9 +262,13 @@ const OverLeafBar = ({ setSelectedIcon, inventory, selectedIcon }) => {
                     <motion.img
                       src={item.image || `/assets/items/${item.id}.svg`}
                       alt={item.label}
-                      className="w-12 h-12 aspect-square object-cover rounded-lg"
+                      className={isMobile ? "w-10 h-10 aspect-square object-cover rounded-lg" : "w-12 h-12 aspect-square object-cover rounded-lg"} // Smaller on mobile
                       animate={{
-                        filter: selectedIcon === item.id ? "drop-shadow(0px 0px 12px rgba(27, 102, 48, 0.7))" : hoveredItem === item.id ? "drop-shadow(0px 0px 5px rgba(27, 102, 48, 0.3))" : "drop-shadow(0px 0px 0px transparent)",
+                        filter: selectedIcon === item.id
+                          ? "drop-shadow(0px 0px 12px rgba(27, 102, 48, 0.7))"
+                          : hoveredItem === item.id
+                          ? "drop-shadow(0px 0px 5px rgba(27, 102, 48, 0.3))"
+                          : "drop-shadow(0px 0px 0px transparent)",
                       }}
                       transition={{ type: "spring", stiffness: 300, damping: 15 }}
                     />
@@ -245,7 +289,10 @@ const OverLeafBar = ({ setSelectedIcon, inventory, selectedIcon }) => {
                   >
                     {item.amount}
                   </motion.div>
-                  <motion.div className="mt-1 font-semibold text-xs text-emerald-800" animate={{ scale: selectedIcon === item.id ? 1.05 : 1, fontWeight: selectedIcon === item.id ? "700" : "600" }}>
+                  <motion.div
+                    className="mt-1 font-semibold text-xs text-emerald-800"
+                    animate={{ scale: selectedIcon === item.id ? 1.05 : 1, fontWeight: selectedIcon === item.id ? "700" : "600" }}
+                  >
                     {item.label}
                   </motion.div>
                 </motion.button>
