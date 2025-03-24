@@ -13,7 +13,7 @@ const PlantDisplay = ({ plantRef, wiggle, scale, plantImage, plantName, insect, 
       style={{ userSelect: "none" }} // Inline CSS to disable selection
     >
       <motion.img 
-        src={import.meta.env.VITE_BACKEND + plantImage}
+        src={plantImage}
         alt={plantName}
         className="w-[120px] h-[120px] sm:w-[140px] sm:h-[140px] md:w-[160px] md:h-[160px] lg:w-[180px] lg:h-[180px] -mt-20"
         animate={{ scale }}

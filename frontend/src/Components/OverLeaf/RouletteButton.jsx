@@ -22,7 +22,7 @@ const RouletteButton = ({ user, setUser }) => {
   useEffect(() => {
     const fetchSpinData = async () => {
       try {
-        const response = await axiosInstance.get("/game/spin/prizes");
+        const response = await axiosInstance.get("/api/game/spin/prizes");
         if (response.data) {
           setSpinData(response.data.prizes);
         }
@@ -42,7 +42,7 @@ const RouletteButton = ({ user, setUser }) => {
     setIsSpinning(true);
 
     try {
-      const response = await axiosInstance.post("/game/spin/");
+      const response = await axiosInstance.post("/api/game/spin/");
       const data = response.data;
 
       if (data.success) {
