@@ -1,29 +1,449 @@
-import React, { useState, useEffect, forwardRef } from 'react';
+// import React, { useState, useEffect, useRef } from 'react';
+// import axiosInstance from "../../Context/axiosInstance";
+// import { ShoppingBag, Sparkles, Clock, X, Plus, Minus, ShoppingCart } from 'lucide-react';
+// import greencoinIcon from '../../assets/peng.svg';
+// import { toastError, toastSuccess } from "../utils/toastCustom";
+
+// const GardenShop = ({ isOpen, onClose, user, setUser, onPurchase }) => {
+//   const [animateItems, setAnimateItems] = useState(false);
+//   const [selectedItem, setSelectedItem] = useState(null);
+//   const [inventory, setInventory] = useState({});
+//   const [itemQuantities, setItemQuantities] = useState({});
+//   const [shopItems, setShopItems] = useState([]);
+//   const [loading, setLoading] = useState(true);
+//   const [error, setError] = useState(null);
+//   const modalRef = useRef(null);
+
+//   // Fetch shop items from API
+//   useEffect(() => {
+//     const fetchShopItems = async () => {
+//       try {
+//         setLoading(true);
+//         const response = await axiosInstance.get('/game/items/');
+//         const data = response.data;
+        
+//         if (data.success && Array.isArray(data.items)) {
+//           setShopItems(data.items);
+          
+//           // Initialize quantities for all items
+//           const initialQuantities = {};
+//           data.items.forEach(item => {
+//             initialQuantities[item.id] = 1;
+//           });
+//           setItemQuantities(initialQuantities);
+          
+//           // Update user coins/points from the API response
+//           if (data.points !== undefined) {
+//             setUser(prevUser => ({
+//               ...prevUser,
+//               coins: data.points
+//             }));
+//           }
+//         } else {
+//           setError('Failed to load shop items');
+//         }
+//       } catch (err) {
+//         setError('Error connecting to the shop service');
+//         console.error('Shop fetch error:', err);
+//       } finally {
+//         setLoading(false);
+//       }
+//     };
+
+//     if (isOpen) {
+//       fetchShopItems();
+//     }
+//   }, [isOpen]);
+
+//   // Initialize inventory on component mount
+//   useEffect(() => {
+//     const fetchInventory = async () => {
+//       try {
+//         const response = await axiosInstance.get('/game/inventory/');
+//         const inventoryData = {};
+//         response.data.forEach(item => {
+//           inventoryData[item.item.id] = item.quantity;
+//         });
+//         setInventory(inventoryData);
+//       } catch (err) {
+//         console.error('Inventory fetch error:', err);
+//         toastError('Failed to load inventory');
+//       }
+//     };
+
+//     if (isOpen && shopItems.length > 0) {
+//       fetchInventory();
+//     }
+//   }, [isOpen, shopItems]);
+
+//   useEffect(() => {
+//     if (isOpen) {
+//       setAnimateItems(true);
+//       document.body.style.overflow = 'hidden';
+      
+//       if (modalRef.current) {
+//         modalRef.current.classList.add('scale-100', 'opacity-100');
+//         modalRef.current.classList.remove('scale-95', 'opacity-0');
+//       }
+      
+//       return () => {
+//         document.body.style.overflow = '';
+//       };
+//     } else {
+//       setAnimateItems(false);
+//       setSelectedItem(null);
+//     }
+//   }, [isOpen]);
+
+//   // Update item quantity
+//   const updateItemQuantity = (itemId, change) => {
+//     setItemQuantities(prev => {
+//       const newQuantity = Math.max(1, (prev[itemId] || 1) + change);
+//       return { ...prev, [itemId]: newQuantity };
+//     });
+//   };
+  
+//   const handlePurchase = async (item) => {
+//     const quantity = itemQuantities[item.id] || 1;
+//     const totalPrice = item.price * quantity;
+    
+//     if (user.coins >= totalPrice) {
+//       const button = document.getElementById(`buy-btn-${item.id}`);
+//       if (button) {
+//         button.classList.add("scale-90");
+//         setTimeout(() => {
+//           button.classList.remove("scale-90");
+//         }, 150);
+//       }
+      
+//       try {
+//         const response = await axiosInstance.post(`/game/items/${item.id}/purchase/`, {
+//           quantity: quantity
+//         });
+        
+//         const result = response.data;
+        
+//         if (result.success) {
+//           // Update user coins
+//           setUser(prevUser => ({
+//             ...prevUser,
+//             coins: result.remaining_points
+//           }));
+          
+//           // Call the callback to update parent's inventory
+//           if (onPurchase) {
+//             onPurchase();
+//           }
+          
+//           toastSuccess(`Successfully purchased ${quantity} ${item.name}!`);
+//         } else {
+//           toastError(result.message || "Purchase failed. Please try again.");
+//         }
+//       } catch (err) {
+//         toastError("Purchase failed. Please try again.");
+//         console.error('Purchase error:', err);
+//       }
+//     } else {
+//       toastError("Not enough coins!");
+//     }
+//   };
+
+//   // Handle item selection
+//   const handleItemSelect = (item) => {
+//     setSelectedItem(item);
+//   };
+
+//   // Handle shop close with animation
+//   const handleCloseShop = () => {
+//     if (modalRef.current) {
+//       modalRef.current.classList.add('scale-95', 'opacity-0');
+//       modalRef.current.classList.remove('scale-100', 'opacity-100');
+//       setTimeout(() => {
+//         onClose();
+//       }, 0);
+//     } else {
+//       onClose();
+//     }
+//   };
+
+//   // Get item effects display
+//   const getItemEffectsDisplay = (item) => {
+//     if (!item.effects || item.effects.length === 0) {
+//       return "No special effects";
+//     }
+    
+//     return item.effects.map(effect => effect.name).join(", ");
+//   };
+
+//   if (!isOpen) return null;
+
+//   return (
+//     <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4 md:p-0 overflow-y-auto">
+//       <div 
+//         ref={modalRef}
+//         className="bg-white w-full max-w-4xl rounded-2xl overflow-hidden shadow-2xl max-h-full md:max-h-[90vh] flex flex-col transform transition-all duration-300 scale-95 opacity-0"
+//       >
+//         {/* Header */}
+//         <div className="bg-gradient-to-r from-emerald-300 to-green-600 p-4 flex justify-between items-center">
+//           <div className="flex items-center space-x-3">
+//             <div className="bg-white/20 p-2 rounded-lg">
+//               <ShoppingBag className="text-white" size={22} />
+//             </div>
+//             <h2 className="text-xl text-white tracking-wide">Garden Shop</h2>
+//           </div>
+//           <div className="flex items-center space-x-2">
+//             <button 
+//               onClick={handleCloseShop}
+//               className="bg-white/20 hover:bg-white/30 rounded-full p-2 transition-all duration-200"
+//               aria-label="Close shop"
+//             >
+//               <X size={18} color="white" />
+//             </button>
+//           </div>
+//         </div>
+
+//         {/* Grid Layout */}
+//         <div className="p-4 md:p-6 bg-white overflow-y-auto flex-grow">
+//           {loading ? (
+//             <div className="flex justify-center items-center h-64">
+//               <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-500"></div>
+//             </div>
+//           ) : error ? (
+//             <div className="text-center text-red-500 p-4">
+//               {error}
+//             </div>
+//           ) : (
+//             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-5">
+//               {shopItems.map((item, index) => (
+//                 <div 
+//                   key={item.id}
+//                   className={`rounded-xl overflow-hidden shadow-md hover:shadow-xl transform transition-all duration-500 ${
+//                     animateItems ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
+//                   } hover:scale-103 cursor-pointer group`}
+//                   style={{ transitionDelay: `${index * 50}ms` }}
+//                   onClick={() => handleItemSelect(item)}
+//                 >
+//                   <div className="relative">
+//                     <div className="h-1 bg-gradient-to-r from-emerald-400 to-green-500"></div>
+//                     <div className="h-40 sm:h-44 md:h-52 flex items-center justify-center bg-gradient-to-b from-gray-50 to-emerald-50 relative">
+//                       <img 
+//                         src={item.image} 
+//                         alt={item.name}
+//                         className="w-24 h-24 md:w-28 md:h-28 object-contain animate-float transform transition-transform duration-500 group-hover:scale-110 drop-shadow-md"
+//                         onError={(e) => {
+//                           e.target.onerror = null;
+//                           e.target.src = 'https://via.placeholder.com/150?text=No+Image';
+//                         }}
+//                       />
+//                       {item.item_type === "NEW" && (
+//                         <div className="absolute top-3 right-3 bg-gradient-to-r from-indigo-500 to-indigo-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-md">
+//                           NEW!
+//                         </div>
+//                       )}
+//                       {item.item_type === "POPULAR" && (
+//                         <div className="absolute top-3 right-3 bg-gradient-to-r from-amber-500 to-red-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-md flex items-center gap-1">
+//                           <Sparkles size={12} /> POPULAR
+//                         </div> 
+//                       )}
+//                       {inventory[item.id] > 0 && (
+//                         <div className="absolute top-3 left-3 bg-emerald-500 text-white text-xs font-bold px-1 py-1 rounded-lg shadow-md">
+//                           Owned: {inventory[item.id]}
+//                         </div>
+//                       )}
+//                     </div>
+//                     <div className="absolute bottom-0 w-full bg-gradient-to-t from-black/30 via-black/20 to-transparent p-3 md:p-4">
+//                       <h3 className="text-green-700 font text-base md:text-lg">{item.name}</h3>
+//                       <p className="text-white/90 text-xs md:text-sm truncate">{item.description}</p>
+//                     </div>
+//                   </div>
+//                   <div className="bg-white p-2 border-t border-gray-100">
+//                     <div className="text-xs text-gray-500 mb-1 truncate">
+//                       {item.effects && item.effects.length > 0 ? 
+//                         `Effects: ${getItemEffectsDisplay(item)}` : 
+//                         `Type: ${item.item_type}`
+//                       }
+//                     </div>
+//                     <div className="flex justify-between items-center mt-1">
+//                       <div className="flex items-center ">
+//                         <span className="text-gray-700 font-bold">{item.price}</span>
+//                         <img 
+//                           src={greencoinIcon} 
+//                           className="w-6 h-6 object-contain"
+//                           alt="Coins"
+//                         />
+//                       </div>
+//                       <div className="flex space-x-2">
+//                         <div className="flex items-center bg-gray-100 rounded-lg overflow-hidden">
+//                           <button 
+//                             onClick={(e) => {
+//                               e.stopPropagation();
+//                               updateItemQuantity(item.id, -1);
+//                             }}
+//                             className="p-1 hover:bg-gray-200 text-gray-700"
+//                           >
+//                             <Minus size={16} />
+//                           </button>
+//                           <span className="px-0.5 text-black font-small">{itemQuantities[item.id] || 1}</span>
+//                           <button 
+//                             onClick={(e) => {
+//                               e.stopPropagation();
+//                               updateItemQuantity(item.id, 1);
+//                             }}
+//                             className="p-1 hover:bg-gray-200 text-gray-700"
+//                           >
+//                             <Plus size={16} />
+//                           </button>
+//                         </div>
+//                         <button
+//                           id={`buy-btn-${item.id}`}
+//                           onClick={(e) => {
+//                             e.stopPropagation();
+//                             handlePurchase(item);
+//                           }}
+//                           className="bg-gradient-to-r from-green-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white px-3 py-1.5 rounded-lg font-medium text-sm transition-all duration-200 transform hover:scale-105 active:scale-95 shadow-sm"
+//                           disabled={item.price === 0}
+//                         >
+//                           {item.price === 0 ? 'FREE' : 'BUY'}
+//                         </button>
+//                       </div>
+//                     </div>
+//                   </div>
+//                 </div>
+//               ))}
+//             </div>
+//           )}
+//         </div>
+
+//         {/* Footer */}
+//         <div className="bg-emerald-50 p-4 flex justify-between items-center border-t border-gray-200">
+//           <div>
+//             <p className="text-gray-500 text-sm">Your balance:</p>
+//             <p className="text-emerald-600 flex items-center text-base font-semibold">
+//               <span>{user?.coins || 0}</span>
+//               <img 
+//                 src={greencoinIcon} 
+//                 className="w-7 h-7 object-contain"
+//               />
+//             </p>
+//           </div>
+//           <div className="flex space-x-3">
+//             <button
+//               className="bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all hover:scale-105 shadow-md"
+//               onClick={() => window.location.href = "/#lead-points"}
+//             >
+//               Get Coins
+//             </button>
+//           </div>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
+
+
+// GardenShop.ShopButton = ({ onClick }) => {
+//   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+
+//   useEffect(() => {
+//     const handleResize = () => {
+//       setIsMobile(window.innerWidth <= 768);
+//     };
+
+//     window.addEventListener('resize', handleResize);
+//     return () => window.removeEventListener('resize', handleResize);
+//   }, []);
+
+//   return (
+//     <button
+//       onClick={onClick}
+//       className={`fixed ${
+//         isMobile 
+//         ? 'bottom-190 right-4' // Mobile positioning
+//         : 'top-32 right-4' // Desktop positioning, moved down
+//       } bg-green-100 hover:from-emerald-500 hover:to-green-600 w-14 h-14 md:w-16 md:h-16 rounded-full shadow-lg flex items-center justify-center hover:shadow-xl transition-all duration-300 hover:scale-110 z-40`}
+//       aria-label="Open Shop"
+//     >
+//       <div className="absolute w-full h-full rounded-full bg-green opacity-20 animate-ping-slow"></div>
+//       <ShoppingCart size={24} className="text-green-500" />
+//     </button>
+//   );
+// };
+// export default GardenShop;
+
+import React, { useState, useEffect, useRef } from 'react';
 import axiosInstance from "../../Context/axiosInstance";
-import { ShoppingBag, Clock, ShoppingCart } from 'lucide-react';
+import { ShoppingBag, Sparkles, Clock, X, Plus, Minus, ShoppingCart } from 'lucide-react';
 import greencoinIcon from '../../assets/peng.svg';
 import { toastError, toastSuccess } from "../utils/toastCustom";
-import { green } from '@mui/material/colors';
-import {
-  Dialog,
-  Grid,
-  Card,
-  CardContent,
-  CardActions,
-  Button,
-  IconButton,
-  Typography,
-  Box,
-  CircularProgress,
-  Chip,
-  Fade
-} from '@mui/material';
-import { Add, Remove, ShoppingCart as ShoppingCartIcon } from '@mui/icons-material';
 
-// Create a Transition component using Fade with a timeout of 500ms
-const Transition = forwardRef(function Transition(props, ref) {
-  return <Fade ref={ref} {...props} timeout={500} />;
-});
+// Custom animation styles
+const customAnimationStyles = `
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+  }
+
+  @keyframes modalSlideIn {
+    from { 
+      opacity: 0; 
+      transform: scale(0.9) translateY(20px); 
+    }
+    to { 
+      opacity: 1; 
+      transform: scale(1) translateY(0); 
+    }
+  }
+
+  @keyframes modalSlideOut {
+    from { 
+      opacity: 1; 
+      transform: scale(1) translateY(0); 
+    }
+    to { 
+      opacity: 0; 
+      transform: scale(0.9) translateY(20px); 
+    }
+  }
+
+  .animate-fade-in {
+    animation: fadeIn 0.3s ease-out forwards;
+  }
+
+  .animate-fade-out {
+    animation: fadeOut 0.3s ease-in forwards;
+  }
+
+  .animate-modal-slide-in {
+    animation: modalSlideIn 0.3s ease-out forwards;
+  }
+
+  .animate-modal-slide-out {
+    animation: modalSlideOut 0.3s ease-in forwards;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+
+  @keyframes pingCustom {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.2); opacity: 0.75; }
+  }
+
+  .animate-float {
+    animation: float 3s ease-in-out infinite;
+  }
+
+  .animate-ping-slow {
+    animation: pingCustom 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+`;
 
 const GardenShop = ({ isOpen, onClose, user, setUser, onPurchase }) => {
   const [animateItems, setAnimateItems] = useState(false);
@@ -33,18 +453,22 @@ const GardenShop = ({ isOpen, onClose, user, setUser, onPurchase }) => {
   const [shopItems, setShopItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isClosing, setIsClosing] = useState(false);
+  const modalRef = useRef(null);
+  const backgroundRef = useRef(null);
 
-  // Animate items when shop opens
+  // Add dynamic animation styles
   useEffect(() => {
-    if (isOpen) {
-      const timer = setTimeout(() => {
-        setAnimateItems(true);
-      }, 200);
-      return () => clearTimeout(timer);
-    } else {
-      setAnimateItems(false);
-    }
-  }, [isOpen]);
+    // Create a style element to add custom animations
+    const styleElement = document.createElement('style');
+    styleElement.textContent = customAnimationStyles;
+    document.head.appendChild(styleElement);
+
+    // Cleanup function to remove the style element
+    return () => {
+      document.head.removeChild(styleElement);
+    };
+  }, []);
 
   // Fetch shop items from API
   useEffect(() => {
@@ -53,18 +477,22 @@ const GardenShop = ({ isOpen, onClose, user, setUser, onPurchase }) => {
         setLoading(true);
         const response = await axiosInstance.get('/game/items/');
         const data = response.data;
-
+        
         if (data.success && Array.isArray(data.items)) {
           setShopItems(data.items);
+          
+          // Initialize quantities for all items
           const initialQuantities = {};
-          data.items.forEach((item) => {
+          data.items.forEach(item => {
             initialQuantities[item.id] = 1;
           });
           setItemQuantities(initialQuantities);
+          
+          // Update user coins/points from the API response
           if (data.points !== undefined) {
-            setUser((prevUser) => ({
+            setUser(prevUser => ({
               ...prevUser,
-              coins: data.points,
+              coins: data.points
             }));
           }
         } else {
@@ -81,15 +509,15 @@ const GardenShop = ({ isOpen, onClose, user, setUser, onPurchase }) => {
     if (isOpen) {
       fetchShopItems();
     }
-  }, [isOpen, setUser]);
+  }, [isOpen]);
 
-  // Fetch inventory
+  // Initialize inventory on component mount
   useEffect(() => {
     const fetchInventory = async () => {
       try {
         const response = await axiosInstance.get('/game/inventory/');
         const inventoryData = {};
-        response.data.forEach((item) => {
+        response.data.forEach(item => {
           inventoryData[item.item.id] = item.quantity;
         });
         setInventory(inventoryData);
@@ -104,44 +532,68 @@ const GardenShop = ({ isOpen, onClose, user, setUser, onPurchase }) => {
     }
   }, [isOpen, shopItems]);
 
+  // Use effect for open/close animations
+  useEffect(() => {
+    if (isOpen) {
+      setAnimateItems(true);
+      document.body.style.overflow = 'hidden';
+    } else {
+      setAnimateItems(false);
+      setSelectedItem(null);
+    }
+  }, [isOpen]);
+
   // Update item quantity
   const updateItemQuantity = (itemId, change) => {
-    setItemQuantities((prev) => {
+    setItemQuantities(prev => {
       const newQuantity = Math.max(1, (prev[itemId] || 1) + change);
       return { ...prev, [itemId]: newQuantity };
     });
   };
-
+  
   // Handle purchase
   const handlePurchase = async (item) => {
     const quantity = itemQuantities[item.id] || 1;
     const totalPrice = item.price * quantity;
-
+    
     if (user.coins >= totalPrice) {
+      const button = document.getElementById(`buy-btn-${item.id}`);
+      if (button) {
+        button.classList.add("scale-90");
+        setTimeout(() => {
+          button.classList.remove("scale-90");
+        }, 150);
+      }
+      
       try {
         const response = await axiosInstance.post(`/game/items/${item.id}/purchase/`, {
-          quantity: quantity,
+          quantity: quantity
         });
+        
         const result = response.data;
-
+        
         if (result.success) {
-          setUser((prevUser) => ({
+          // Update user coins
+          setUser(prevUser => ({
             ...prevUser,
-            coins: result.remaining_points,
+            coins: result.remaining_points
           }));
+          
+          // Call the callback to update parent's inventory
           if (onPurchase) {
             onPurchase();
           }
+          
           toastSuccess(`Successfully purchased ${quantity} ${item.name}!`);
         } else {
-          toastError(result.message || 'Purchase failed. Please try again.');
+          toastError(result.message || "Purchase failed. Please try again.");
         }
       } catch (err) {
-        toastError('Purchase failed. Please try again.');
+        toastError("Purchase failed. Please try again.");
         console.error('Purchase error:', err);
       }
     } else {
-      toastError('Not enough coins!');
+      toastError("Not enough coins!");
     }
   };
 
@@ -150,217 +602,230 @@ const GardenShop = ({ isOpen, onClose, user, setUser, onPurchase }) => {
     setSelectedItem(item);
   };
 
+  // Enhanced close shop method with animation
+  const handleCloseShop = () => {
+    if (modalRef.current && backgroundRef.current) {
+      // Trigger closing animations
+      setIsClosing(true);
+      modalRef.current.classList.add('animate-modal-slide-out');
+      backgroundRef.current.classList.add('animate-fade-out');
+
+      // Wait for animation to complete before actually closing
+      setTimeout(() => {
+        setIsClosing(false);
+        onClose();
+      }, 300); // Match this with animation duration
+    } else {
+      onClose();
+    }
+  };
+
   // Get item effects display
   const getItemEffectsDisplay = (item) => {
     if (!item.effects || item.effects.length === 0) {
-      return 'No special effects';
+      return "No special effects";
     }
-    return item.effects.map((effect) => effect.name).join(', ');
+    
+    return item.effects.map(effect => effect.name).join(", ");
   };
 
-  if (!isOpen) return null;
+  if (!isOpen && !isClosing) return null;
 
   return (
-    <Dialog
-      open={isOpen}
-      onClose={onClose}
-      maxWidth="md"
-      fullWidth
-      TransitionComponent={Transition} // Use fade transition for dialog
-      keepMounted // Optional: keeps the child component mounted during transitions
+    <div 
+      ref={backgroundRef}
+      className={`fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4 md:p-0 overflow-y-auto 
+      ${isOpen ? 'animate-fade-in' : ''}`}
     >
-      <Box sx={{ bgcolor: 'background.paper', p: 2 }}>
+      <div 
+        ref={modalRef}
+        className={`bg-white w-full max-w-4xl rounded-2xl overflow-hidden shadow-2xl max-h-full md:max-h-[90vh] flex flex-col transform transition-all duration-300 
+        ${isOpen ? 'animate-modal-slide-in' : ''}`}
+      >
         {/* Header */}
-        <Box
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            background: 'linear-gradient(to right, #34d399, #059669)', // emerald-300 to green-600
-            p: 2,
-            color: 'white',
-          }}
-        >
-          <ShoppingBag size={24} />
-          <Typography variant="h6" sx={{ ml: 1 }}>
-            Garden Shop
-          </Typography>
-        </Box>
-
-        {/* Shop Timer */}
-        <Box
-          sx={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            bgcolor: '#ecfdf5', // emerald-50
-            p: 2,
-            borderBottom: 1,
-            borderColor: 'grey.200',
-          }}
-        >
-          <Typography variant="body1">Featured Items</Typography>
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <Clock size={16} />
-            <Typography variant="body2" sx={{ ml: 1 }}>
-              23 HOURS
-            </Typography>
-          </Box>
-        </Box>
+         <div className="bg-gradient-to-r from-emerald-300 to-green-600 p-4 flex justify-between items-center">
+           <div className="flex items-center space-x-3">
+             <div className="bg-white/20 p-2 rounded-lg">
+               <ShoppingBag className="text-white" size={22} />
+             </div>
+             <h2 className="text-xl text-white tracking-wide">Garden Shop</h2>
+           </div>
+           <div className="flex items-center space-x-2">
+             <button 
+              onClick={handleCloseShop}
+              className="bg-white/20 hover:bg-white/30 rounded-full p-2 transition-all duration-200"
+              aria-label="Close shop"
+            >
+              <X size={18} color="white" />
+            </button>
+          </div>
+        </div>
 
         {/* Grid Layout */}
-        <Box sx={{ p: 2, overflowY: 'auto', flexGrow: 1 }}>
+        <div className="p-4 md:p-6 bg-white overflow-y-auto flex-grow">
           {loading ? (
-            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
-              <CircularProgress />
-            </Box>
+            <div className="flex justify-center items-center h-64">
+              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-500"></div>
+            </div>
           ) : error ? (
-            <Typography color="error" align="center">
+            <div className="text-center text-red-500 p-4">
               {error}
-            </Typography>
+            </div>
           ) : (
-            <Grid container spacing={2}>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-5">
               {shopItems.map((item, index) => (
-                <Grid item xs={12} sm={6} md={4} key={item.id}>
-                  <Box
-                    sx={{
-                      transform: animateItems ? 'translateY(0)' : 'translateY(20px)',
-                      opacity: animateItems ? 1 : 0,
-                      transition: 'transform 0.5s, opacity 0.5s',
-                      transitionDelay: `${index * 50}ms`,
-                    }}
-                  >
-                    <Card
-                      sx={{
-                        height: '100%',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        background: 'linear-gradient(to bottom, #f9fafb, #ecfdf5)', // gray-50 to emerald-50
-                        transition: 'transform 0.3s',
-                        '&:hover': { transform: 'scale(1.03)' },
-                      }}
-                    >
-                      <Box sx={{ height: 1, background: 'linear-gradient(to right, #34d399, #059669)' }} />
-                      <CardContent sx={{ flexGrow: 1, position: 'relative' }}>
-                        <Box sx={{ position: 'relative', height: 150, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                          <img
-                            src={item.image}
-                            alt={item.name}
-                            style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }}
-                            onError={(e) => {
-                              e.target.src = 'https://via.placeholder.com/150?text=No+Image';
+                <div 
+                  key={item.id}
+                  className={`rounded-xl overflow-hidden shadow-md hover:shadow-xl transform transition-all duration-500 ${
+                    animateItems ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
+                  } hover:scale-103 cursor-pointer group`}
+                  style={{ transitionDelay: `${index * 50}ms` }}
+                  onClick={() => handleItemSelect(item)}
+                >
+                  <div className="relative">
+                    <div className="h-1 bg-gradient-to-r from-emerald-400 to-green-500"></div>
+                    <div className="h-40 sm:h-44 md:h-52 flex items-center justify-center bg-gradient-to-b from-gray-50 to-emerald-50 relative">
+                      <img 
+                        src={item.image} 
+                        alt={item.name}
+                        className="w-24 h-24 md:w-28 md:h-28 object-contain animate-float transform transition-transform duration-500 group-hover:scale-110 drop-shadow-md"
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = 'https://via.placeholder.com/150?text=No+Image';
+                        }}
+                      />
+                      {item.item_type === "NEW" && (
+                        <div className="absolute top-3 right-3 bg-gradient-to-r from-indigo-500 to-indigo-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-md">
+                          NEW!
+                        </div>
+                      )}
+                      {item.item_type === "POPULAR" && (
+                        <div className="absolute top-3 right-3 bg-gradient-to-r from-amber-500 to-red-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-md flex items-center gap-1">
+                          <Sparkles size={12} /> POPULAR
+                        </div> 
+                      )}
+                      {inventory[item.id] > 0 && (
+                        <div className="absolute top-3 left-3 bg-emerald-500 text-white text-xs font-bold px-1 py-1 rounded-lg shadow-md">
+                          Owned: {inventory[item.id]}
+                        </div>
+                      )}
+                    </div>
+                    <div className="absolute bottom-0 w-full bg-gradient-to-t from-black/30 via-black/20 to-transparent p-3 md:p-4">
+                      <h3 className="text-green-700 font text-base md:text-lg">{item.name}</h3>
+                      <p className="text-white/90 text-xs md:text-sm truncate">{item.description}</p>
+                    </div>
+                  </div>
+                  <div className="bg-white p-2 border-t border-gray-100">
+                    <div className="text-xs text-gray-500 mb-1 truncate">
+                      {item.effects && item.effects.length > 0 ? 
+                        `Effects: ${getItemEffectsDisplay(item)}` : 
+                        `Type: ${item.item_type}`
+                      }
+                    </div>
+                    <div className="flex justify-between items-center mt-1">
+                      <div className="flex items-center ">
+                        <span className="text-gray-700 font-bold">{item.price}</span>
+                        <img 
+                          src={greencoinIcon} 
+                          className="w-6 h-6 object-contain"
+                          alt="Coins"
+                        />
+                      </div>
+                      <div className="flex space-x-2">
+                        <div className="flex items-center bg-gray-100 rounded-lg overflow-hidden">
+                          <button 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              updateItemQuantity(item.id, -1);
                             }}
-                          />
-                          {item.item_type === "NEW" && (
-                            <Chip label="NEW!" color="primary" size="small" sx={{ position: 'absolute', top: 8, right: 8 }} />
-                          )}
-                          {item.item_type === "POPULAR" && (
-                            <Chip label="POPULAR" color="secondary" size="small" sx={{ position: 'absolute', top: 8, right: 8 }} />
-                          )}
-                          {inventory[item.id] > 0 && (
-                            <Chip label={`Owned: ${inventory[item.id]}`} color="success" size="small" sx={{ position: 'absolute', top: 8, left: 8 }} />
-                          )}
-                          {item.cooldown_seconds > 0 && (
-                            <Chip
-                              icon={<Clock size={12} />}
-                              label={`${Math.floor(item.cooldown_seconds / 60)}m cooldown`}
-                              size="small"
-                              sx={{ position: 'absolute', bottom: 8, right: 8 }}
-                            />
-                          )}
-                        </Box>
-                        <Typography variant="h6">{item.name}</Typography>
-                        <Typography variant="body2">{item.description}</Typography>
-                        <Typography variant="caption">{getItemEffectsDisplay(item)}</Typography>
-                      </CardContent>
-                      <CardActions sx={{ justifyContent: 'space-between', p: 2 }}>
-                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                          <IconButton onClick={() => updateItemQuantity(item.id, -1)}>
-                            <Remove />
-                          </IconButton>
-                          <Typography>{itemQuantities[item.id] || 1}</Typography>
-                          <IconButton onClick={() => updateItemQuantity(item.id, 1)}>
-                            <Add />
-                          </IconButton>
-                        </Box>
-                        <Button
-                          variant="contained"
-                          color="primary"
-                          onClick={() => handlePurchase(item)}
+                            className="p-1 hover:bg-gray-200 text-gray-700"
+                          >
+                            <Minus size={16} />
+                          </button>
+                          <span className="px-0.5 text-black font-small">{itemQuantities[item.id] || 1}</span>
+                          <button 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              updateItemQuantity(item.id, 1);
+                            }}
+                            className="p-1 hover:bg-gray-200 text-gray-700"
+                          >
+                            <Plus size={16} />
+                          </button>
+                        </div>
+                        <button
+                          id={`buy-btn-${item.id}`}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handlePurchase(item);
+                          }}
+                          className="bg-gradient-to-r from-green-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white px-3 py-1.5 rounded-lg font-medium text-sm transition-all duration-200 transform hover:scale-105 active:scale-95 shadow-sm"
                           disabled={item.price === 0}
                         >
                           {item.price === 0 ? 'FREE' : 'BUY'}
-                        </Button>
-                      </CardActions>
-                    </Card>
-                  </Box>
-                </Grid>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               ))}
-            </Grid>
+            </div>
           )}
-        </Box>
+        </div>
 
         {/* Footer */}
-        <Box
-          sx={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            bgcolor: '#ecfdf5', // emerald-50
-            p: 2,
-            borderTop: 1,
-            borderColor: 'grey.200',
-          }}
-        >
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <Typography variant="body2" sx={{ mr: 1 }}>
-              Your balance:
-            </Typography>
-            <Typography variant="h6">{user?.coins || 0}</Typography>
-            <img src={greencoinIcon} alt="Coins" style={{ width: 24, height: 24, marginLeft: 8 }} />
-          </Box>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={() => (window.location.href = '/#lead-points')}
-          >
-            Get Coins
-          </Button>
-        </Box>
-      </Box>
-    </Dialog>
+        <div className="bg-emerald-50 p-4 flex justify-between items-center border-t border-gray-200">
+          <div>
+            <p className="text-gray-500 text-sm">Your balance:</p>
+            <p className="text-emerald-600 flex items-center text-base font-semibold">
+              <span>{user?.coins || 0}</span>
+              <img 
+                src={greencoinIcon} 
+                className="w-7 h-7 object-contain"
+              />
+            </p>
+          </div>
+          <div className="flex space-x-3">
+            <button
+              className="bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all hover:scale-105 shadow-md"
+              onClick={() => window.location.href = "/#lead-points"}
+            >
+              Get Coins
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
 
+// Shop Button Component (Nested Component)
 GardenShop.ShopButton = ({ onClick }) => {
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   return (
-    <Button
+    <button
       onClick={onClick}
-      startIcon={<ShoppingCartIcon />}
-      sx={{
-        borderRadius: 28,  // More rounded corners
-        bgcolor: green[500], 
-        color: 'white',
-        textTransform: 'none',
-        boxShadow: '0 4px 14px rgba(0, 128, 0, 0.2)',  // Soft shadow for depth
-        fontWeight: 600,  // Slightly bolder
-        px: 3,  // More horizontal padding
-        py: 1,  // More vertical padding
-        transition: 'all 0.2s ease',  // Smooth transition for hover effects
-        '&:hover': {
-          bgcolor: green[600],
-          transform: 'translateY(-2px)',  // Subtle lift effect
-          boxShadow: '0 6px 20px rgba(0, 128, 0, 0.25)',  // Enhanced shadow on hover
-        },
-        '&:active': {
-          transform: 'translateY(1px)',  // Press effect
-          boxShadow: '0 2px 10px rgba(0, 128, 0, 0.2)',  // Reduced shadow when pressed
-        }
-      }}
+      className={`fixed ${
+        isMobile 
+        ? 'bottom-190 right-4' // Mobile positioning
+        : 'top-32 right-4' // Desktop positioning, moved down
+      } bg-green-100 hover:from-emerald-500 hover:to-green-600 w-14 h-14 md:w-16 md:h-16 rounded-full shadow-lg flex items-center justify-center hover:shadow-xl transition-all duration-300 hover:scale-110 z-40`}
+      aria-label="Open Shop"
     >
-      Shop
-    </Button>
+      <div className="absolute w-full h-full rounded-full bg-green opacity-20 animate-ping-slow"></div>
+      <ShoppingCart size={24} className="text-green-500" />
+    </button>
   );
 };
-
 
 export default GardenShop;
