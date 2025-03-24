@@ -115,7 +115,7 @@ export default function DailyRewards({setUser, setInventory}) {
   return (
     <>
       <motion.button
-        className="absolute top-45 left-5 bg-gradient-to-r from-green-500 to-black text-white font-bold py-2 px-6 rounded-lg shadow-md transition-all hover:scale-110"
+        className="bg-gradient-to-r from-green-500 to-black text-white font-bold py-2 px-6 rounded-lg shadow-md transition-all hover:scale-110"
         onClick={() => setOpen(true)}
         whileTap={{ scale: 0.9 }}
       >
