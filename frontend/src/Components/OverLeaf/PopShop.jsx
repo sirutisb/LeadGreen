@@ -331,27 +331,32 @@ const GardenShop = ({ isOpen, onClose, user, setUser, onPurchase }) => {
 };
 
 GardenShop.ShopButton = ({ onClick }) => {
-  return (
-    <Button
-      onClick={onClick}
-      variant="contained"
-      startIcon={<ShoppingCartIcon />}
-      sx={{
-        borderRadius: 2,
-        bgcolor: 'primary.main',
-        color: 'white',
-        textTransform: 'none',
-        '&:hover': {
-          bgcolor: 'primary.dark',
-        },
-        boxShadow: 3,
-        px: 3,
-        py: 1,
-      }}
-    >
-      Shop
-    </Button>
-  );
-};
+    return (
+      <Button
+        onClick={onClick}
+        variant="contained"
+        startIcon={<ShoppingCartIcon />}
+        sx={{
+          borderRadius: 2, 
+          background: 'linear-gradient(to right, #3b82f6, #1e40af)',
+          color: 'white',
+          fontWeight: 'bold', 
+          textTransform: 'none',
+          boxShadow: 3,
+          px: 3, 
+          py: 1,
+          transition: 'all 0.2s ease-in-out',
+          '&:hover': {
+            background: 'linear-gradient(to right, #2563eb, #1e3a8a)',
+          },
+          '&:active': {
+            transform: 'scale(0.9)',
+          },
+        }}
+      >
+        Shop
+      </Button>
+    );
+  };
 
 export default GardenShop;
