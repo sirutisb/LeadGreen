@@ -347,6 +347,7 @@ reward_day_cycle = {
     7 : {"reward": "pest", "amount" : 2},
 }
 
+
 class DailyRewardView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -385,7 +386,8 @@ class DailyRewardView(APIView):
         user = request.user
         profile = user.game_profile
 
-        day = request.data.get("day") # get day from frontend
+        streak = profile.streak
+        day = ((streak - 1) % 7) + 1 # convert streak to day reward cycle
 
         # if cant collect
         if not profile.can_collect_daily_reward():
@@ -393,7 +395,10 @@ class DailyRewardView(APIView):
                 status = status.HTTP_400_BAD_REQUEST
             )
         
-        profile.collect_daily_reward()
+        reward = reward_day_cycle[day]["reward"]
+        amount = reward_day_cycle[day]["amount"]
+        
+        profile.collect_daily_reward(reward, amount)
 
         return Response({"message": "Reward collected"}, status=status.HTTP_200_OK)
 

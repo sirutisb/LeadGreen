@@ -155,7 +155,7 @@ class GameProfile(models.Model):
         
         return time_diff >= timedelta(hours = 24)
         
-    def collect_daily_reward(self):
+    def collect_daily_reward(self, reward, amount):
         """ reward collection """
 
         # unable to collect - 24 hours not past        
@@ -212,6 +212,23 @@ class GameProfile(models.Model):
             )
         
         return inventory_item
+    
+class DailyRewardConfig(models.Model):
+
+    day = models.IntegerField(unique=True)
+    
+    reward_type = models.CharField(max_length=32, choices=[
+        ('POINTS', 'Points'),
+        ('SPINS', 'Spins'),
+        ('ITEM', 'Item')
+    ])
+
+    amount = models.IntegerField()
+
+    item = models.ForeignKey(Item, on_delete=models.SET_NULL, null=True, blank=True)
+
+    class Meta:
+        ordering = ['day']
 
 @receiver(post_save, sender=UserProfile)
 def create_game_profile(sender, instance, created, **kwargs):
