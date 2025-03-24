@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import GameProfile, Plant, Insect, Prize, ItemEffect, Item, Inventory, Transaction
+from .models import GameProfile, Plant, Insect, Prize, ItemEffect, Item, Inventory, Transaction, DailyRewardConfig
 
 # Register your models here.
 
@@ -27,3 +27,4 @@ class ItemAdmin(admin.ModelAdmin):
 
 admin.site.register(Inventory)
 admin.site.register(Transaction)
+admin.site.register(DailyRewardConfig)

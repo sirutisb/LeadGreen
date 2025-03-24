@@ -398,7 +398,7 @@ class DailyRewardView(APIView):
         reward = reward_day_cycle[day]["reward"]
         amount = reward_day_cycle[day]["amount"]
         
-        profile.collect_daily_reward(reward, amount)
+        profile.collect_daily_reward()
 
         return Response({"message": "Reward collected"}, status=status.HTTP_200_OK)
 
