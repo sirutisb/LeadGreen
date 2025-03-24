@@ -159,7 +159,7 @@ python manage.py test
 ![Alt Text](https://media.giphy.com/media/mYB4QNUUqlqkohrjVy/giphy.gif)
 
 ### 3. User Profile
-![Screenshot 2025-03-24 220924.png](https://www.imghippo.com/i/Rzic4469yeI.png)
+![image](https://github.com/sirutisb/LeadGreen/issues/10#issue-2944615858)
 
 ### 3. Leaderboard
 ![Alt Text](https://media.giphy.com/media/6ESJHByMEeR7mulQwf/giphy.gif)
