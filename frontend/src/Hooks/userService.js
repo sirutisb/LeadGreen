@@ -38,7 +38,7 @@ const userService = {
   // Upload profile picture
   uploadProfilePicture: async (formData) => {
     try {
-      const response = await axiosInstance.post('/users/picture/', formData, {
+      const response = await axiosInstance.post('/api/users/picture/', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },

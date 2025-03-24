@@ -19,7 +19,7 @@ export default function DailyRewards({setUser, setInventory}) {
 
   // Function to fetch rewards data from the API
   const fetchRewards = () => {
-    axiosInstance.get("/game/reward")
+    axiosInstance.get("/api/game/reward")
       .then((response) => response.data)
       .then((data) => {
         console.log(data)
@@ -38,7 +38,7 @@ export default function DailyRewards({setUser, setInventory}) {
     // Find the reward that can be collected
     const rewardToCollect = rewards.find((reward) => reward.canCollect);
   
-    // Check if there’s a collectible reward
+    // Check if there's a collectible reward
     if (rewardToCollect) {
       // Update the rewards state optimistically
       setRewards(
@@ -50,7 +50,7 @@ export default function DailyRewards({setUser, setInventory}) {
         })
       );
   
-      // Update the streak if it’s less than the maximum (e.g., 7 days)
+      // Update the streak if it's less than the maximum (e.g., 7 days)
       if (streak < 7) {
         setStreak(streak + 1);
       }
@@ -74,7 +74,7 @@ export default function DailyRewards({setUser, setInventory}) {
       }
   
       // Send the POST request to the server (optimistic update, no rollback here)
-      axiosInstance.post("/game/reward/").catch((error) => {
+      axiosInstance.post("/api/game/reward/").catch((error) => {
         console.error("Error collecting reward:", error);
         // Optionally, notify the user of the failure
       });
