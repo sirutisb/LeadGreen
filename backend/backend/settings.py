@@ -243,6 +243,9 @@ AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
 
 # S3 static settings
 #STATIC_ROOT = 'static/'
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+]
 STATIC_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/static/'
 
 # S3 media settings

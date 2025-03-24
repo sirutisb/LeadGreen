@@ -39,11 +39,15 @@ class ItemEffectSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'effect_type', 'parameters']
 
 class ItemSerializer(serializers.ModelSerializer):
+    image = serializers.SerializerMethodField()
     effects = ItemEffectSerializer(many=True, read_only=True)
     
     class Meta:
         model = Item
         fields = ['id', 'name', 'description', 'image', 'price', 'item_type', 'effects', 'cooldown_seconds']
+
+    def get_image(self, obj):
+        return f"{settings.STATIC_URL}{obj.image}"
 
 class InventorySerializer(serializers.ModelSerializer):
     item = ItemSerializer(read_only=True)

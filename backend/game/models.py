@@ -18,7 +18,6 @@ class Plant(models.Model):
     level = models.IntegerField(unique=True)  # each level - one plant
     image = models.CharField(
         max_length=100,
-        default="plants/plant1.svg",
         help_text="Path to the plant image in static files"
     )
 
@@ -37,7 +36,6 @@ class Insect(models.Model):
     spawn_chance = models.FloatField(default=0.2)  # prob of spawning
     image = models.CharField(
         max_length=100,
-        default="insects/insect1.svg",
         help_text="Path to the insect image in static files"
     )
 
@@ -275,10 +273,9 @@ class Item(models.Model):
     name = models.CharField(max_length=32)
     description = models.TextField(default="")
     price = models.IntegerField(default=0)
-    image = models.ImageField(
-        upload_to="items/",
-        blank=False,
-        null=True
+    image = models.CharField(
+        max_length=100,
+        help_text="Path to the item image in static files"
     )
 
     item_type = models.CharField(max_length=20, choices=ITEM_TYPE)
