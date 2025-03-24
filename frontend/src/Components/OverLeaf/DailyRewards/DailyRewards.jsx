@@ -74,7 +74,7 @@ export default function DailyRewards({setUser, setInventory}) {
       }
   
       // Send the POST request to the server (optimistic update, no rollback here)
-      axiosInstance.post("/game/reward").catch((error) => {
+      axiosInstance.post("/game/reward/").catch((error) => {
         console.error("Error collecting reward:", error);
         // Optionally, notify the user of the failure
       });
@@ -126,7 +126,7 @@ export default function DailyRewards({setUser, setInventory}) {
         open={open}
         onClose={() => setOpen(false)}
         rewards={rewards}
-        onCollect={collectReward}
+        collectReward={collectReward}
         streak={streak}
         getRewardIcon={getRewardIcon}
         renderStreakFlames={renderStreakFlames}
