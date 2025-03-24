@@ -289,7 +289,7 @@ export default function UserProfile() {
 
                 {/* Sustainability Tips */}
                 <div className="bg-white rounded-lg shadow-md p-6">
-                  <h2 className="text-xl font-serif font-bold mb-4 flex items-center gap-2">
+                  <h2 className="text-xl font-serif font-bold mb-4 flex items-center gap-2 text-black">
                     <Leaf className="h-5 w-5 text-green-600" /> Sustainability Tips
                   </h2>
                   <div className="bg-green-50 rounded-lg p-4">
@@ -454,7 +454,7 @@ export default function UserProfile() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
             >
-              <h2 className="text-xl font-serif font-bold mb-4 flex items-center gap-2">
+              <h2 className="text-xl font-serif font-bold mb-4 flex items-center gap-2 text-black">
                 <TrendingUp className="h-5 w-5 text-green-600" /> Your Rank
               </h2>
               <div className="text-center py-4">
@@ -462,11 +462,17 @@ export default function UserProfile() {
                   <span className="text-3xl font-bold text-green-700">#{userData.rank}</span>
                 </div>
                 <p className="text-gray-600 mt-4">
-                  {userData.rank <= 10 
-                    ? "You're in the top 10 eco-warriors! 🌟" 
-                    : userData.rank <= 50 
-                    ? "You're in the top 50 eco-warriors! 🌱" 
-                    : "Keep growing to climb the ranks! 🌿"}
+                  {userData.rank === 1 
+                    ? "🏆 You're the #1 Eco-Warrior! Amazing job! 🌟" 
+                    : userData.rank === 2
+                    ? "🥈 You're the #2 Eco-Warrior! Incredible achievement! 🌟"
+                    : userData.rank === 3
+                    ? "🥉 You're the #3 Eco-Warrior! Outstanding work! 🌟"
+                    : userData.rank <= 5
+                    ? "🌟 You're in the top 5 eco-warriors! Phenomenal! 🌟"
+                    : userData.rank <= 10
+                    ? "🌱 You're in the top 10 eco-warriors! Fantastic! ✨"
+                    : "🌳 Keep growing to climb the ranks! You're doing great! 🌳"}
                 </p>
               </div>
               <div className="mt-4">
