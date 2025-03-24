@@ -148,7 +148,15 @@ python manage.py test
 ![Alt Text](https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExN2k0bmxvbDJ4bzZ3b3VmenlleGNkbHU3MXowdGw1OXB1MHl6anM0MyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/4ya9mwfYOu37J9Bulg/giphy.gif)
 
 ### 2. Demo-Gameplay
-![Alt Text](https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExMm1pOWQ5NWp0NDYxN20xaHhzZHo0Y2xtaW90Y3hjNWh2ejJ6ZTZjNyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/SmBV5jMyNjGBQ1u6Ii/giphy.gif)
+
+#### Earn Points !
+![Alt Text](https://media.giphy.com/media/sIYMASXNhFuP5ycBo2/giphy.gif)
+
+#### Purchase Utilities !
+![Alt Text](https://media.giphy.com/media/jEo6uvTS3ScyYXCsH9/giphy.gif)
+
+#### Play Game !
+![Alt Text](https://media.giphy.com/media/mYB4QNUUqlqkohrjVy/giphy.gif)
 
 ### 3. Leaderboard
 ![Alt Text](https://media.giphy.com/media/6ESJHByMEeR7mulQwf/giphy.gif)

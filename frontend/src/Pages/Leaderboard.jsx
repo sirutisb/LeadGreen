@@ -283,9 +283,12 @@ const LeaderboardPage = () => {
           <p className="text-lg md:text-xl mb-8 animate-subtitle-fade-in">
             Join the movement and make a difference!
           </p>
-          <button className="bg-white text-green-600 font-bold py-2 px-6 rounded-full hover:bg-green-100 transition-all shadow-md transform hover:scale-105 animate-button-pop">
+          <Link 
+            to="/login"
+            className="inline-block bg-white text-green-600 font-bold py-2 px-6 rounded-full hover:bg-green-100 transition-all shadow-md transform hover:scale-105 animate-button-pop"
+          >
             Join the Challenge
-          </button>
+          </Link>
         </div>
 
         {/* Background elements */}
