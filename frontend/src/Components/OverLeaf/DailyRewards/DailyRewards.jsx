@@ -11,8 +11,14 @@ import spinIcon from "../../../assets/spin.svg";
 
 // Use Flame from lucide-react for the streak indicator
 import { Flame } from "lucide-react";
+const rewardIcons = {
+    water: waterIcon,
+    soil: soilIcon,
+    glove: gloveIcon,
+    pest: pestIcon
+  };
 
-export default function DailyRewards({setUser, setInventory}) {
+export default function DailyRewards({setUser, setInventory, loadInventory}) {
   const [open, setOpen] = useState(false);
   const [rewards, setRewards] = useState([]);
   const [streak, setStreak] = useState(0);
@@ -22,7 +28,6 @@ export default function DailyRewards({setUser, setInventory}) {
     axiosInstance.get("/game/reward")
       .then((response) => response.data)
       .then((data) => {
-        console.log(data)
         setStreak(data[0].streak); // First element contains the streak
         setRewards(data.slice(1)); // Remaining elements are the rewards
       })
@@ -35,12 +40,10 @@ export default function DailyRewards({setUser, setInventory}) {
   }, []);
 
   const collectReward = () => {
-    // Find the reward that can be collected
     const rewardToCollect = rewards.find((reward) => reward.canCollect);
   
-    // Check if there’s a collectible reward
     if (rewardToCollect) {
-      // Update the rewards state optimistically
+      // Update rewards state optimistically
       setRewards(
         rewards.map((reward) => {
           if (reward.day === rewardToCollect.day) {
@@ -50,33 +53,47 @@ export default function DailyRewards({setUser, setInventory}) {
         })
       );
   
-      // Update the streak if it’s less than the maximum (e.g., 7 days)
+      // Update streak if less than maximum (e.g., 7 days)
       if (streak < 7) {
         setStreak(streak + 1);
       }
   
-      // Update user state based on reward type
+      // Handle reward type
       if (rewardToCollect.reward === "spin") {
-        // Update spins in the user state
+        // Update spins in user state
         setUser((prevUser) => ({
           ...prevUser,
           spins: (prevUser.spins || 0) + rewardToCollect.amount,
         }));
       } else {
-            setInventory((prevInventory) =>
-                prevInventory.map((item) => {
-                if (item.label.toLowerCase() === rewardToCollect.reward.toLowerCase()) {
-                    return { ...item, amount: item.amount + rewardToCollect.amount };
-                }
-                return item;
-                })
-            );
+        // Optimistically update inventory for non-spin rewards
+        setInventory((prevInventory) => {
+          const existingItemIndex = prevInventory.findIndex(
+            (item) => item.label.toLowerCase() === rewardToCollect.reward.toLowerCase()
+          );
+          if (existingItemIndex !== -1) {
+            // Item exists, update its amount
+            const updatedInventory = [...prevInventory];
+            updatedInventory[existingItemIndex] = {
+              ...updatedInventory[existingItemIndex],
+              amount: updatedInventory[existingItemIndex].amount + rewardToCollect.amount,
+            };
+            return updatedInventory;
+          } else {
+            console.log(prevInventory)
+            // Item is new, add it to inventory
+            return [
+              ...prevInventory,
+              { label: rewardToCollect.reward, amount: rewardToCollect.amount, image: rewardIcons[rewardToCollect.reward]},
+            ];
+          }
+        });
       }
   
-      // Send the POST request to the server (optimistic update, no rollback here)
+      // Send POST request to server
       axiosInstance.post("/game/reward/").catch((error) => {
         console.error("Error collecting reward:", error);
-        // Optionally, notify the user of the failure
+        // Optionally, notify the user if the server update fails
       });
     }
   };

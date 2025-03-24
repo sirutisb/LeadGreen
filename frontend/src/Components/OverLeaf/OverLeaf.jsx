@@ -138,7 +138,7 @@ const OverLeaf = () => {
           <OverLeafBar setSelectedIcon={setSelectedIcon} inventory={inventory} selectedIcon={selectedIcon} />
           <StatsDisplay user={user} />
           <RouletteButton user={user} setUser={setUser} />
-          <DailyRewards setUser={setUser} setInventory={setInventory} />
+          <DailyRewards setUser={setUser} setInventory={setInventory} loadInventory={loadInventory}/>
         </div>
         <div className="flex flex-col justify-center items-end p-4">
           <GardenShop.ShopButton onClick={() => setShopOpen(true)} />
