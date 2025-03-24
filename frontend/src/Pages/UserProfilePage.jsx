@@ -10,6 +10,7 @@ import AuthContext from "../Context/AuthContext"
 import userService from "../Hooks/userService"
 import { useParams } from "react-router-dom"
 import { Link } from "react-router-dom"
+import { Typography, Box } from "@mui/material"
 
 export default function UserProfile() {
   const { user, logoutUser } = useContext(AuthContext)
@@ -415,12 +416,30 @@ export default function UserProfile() {
                             +{post.points_received} pts
                           </div>
                         </div>
-                        <div className="mt-2 flex items-center gap-2">
-                          <button className="text-sm text-gray-500 hover:text-gray-700">Like</button>
-                          <span className="text-gray-300">•</span>
-                          <button className="text-sm text-gray-500 hover:text-gray-700">Comment</button>
-                          <span className="text-gray-300">•</span>
-                          <button className="text-sm text-gray-500 hover:text-gray-700">Share</button>
+                        {post.image && (
+                          <div className="mt-4 rounded-lg overflow-hidden">
+                            <img
+                              src={post.image}
+                              alt="Post content"
+                              className="w-full h-auto object-cover"
+                            />
+                          </div>
+                        )}
+                        <div className="mt-4 flex items-center gap-4">
+                          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                            <Typography 
+                              variant="body2" 
+                              sx={{ 
+                                color: '#1B6630',
+                                fontWeight: 'bold',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 1
+                              }}
+                            >
+                              <span>❤️</span> {post.likes_count || 0} {post.likes_count === 1 ? 'like' : 'likes'}
+                            </Typography>
+                          </Box>
                         </div>
                       </div>
                     </div>
