@@ -194,7 +194,8 @@ curl -X POST http://localhost:8000/api/auth/login/ \
 ---
 
 # Deployment
-- [Backend Instructions](docs/deployment.md)
+- [Backend Guide](docs/deployment-backend.md)
+- [Frontend Guide](docs/deployment-frontend.md)
 
 ## Configurations
 
@@ -205,35 +206,42 @@ Ensure CORS settings as needed in `backend/backend/settings.py`.
 
 ## Project Structure
 ```
-.
-├── backend/                 # Django backend
-│   ├── authentication/      # User authentication module
-│   ├── backend/             # Backend configurations
-│   ├── game/                # Game-related logic
-│   ├── leaderboard/         # Leaderboard management
-│   ├── media/               # Media storage
-│   ├── posts/               # Blog or posts-related logic
-│   ├── qrcodes/             # QR code generation and management
-│   ├── users/               # User-related functionality
-│   ├── db.sqlite3           # SQLite database (for development)
-│   ├── manage.py            # Django management script
-│   ├── requirements.txt     # Python dependencies
-│   ├── .gitignore           # Git ignore file
-│   └── .venv/               # Python virtual environment
-│
-├── frontend/                # Frontend built with Vite + React + Tailwind
-│   ├── node_modules/        # Dependencies
-│   ├── public/              # Static assets
-│   ├── src/                 # React source code
-│   ├── .gitignore           # Git ignore file
-│   ├── eslint.config.js     # ESLint configuration
-│   ├── index.html           # HTML entry point
-│   ├── package.json         # Frontend dependencies
-│   ├── package-lock.json    # Lockfile for dependencies
-│   ├── tailwind.config.js   # Tailwind CSS configuration
-│   ├── vite.config.js       # Vite configuration  
-│
-└── README.md                # Root project documentation
+
+# LeadGreen Project Structure
+
+```
+LeadGreen/
+├── backend/                      # Django backend
+│   ├── .env                      # Environment variables
+│   ├── .gitignore                # Git ignore file
+│   ├── .venv/                    # Python virtual environment
+│   ├── README.md                 # Backend documentation
+│   ├── authentication/           # Authentication app
+│   ├── backend/                  # Main Django project settings
+│   ├── db.sqlite3                # SQLite database (development)
+│   ├── game/                     # Game app
+│   ├── leaderboard/              # Leaderboard app
+│   ├── manage.py                 # Django management script
+│   ├── posts/                    # Posts app
+│   ├── qrcodes/                  # QR codes app
+│   ├── requirements.txt          # Python dependencies
+│   ├── shop/                     # Shop app
+│   ├── static/                   # Static files
+│   └── users/                    # Users app
+├── frontend/                     # React/Vite frontend
+│   ├── .env                      # Environment variables
+│   ├── index.html                # Entry HTML file
+│   ├── public/                   # Public assets
+│   ├── src/                      # Source code
+│   ├── tailwind.config.js        # Tailwind CSS configuration
+│   ├── vercel.json               # Vercel deployment configuration
+│   └── vite.config.js            # Vite configuration
+```
+
+This tree represents the overall structure of the LeadGreen project with both backend (Django) and frontend (React/Vite) components. The structure follows typical Django and React conventions, with Django organized into multiple apps for different features, and the React frontend using a component-based organization.
+
+Note that some subdirectories may have additional files not shown here, and the exact structure of each app might vary based on the project's specific requirements.
+
 ```
 ---
 ## License
