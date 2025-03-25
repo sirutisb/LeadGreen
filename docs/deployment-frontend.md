@@ -32,25 +32,9 @@ Your frontend needs to know the URL of your backend API. Create a `.env` file in
 VITE_BACKEND=https://your-backend-url.com
 ```
 
-Replace `https://your-backend-url.com` with the actual URL of your deployed backend.
+Replace `https://your-backend-url.com` with the actual URL of your deployed backend (see the [backend](docs/deploymend-backend.md) guide for information).
 
 > **Important**: In Vite, all environment variables must be prefixed with `VITE_` to be accessible in your client-side code.
-
-### Accessing Environment Variables in Your Code
-
-In your React components, you can access this environment variable like this:
-
-```javascript
-const apiUrl = import.meta.env.VITE_BACKEND;
-```
-
-For example, when making API requests:
-
-```javascript
-fetch(`${import.meta.env.VITE_BACKEND}/api/users/`)
-  .then(response => response.json())
-  .then(data => console.log(data));
-```
 
 ## 2. Deployment Options
 
@@ -74,7 +58,7 @@ Vercel is optimized for frontend applications and offers a straightforward deplo
    - Project Name: `leadgreen-frontend` (or your preferred name)
    - Framework Preset: Vite
    - Build and Output Settings: Leave as default
-   - Root Directory: `.` (if your package.json is in the root)
+   - Root Directory: `frontend/` (The directory where package.json is located)
 
 5. **Environment Variables**:
    - Click "Environment Variables" to expand the section
