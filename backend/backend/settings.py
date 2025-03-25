@@ -38,21 +38,6 @@ ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS').split(' ')
 CORS_ALLOWED_ORIGINS = os.getenv('CORS_ALLOWED_ORIGINS').split(' ')
 CORS_ALLOW_CREDENTIALS = True
 
-# Media files configuration
-# MEDIA_URL = '/media/'
-# MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
-# Static files configuration
-#STATIC_URL = '/static/'
-# STATIC_ROOT = BASE_DIR / 'staticfiles'
-# STATICFILES_DIRS = [
-#     BASE_DIR / 'static',
-# ]
-
-# STATIC_ROOT = BASE_DIR / 'staticfiles'
-
-# STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-
 AUTH_USER_MODEL = 'users.UserProfile'
 
 # Application definition
@@ -65,6 +50,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'storages',
+    'rest_framework',
+    'rest_framework_simplejwt.token_blacklist',
+    'corsheaders',
 
     'authentication',
     'game',
@@ -72,14 +60,6 @@ INSTALLED_APPS = [
     'posts',
     'qrcodes',
     'users',
-
-
-    #'base.apps.BaseConfig',
-    
-    'rest_framework',
-    'rest_framework_simplejwt.token_blacklist',
-    'corsheaders',
-
 ]
 
 REST_FRAMEWORK = {
@@ -91,8 +71,8 @@ REST_FRAMEWORK = {
 # Django project settings.py
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=500), # for testing purposes make it shorter like 30 min
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=1),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=3),
     "ROTATE_REFRESH_TOKENS": True, # refresh tokens will be regenerated when user persists
     "BLACKLIST_AFTER_ROTATION": True, # blacklists the old refresh token after rotation
     "UPDATE_LAST_LOGIN": False,
@@ -129,9 +109,6 @@ SIMPLE_JWT = {
     "SLIDING_TOKEN_OBTAIN_SERIALIZER": "rest_framework_simplejwt.serializers.TokenObtainSlidingSerializer",
     "SLIDING_TOKEN_REFRESH_SERIALIZER": "rest_framework_simplejwt.serializers.TokenRefreshSlidingSerializer",
 }
-
-# end jwt
-
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -176,8 +153,9 @@ DATABASES = {
     }
 }
 
-database_url = os.getenv('DATABASE_URL')
-DATABASES['default'] = dj_database_url.parse(database_url)
+# For deployment uncomment the following lines
+# database_url = os.getenv('DATABASE_URL')
+# DATABASES['default'] = dj_database_url.parse(database_url)
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -231,18 +209,35 @@ SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
 X_FRAME_OPTIONS = 'DENY'
 
-# AWS S3 Configuration
-AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
-AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
-AWS_STORAGE_BUCKET_NAME = os.getenv('AWS_STORAGE_BUCKET_NAME')
-AWS_S3_REGION_NAME = os.getenv('AWS_S3_REGION_NAME', 'eu-north-1')
-AWS_S3_FILE_OVERWRITE = False
-AWS_DEFAULT_ACL = None  # Changed from 'public-read' to None
-AWS_S3_VERIFY = True
-AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
+#Media files configuration
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+#Static files configuration
+STATIC_URL = '/static/'
+# STATIC_ROOT = BASE_DIR / 'staticfiles'
+# STATICFILES_DIRS = [
+#     BASE_DIR / 'static',
+# ]
+
+# STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+# AWS S3 Configuration - Uncomment for deployment via AWS S3
+'''
+# AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
+# AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
+# AWS_STORAGE_BUCKET_NAME = os.getenv('AWS_STORAGE_BUCKET_NAME')
+# AWS_S3_REGION_NAME = os.getenv('AWS_S3_REGION_NAME', 'eu-north-1')
+# AWS_S3_FILE_OVERWRITE = False
+# AWS_DEFAULT_ACL = None  # Changed from 'public-read' to None
+# AWS_S3_VERIFY = True
+# AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
 
 # S3 static settings
-#STATIC_ROOT = 'static/'
+STATIC_ROOT = 'static/'
+
 STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]
@@ -252,8 +247,11 @@ STATIC_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/static/'
 #MEDIA_ROOT = 'media/'
 MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/media/'
 
+
 # Storage configuration classes
 # Create a custom storage class to specify locations for static and media files
+# Database storages for deployment 
+
 STORAGES = {
     "default": {
         "BACKEND": "storages.backends.s3.S3Storage",
@@ -291,9 +289,4 @@ STORAGES = {
     },
 }
 
-# # Additional AWS Settings
-# AWS_S3_OBJECT_PARAMETERS = {
-#     'CacheControl': 'max-age=86400',  # 24 hours
-# }
-# AWS_QUERYSTRING_AUTH = False  # Don't add complex authentication-related query parameters for requests
-# AWS_S3_ADDRESSING_STYLE = "virtual"  # Use virtual addressing style
+'''
