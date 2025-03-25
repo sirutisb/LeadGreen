@@ -194,21 +194,13 @@ curl -X POST http://localhost:8000/api/auth/login/ \
 ---
 
 # Deployment
+- [Deployed App Example](https://lead-green-tawny.vercel.app/)
 - [Backend Guide](docs/deployment-backend.md)
 - [Frontend Guide](docs/deployment-frontend.md)
-
-## Configurations
-
-### 1. CORS Settings (Enabled by default)
-Ensure CORS settings as needed in `backend/backend/settings.py`.
 
 ---
 
 ## Project Structure
-```
-
-# LeadGreen Project Structure
-
 ```
 LeadGreen/
 ├── backend/                      # Django backend
@@ -222,28 +214,28 @@ LeadGreen/
 │   ├── game/                     # Game app
 │   ├── leaderboard/              # Leaderboard app
 │   ├── manage.py                 # Django management script
+│   ├── media/                    # Media files
 │   ├── posts/                    # Posts app
 │   ├── qrcodes/                  # QR codes app
 │   ├── requirements.txt          # Python dependencies
-│   ├── shop/                     # Shop app
-│   ├── static/                   # Static files
 │   └── users/                    # Users app
+│
 ├── frontend/                     # React/Vite frontend
-│   ├── .env                      # Environment variables
-│   ├── index.html                # Entry HTML file
-│   ├── public/                   # Public assets
-│   ├── src/                      # Source code
-│   ├── tailwind.config.js        # Tailwind CSS configuration
-│   ├── vercel.json               # Vercel deployment configuration
-│   └── vite.config.js            # Vite configuration
-```
-
-This tree represents the overall structure of the LeadGreen project with both backend (Django) and frontend (React/Vite) components. The structure follows typical Django and React conventions, with Django organized into multiple apps for different features, and the React frontend using a component-based organization.
-
-Note that some subdirectories may have additional files not shown here, and the exact structure of each app might vary based on the project's specific requirements.
-
+    ├── .env                      # Environment variables
+    ├── .gitignore                # Git ignore file
+    ├── README.md                 # Frontend documentation
+    ├── eslint.config.js          # ESLint configuration
+    ├── index.html                # Entry HTML file
+    ├── node_modules/             # Node.js dependencies
+    ├── package-lock.json         # Locked dependencies
+    ├── package.json              # Project metadata and scripts
+    ├── public/                   # Public assets
+    ├── src/                      # Source code
+    ├── tailwind.config.js        # Tailwind CSS configuration
+    └── vite.config.js            # Vite configuration
 ```
 ---
+
 ## License
 This project is licensed under the MIT License. See the LICENSE file for details.
 
