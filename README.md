@@ -211,6 +211,7 @@ Ensure CORS settings as needed in `backend/backend/settings.py`.
 # LeadGreen Project Structure
 
 ```
+.
 LeadGreen/
 ├── backend/                      # Django backend
 │   ├── .env                      # Environment variables
