@@ -8,17 +8,18 @@ import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 
 const Feed = () => {
   const [posts, setPosts] = useState([]);
-  const [nextPage, setNextPage] = useState(`${import.meta.env.VITE_BACKEND}/api/posts?page=1`);
+  const [nextPage, setNextPage] = useState(null);
   const [isFetchingNextPage, setIsFetchingNextPage] = useState(false);
   const [hasNextPage, setHasNextPage] = useState(true);
   const [showScrollTop, setShowScrollTop] = useState(false);
 
   const fetchNextPage = async () => {
-    if (!nextPage || isFetchingNextPage) return;
-    setIsFetchingNextPage(true); // Set loading state before fetch
+    if (!nextPage && posts.length > 0) return; // Don't fetch if we have posts but no nextPage
+    if (isFetchingNextPage) return;
+    setIsFetchingNextPage(true);
     
     try {
-        const response = await axiosInstance.get(nextPage);
+      const response = await axiosInstance.get(nextPage || '/api/posts/');
       const data = response.data;
 
       // Deduplicate posts 
@@ -30,9 +31,9 @@ const Feed = () => {
           return [...prev, ...newPosts];
         });
       
-      // Store the URL for the next page of results (null if no more pages)
-      setNextPage(data.next);
-      setHasNextPage(!!data.next);
+        // Store the URL for the next page of results (null if no more pages)
+        setNextPage(data.next);
+        setHasNextPage(!!data.next);
       }
     } catch (error) {
       console.error("Error fetching posts:", error);

@@ -5,7 +5,7 @@ const userService = {
   // Get user profile by ID
   getUserProfile: async (userId) => {
     try {
-      const response = await axiosInstance.get(`/users/${userId}/`);
+      const response = await axiosInstance.get(`/api/users/${userId}/`);
       return response.data;
     } catch (error) {
       console.error("Error fetching user profile:", error);
@@ -16,7 +16,7 @@ const userService = {
   // Get user's posts with pagination
   getUserPosts: async (userId, page = 1) => {
     try {
-      const response = await axiosInstance.get(`/users/${userId}/posts/?page=${page}`);
+      const response = await axiosInstance.get(`/api/users/${userId}/posts/?page=${page}`);
       return response.data;
     } catch (error) {
       console.error("Error fetching user posts:", error);
@@ -27,7 +27,7 @@ const userService = {
   // Update user profile
   updateUserProfile: async (userId, profileData) => {
     try {
-      const response = await axiosInstance.patch(`/users/${userId}/`, profileData);
+      const response = await axiosInstance.patch(`/api/users/${userId}/`, profileData);
       return response.data;
     } catch (error) {
       console.error("Error updating user profile:", error);
@@ -38,7 +38,7 @@ const userService = {
   // Upload profile picture
   uploadProfilePicture: async (formData) => {
     try {
-      const response = await axiosInstance.post('/users/picture/', formData, {
+      const response = await axiosInstance.post('/api/users/picture/', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },

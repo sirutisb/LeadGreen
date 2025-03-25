@@ -16,10 +16,9 @@ class Plant(models.Model):
     """
     name = models.CharField(max_length=32)  # exampe - "Leafy", "Sprouto"
     level = models.IntegerField(unique=True)  # each level - one plant
-    image = models.ImageField(
-        upload_to="plants/",
-        blank=False,
-        null=True
+    image = models.CharField(
+        max_length=100,
+        help_text="Path to the plant image in static files"
     )
 
     class Meta:
@@ -35,10 +34,9 @@ class Insect(models.Model):
     name = models.CharField(max_length=32)  # example "Buzzly", "Creepsy"
     level = models.IntegerField(default=1)  # level requirement to appear
     spawn_chance = models.FloatField(default=0.2)  # prob of spawning
-    image = models.ImageField(
-        upload_to="insects/",
-        blank=False,
-        null=True
+    image = models.CharField(
+        max_length=100,
+        help_text="Path to the insect image in static files"
     )
 
     def __str__(self):
@@ -286,10 +284,9 @@ class Item(models.Model):
     name = models.CharField(max_length=32)
     description = models.TextField(default="")
     price = models.IntegerField(default=0)
-    image = models.ImageField(
-        upload_to="items/",
-        blank=False,
-        null=True
+    image = models.CharField(
+        max_length=100,
+        help_text="Path to the item image in static files"
     )
 
     item_type = models.CharField(max_length=20, choices=ITEM_TYPE)

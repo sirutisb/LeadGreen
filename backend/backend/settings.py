@@ -11,32 +11,47 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+import os
+from datetime import timedelta
+from dotenv import load_dotenv
+
+import dj_database_url
+
+# Load environment variables
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
-from datetime import timedelta
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-j5v($1+$7pm+*cd%t_a9=&wzi)7@inr+si6@km#&ld57&3rf8m'
+SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
-ALLOWED_HOSTS = ['*'] # Allow all hosts FOR TESTING
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS').split(' ')
 
-# allow all origins for development purposes
-CORS_ALLOW_ALL_ORIGINS = True
+# CORS settings
+CORS_ALLOWED_ORIGINS = os.getenv('CORS_ALLOWED_ORIGINS').split(' ')
+CORS_ALLOW_CREDENTIALS = True
 
+# Media files configuration
+# MEDIA_URL = '/media/'
+# MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-# image files and stuff
-# TODO: media implementation
-import os
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+# Static files configuration
+#STATIC_URL = '/static/'
+# STATIC_ROOT = BASE_DIR / 'staticfiles'
+# STATICFILES_DIRS = [
+#     BASE_DIR / 'static',
+# ]
+
+# STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+# STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 AUTH_USER_MODEL = 'users.UserProfile'
 
@@ -49,6 +64,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'storages',
 
     'authentication',
     'game',
@@ -119,15 +135,14 @@ SIMPLE_JWT = {
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # Add whitenoise middleware
+    'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-
-    'corsheaders.middleware.CorsMiddleware',
-    'django.middleware.common.CommonMiddleware',
 ]
 
 ROOT_URLCONF = 'backend.urls'
@@ -161,6 +176,8 @@ DATABASES = {
     }
 }
 
+database_url = os.getenv('DATABASE_URL')
+DATABASES['default'] = dj_database_url.parse(database_url)
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -196,7 +213,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = 'static/'
+#STATIC_URL = 'static/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
@@ -205,3 +222,78 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # File upload settings
 FILE_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024  # 10MB max file size
+
+# Security settings
+SECURE_SSL_REDIRECT = not DEBUG
+SESSION_COOKIE_SECURE = not DEBUG
+CSRF_COOKIE_SECURE = not DEBUG
+SECURE_BROWSER_XSS_FILTER = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
+X_FRAME_OPTIONS = 'DENY'
+
+# AWS S3 Configuration
+AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
+AWS_STORAGE_BUCKET_NAME = os.getenv('AWS_STORAGE_BUCKET_NAME')
+AWS_S3_REGION_NAME = os.getenv('AWS_S3_REGION_NAME', 'eu-north-1')
+AWS_S3_FILE_OVERWRITE = False
+AWS_DEFAULT_ACL = None  # Changed from 'public-read' to None
+AWS_S3_VERIFY = True
+AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
+
+# S3 static settings
+#STATIC_ROOT = 'static/'
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+]
+STATIC_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/static/'
+
+# S3 media settings
+#MEDIA_ROOT = 'media/'
+MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/media/'
+
+# Storage configuration classes
+# Create a custom storage class to specify locations for static and media files
+STORAGES = {
+    "default": {
+        "BACKEND": "storages.backends.s3.S3Storage",
+        "OPTIONS": {
+            "bucket_name": AWS_STORAGE_BUCKET_NAME,
+            "region_name": AWS_S3_REGION_NAME,
+            "access_key": AWS_ACCESS_KEY_ID,
+            "secret_key": AWS_SECRET_ACCESS_KEY,
+            "default_acl": AWS_DEFAULT_ACL,
+            "file_overwrite": AWS_S3_FILE_OVERWRITE,
+            "object_parameters": {
+                "CacheControl": "max-age=86400",  # 24 hours
+            },
+            "querystring_auth": False,  # Don't add complex authentication-related query parameters
+            "addressing_style": "virtual",  # Use virtual addressing style
+            "location": "media",  # Default file storage goes to media folder
+        },
+    },
+    "staticfiles": {
+        "BACKEND": "storages.backends.s3.S3Storage",
+        "OPTIONS": {
+            "bucket_name": AWS_STORAGE_BUCKET_NAME,
+            "region_name": AWS_S3_REGION_NAME,
+            "access_key": AWS_ACCESS_KEY_ID,
+            "secret_key": AWS_SECRET_ACCESS_KEY,
+            "default_acl": AWS_DEFAULT_ACL,
+            "file_overwrite": AWS_S3_FILE_OVERWRITE,
+            "object_parameters": {
+                "CacheControl": "max-age=86400",  # 24 hours
+            },
+            "querystring_auth": False,
+            "addressing_style": "virtual",
+            "location": "static",  # Static files go to static folder
+        },
+    },
+}
+
+# # Additional AWS Settings
+# AWS_S3_OBJECT_PARAMETERS = {
+#     'CacheControl': 'max-age=86400',  # 24 hours
+# }
+# AWS_QUERYSTRING_AUTH = False  # Don't add complex authentication-related query parameters for requests
+# AWS_S3_ADDRESSING_STYLE = "virtual"  # Use virtual addressing style

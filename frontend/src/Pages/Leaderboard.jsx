@@ -1,14 +1,12 @@
 import { useState, useEffect} from "react";
 import { Search, ChevronUp, ChevronDown, Leaf, Trophy } from "lucide-react";
-import axios from "axios";
+import axiosInstance from "../Context/axiosInstance";
 import Page from "./Page";
 import "../Components/LeaderboardPage.css";
 import NavBar from "../Components/NavBar/NavBar.jsx";
 import Footer from "../Components/Footer.jsx";
 import TopContributorsPodium from "../Components/TopContributorsPodium";
 import { Link } from "react-router-dom";
-
-const API_BASE_URL = import.meta.env.VITE_BACKEND + "/api/leaderboard";
 
 const LeaderboardPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -68,7 +66,7 @@ const LeaderboardPage = () => {
       setLoading(true);
       setError(null);
       try {
-        const response = await axios.get(`${API_BASE_URL}/${sortBy}/`);
+        const response = await axiosInstance.get(`/api/leaderboard/${sortBy}/`);
         setLeaderboardData(response.data.results || []);
         setNextPage(response.data.next);
         setPreviousPage(response.data.previous);
@@ -88,7 +86,7 @@ const LeaderboardPage = () => {
     if (!url) return;
     setLoading(true);
     try {
-      const response = await axios.get(url);
+      const response = await axiosInstance.get(url);
       setLeaderboardData(response.data.results || []);
       setNextPage(response.data.next);
       setPreviousPage(response.data.previous);

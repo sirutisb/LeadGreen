@@ -1,42 +1,37 @@
 from rest_framework import serializers
-from .models import GameProfile, Plant, Insect
+from .models import GameProfile, Plant, Insect, Inventory, Item, ItemEffect, Transaction
+from django.conf import settings
 
-class PlantProgressSerializer(serializers.Serializer):
-    """
-    Create serializer for getting plant information from frontend
-    """
-    name = serializers.CharField(source='current_plant.name')
-    level = serializers.IntegerField(source='tree_level')
-    growth = serializers.FloatField(source='tree_growth')
-    image = serializers.ImageField(source='current_plant.image')
+class PlantSerializer(serializers.ModelSerializer):
+    image = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Plant
+        fields = ['id', 'name', 'level', 'image']
+
+    def get_image(self, obj):
+        return f"{settings.STATIC_URL}{obj.image}"
 
 class InsectSerializer(serializers.ModelSerializer):
-    """
-    Serializer for getting insect information from frontend
-    """
+    image = serializers.SerializerMethodField()
+
     class Meta:
         model = Insect
-        fields = ['name', 'level', 'spawn_chance', 'image']
+        fields = ['id', 'name', 'level', 'spawn_chance', 'image']
 
-    # Override to explicitly return None if no insect is present
-    def to_representation(self, instance):
-        if instance is None:
-            return None
-        return super().to_representation(instance)
+    def get_image(self, obj):
+        return f"{settings.STATIC_URL}{obj.image}"
 
 class GameProfileSerializer(serializers.ModelSerializer):
     """
     Serializer for getting game profile information from frontend
     """
-    tree = PlantProgressSerializer(source='*')  # source='*' means use the GameProfile instance itself
-    insect = InsectSerializer(source='current_insect')
+    current_plant = PlantSerializer(read_only=True)
+    current_insect = InsectSerializer(read_only=True)
 
     class Meta:
         model = GameProfile
-        fields = ['points_balance', 'tree', 'insect', 'spins']
-
-
-from .models import Item, ItemEffect, Inventory, Transaction
+        fields = ['points_balance', 'tree_level', 'tree_growth', 'current_plant', 'current_insect', 'spins']
 
 class ItemEffectSerializer(serializers.ModelSerializer):
     class Meta:
@@ -44,11 +39,15 @@ class ItemEffectSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'effect_type', 'parameters']
 
 class ItemSerializer(serializers.ModelSerializer):
+    image = serializers.SerializerMethodField()
     effects = ItemEffectSerializer(many=True, read_only=True)
     
     class Meta:
         model = Item
         fields = ['id', 'name', 'description', 'image', 'price', 'item_type', 'effects', 'cooldown_seconds']
+
+    def get_image(self, obj):
+        return f"{settings.STATIC_URL}{obj.image}"
 
 class InventorySerializer(serializers.ModelSerializer):
     item = ItemSerializer(read_only=True)

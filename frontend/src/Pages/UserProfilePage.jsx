@@ -137,18 +137,22 @@ export default function UserProfile() {
     location: "Exeter, UK",
     points: profileData.user.points_balance,
     rank: profileData.rank,
-    treeLevel: profileData.tree.level || -1, 
-    treeName: profileData.tree.name,
-    treeGrowth: profileData.tree.growth, 
+    treeLevel: profileData.game_profile.tree_level,
+    treeName: profileData.game_profile.current_plant.name,
+    treeGrowth: profileData.game_profile.tree_growth,
+    currentPlant: profileData.game_profile.current_plant,
+    currentInsect: profileData.game_profile.current_insect,
+    spins: profileData.game_profile.spins,
     badges: [
       { name: "Early Adopter", icon: <Award className="h-6 w-6" /> },
       { name: "Tree Hugger", icon: <TreePine className="h-6 w-6" /> },
       { name: "Eco Warrior", icon: <Leaf className="h-6 w-6" /> },
     ],
     stats: [
-      { label: "Post", value: profileData.posts.length },
+      { label: "Posts", value: profileData.posts.length },
       { label: "Points", value: profileData.user.points_balance },
-      { label: "CO₂ Saved", value: `${Math.floor(profileData.user.points_balance / 31.4)}kg` }, // Example calculation
+      { label: "CO₂ Saved", value: `${Math.floor(profileData.user.points_balance / 31.4)}kg` },
+      { label: "Spins", value: profileData.game_profile.spins },
     ],
     recentActivity: profileData.posts.slice(0, 4).map((post) => ({
       action: post.caption,
@@ -316,7 +320,13 @@ export default function UserProfile() {
                   <div className="flex justify-center mb-8">
                     <div className="relative">
                       <div className="h-64 w-64 bg-green-50 rounded-full flex items-center justify-center">
-                        <TreePine className="h-32 w-32 text-green-600" />
+                        {userData.currentPlant && (
+                          <img 
+                            src={userData.currentPlant.image} 
+                            alt={userData.currentPlant.name}
+                            className="h-32 w-32 object-contain"
+                          />
+                        )}
                       </div>
                       <div className="absolute -top-2 -right-2 bg-green-600 text-white h-10 w-10 rounded-full flex items-center justify-center font-bold">
                         Lv.{userData.treeLevel}
@@ -335,8 +345,8 @@ export default function UserProfile() {
                       ></div>
                     </div>
                     <div className="flex justify-between mt-2 text-sm text-gray-600">
-                      <span>Current: {Math.round((userData.treeGrowth) * 100)} pts</span>
-                      <span>Next Level: {Math.round(100 -((userData.treeGrowth) * 100))} pts</span>
+                      <span>Current: {Math.round((userData.treeGrowth) * 100)}%</span>
+                      <span>Next Level: {Math.round(100 - ((userData.treeGrowth) * 100))}%</span>
                     </div>
                   </div>
 

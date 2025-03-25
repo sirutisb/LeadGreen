@@ -5,7 +5,7 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.permissions import AllowAny
 from .models import UserProfile
-from game.serializers import PlantProgressSerializer, InsectSerializer
+from game.serializers import GameProfileSerializer, InsectSerializer
 from .serializers import  BasicUserProfileSerializer, UserWithGameSerializer, UserWithPostSerializer, UserPageSerializer
 from game.models import GameProfile
 from django.core.files.storage import default_storage
@@ -14,23 +14,11 @@ import os
 from PIL import Image
 from io import BytesIO
 
-
-#from .serializers import BasicUserProfileSerializer
-
 from posts.serializers import PostSerializer
 from rest_framework.pagination import PageNumberPagination
 from posts.pagination import PostPagination
 from posts.models import Post
 from rest_framework import generics
-
-# class UserProfileView(APIView):
-#     def get(self, request, pk):
-#         try:
-#             user = UserProfile.objects.get(id=pk)
-#             serializer = UserWithGameSerializer(user, many=False)
-#             return Response(serializer.data)
-#         except UserProfile.DoesNotExist:
-#             return Response(status=status.HTTP_404_NOT_FOUND)
 
 class UserPostsView(generics.ListAPIView):
     serializer_class = PostSerializer
@@ -38,7 +26,7 @@ class UserPostsView(generics.ListAPIView):
 
     def get_queryset(self):
         user_id = self.kwargs['id']
-        return Post.objects.filter(user_id=user_id).order_by('-created_at') # Should it only show their approved posts?
+        return Post.objects.filter(user_id=user_id).order_by('-created_at')
     
 class UserProfileView(APIView):
     permission_classes = [AllowAny]
@@ -47,7 +35,7 @@ class UserProfileView(APIView):
             user = UserProfile.objects.get(id=pk)
             return Response({
                 'user': UserPageSerializer(user, context={'request': request}).data,
-                'tree': PlantProgressSerializer(user.game_profile).data,
+                'game_profile': GameProfileSerializer(user.game_profile).data,
                 'posts': PostSerializer(
                     user.post_set.order_by('-created_at'),
                     many=True,

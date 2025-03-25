@@ -102,7 +102,7 @@ const GardenShop = ({ isOpen, onClose, user, setUser, onPurchase }) => {
     const fetchShopItems = async () => {
       try {
         setLoading(true);
-        const response = await axiosInstance.get('/game/items/');
+        const response = await axiosInstance.get('/api/game/items/');
         const data = response.data;
         
         if (data.success && Array.isArray(data.items)) {
@@ -142,7 +142,7 @@ const GardenShop = ({ isOpen, onClose, user, setUser, onPurchase }) => {
   useEffect(() => {
     const fetchInventory = async () => {
       try {
-        const response = await axiosInstance.get('/game/inventory/');
+        const response = await axiosInstance.get('/api/game/inventory/');
         const inventoryData = {};
         response.data.forEach(item => {
           inventoryData[item.item.id] = item.quantity;
@@ -193,8 +193,8 @@ const GardenShop = ({ isOpen, onClose, user, setUser, onPurchase }) => {
       }
       
       try {
-        const response = await axiosInstance.post(`/game/items/${item.id}/purchase/`, {
-          quantity: quantity
+        const response = await axiosInstance.post(`/api/game/items/${item.id}/purchase/`, {
+          quantity: quantity,
         });
         
         const result = response.data;
