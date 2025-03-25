@@ -199,6 +199,43 @@ curl -X POST http://localhost:8000/api/auth/login/ \
 - [Frontend Guide](docs/deployment-frontend.md)
 
 ---
+
+## Project Structure
+```
+LeadGreen/
+├── backend/                      # Django backend
+│   ├── .env                      # Environment variables
+│   ├── .gitignore                # Git ignore file
+│   ├── .venv/                    # Python virtual environment
+│   ├── README.md                 # Backend documentation
+│   ├── authentication/           # Authentication app
+│   ├── backend/                  # Main Django project settings
+│   ├── db.sqlite3                # SQLite database (development)
+│   ├── game/                     # Game app
+│   ├── leaderboard/              # Leaderboard app
+│   ├── manage.py                 # Django management script
+│   ├── media/                    # Media files
+│   ├── posts/                    # Posts app
+│   ├── qrcodes/                  # QR codes app
+│   ├── requirements.txt          # Python dependencies
+│   └── users/                    # Users app
+│
+├── frontend/                     # React/Vite frontend
+    ├── .env                      # Environment variables
+    ├── .gitignore                # Git ignore file
+    ├── README.md                 # Frontend documentation
+    ├── eslint.config.js          # ESLint configuration
+    ├── index.html                # Entry HTML file
+    ├── node_modules/             # Node.js dependencies
+    ├── package-lock.json         # Locked dependencies
+    ├── package.json              # Project metadata and scripts
+    ├── public/                   # Public assets
+    ├── src/                      # Source code
+    ├── tailwind.config.js        # Tailwind CSS configuration
+    └── vite.config.js            # Vite configuration
+```
+---
+
 ## License
 This project is licensed under the MIT License. See the LICENSE file for details.
 
