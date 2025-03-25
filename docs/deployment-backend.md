@@ -67,7 +67,7 @@ This document provides detailed instructions for deploying the LeadGreen backend
    ```
 
 4. **Update Settings**:
-   - You'll need to update the image storage configuration in settings.py
+   - You will need to update the image storage configuration for use of cloudinary instead in settings.py
 
 ## 2. Database Setup
 
@@ -101,7 +101,8 @@ You'll need to set up environment variables for your production deployment.
 
    ```
    DEBUG=False
-   SECRET_KEY=your_secure_production_secret_key
+   DJANGO_SECRET_KEY=your_secure_production_secret_key
+   PYTHON_VERSION=your_python_version
    
    # Database configuration
    DATABASE_URL=your_postgres_connection_string
@@ -119,18 +120,19 @@ You'll need to set up environment variables for your production deployment.
    
    # Other application-specific settings
    ALLOWED_HOSTS=.render.com,your-custom-domain.com
+   CORS_ALLOWED_ORIGINS=.render.com,your-custom-domain.com
    ```
 
 2. **Generate a Secure Secret Key**:
    ```python
    python -c "import secrets; print(secrets.token_urlsafe(50))"
    ```
-   Use the output as your SECRET_KEY.
+   Use the output as the DJANGO_SECRET_KEY.
 
 ## 4. Deploying the Backend to Render
 
-1. **Push Your Code to GitHub**:
-   Ensure your code is in a GitHub repository.
+1. **Push The Code to GitHub**:
+   Ensure the code is in a GitHub repository.
 
 2. **Create a New Web Service on Render**:
    - Go to Dashboard → New → Web Service
