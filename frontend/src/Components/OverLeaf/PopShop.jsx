@@ -440,13 +440,32 @@ GardenShop.ShopButton = ({ onClick }) => {
   }, []);
 
   return (
-    <button
+<button
       onClick={onClick}
-      className={`fixed ${
-        isMobile 
-        ? 'bottom-190 right-4' // Mobile positioning
-        : 'top-32 right-4' // Desktop positioning, moved down
-      } bg-green-100 hover:from-emerald-500 hover:to-green-600 w-14 h-14 md:w-16 md:h-16 rounded-full shadow-lg flex items-center justify-center hover:shadow-xl transition-all duration-300 hover:scale-110 z-40`}
+      className={`
+        fixed 
+        right-4 
+        z-40 
+        bg-green-100 
+        hover:from-emerald-500 
+        hover:to-green-600 
+        w-14 
+        h-14 
+        md:w-16 
+        md:h-16 
+        rounded-full 
+        shadow-lg 
+        flex 
+        items-center 
+        justify-center 
+        hover:shadow-xl 
+        transition-all 
+        duration-300 
+        hover:scale-110
+        ${isMobile 
+          ? 'top-24 sm:top-32 md:top-40' 
+          : 'top-24 sm:top-32 md:top-40'
+        }`}
       aria-label="Open Shop"
     >
       <div className="absolute w-full h-full rounded-full bg-green opacity-20 animate-ping-slow"></div>
