@@ -194,6 +194,7 @@ curl -X POST http://localhost:8000/api/auth/login/ \
 ---
 
 # Deployment
+- [Deployed App Example](https://lead-green-tawny.vercel.app/)
 - [Backend Guide](docs/deployment-backend.md)
 - [Frontend Guide](docs/deployment-frontend.md)
 
