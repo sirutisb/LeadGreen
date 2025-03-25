@@ -428,25 +428,10 @@ const GardenShop = ({ isOpen, onClose, user, setUser, onPurchase }) => {
 
 // Shop Button Component (Nested Component)
 GardenShop.ShopButton = ({ onClick }) => {
-  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
-
-  useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth <= 768);
-    };
-
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
   return (
     <button
       onClick={onClick}
-      className={`fixed ${
-        isMobile 
-        ? 'bottom-190 right-4' // Mobile positioning
-        : 'top-32 right-4' // Desktop positioning, moved down
-      } bg-green-100 hover:from-emerald-500 hover:to-green-600 w-14 h-14 md:w-16 md:h-16 rounded-full shadow-lg flex items-center justify-center hover:shadow-xl transition-all duration-300 hover:scale-110 z-40`}
+      className="fixed right-4 top-[10vh] bg-green-100 hover:from-emerald-500 hover:to-green-600 w-14 h-14 md:w-16 md:h-16 rounded-full shadow-lg flex items-center justify-center hover:shadow-xl transition-all duration-300 hover:scale-110 z-50"
       aria-label="Open Shop"
     >
       <div className="absolute w-full h-full rounded-full bg-green opacity-20 animate-ping-slow"></div>
