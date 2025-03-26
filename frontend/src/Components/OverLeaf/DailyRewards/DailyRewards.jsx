@@ -91,11 +91,16 @@ export default function DailyRewards({setUser, setInventory, loadInventory}) {
         });
       }
   
-      // Send the POST request to the server
-      axiosInstance.post("/api/game/reward/").catch((error) => {
-        console.error("Error collecting reward:", error);
-        // Optionally, notify the user if the server update fails
-      });
+      // Send POST request to server
+      axiosInstance.post("/api/game/reward/")
+        .then(() => {
+          // After successful collection, fetch updated rewards and inventory
+          fetchRewards();
+          loadInventory();
+        })
+        .catch((error) => {
+          console.error("Error collecting reward:", error);
+        });
     }
   };
 
