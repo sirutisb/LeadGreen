@@ -6,9 +6,6 @@ When you complete a sustainable activity such as picking up litter or using publ
 You can then spend these points growing your plant. Using water, soil, etc. As your plant grows it will level up unlocking new appearances.  
 
 ---
-
-## GROUP LAKERS
-
 The group members are:
 
 1. Benitas
@@ -19,27 +16,7 @@ The group members are:
 6. Thomas
 7. Taha
 
-
-This is a submission for Sprint 1. There are three types of document that you will find the following places.
-
 ---
-
-## PROCESS DOCUMENTS
-Our process documents are managed in the trello platform. The link to our project page is below. We have added Solomon to the board so it is visible.
-
-trello link: [https://trello.com/b/UgXBgBLw/software-2025]
-
----
-
-## TECHNICAL DOCUMENTS
-Our technical documents are primarily managed on the github system. The link to the project is below:
-
-github link: [https://github.com/sirutisb/LeadGreen]
-
-Technical documents are broken down into front end and back end etc.
-
----
-
 ## GETTING STARTED:
 
 ### 1. Ensure you have the following installed:
@@ -210,7 +187,7 @@ LeadGreen/
 │   ├── README.md                 # Backend documentation
 │   ├── authentication/           # Authentication app
 │   ├── backend/                  # Main Django project settings
-│   ├── db.sqlite3                # SQLite database (development)
+│   ├── db.sqlite3                # SQLite database (development), use PostgreSQL for deployment
 │   ├── game/                     # Game app
 │   ├── leaderboard/              # Leaderboard app
 │   ├── manage.py                 # Django management script
@@ -238,6 +215,3 @@ LeadGreen/
 
 ## License
 This project is licensed under the MIT License. See the LICENSE file for details.
-
-## Contact
-**Name:** Team Lakers
